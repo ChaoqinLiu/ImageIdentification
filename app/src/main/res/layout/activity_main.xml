@@ -1,18 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="@color/white"
+    android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <com.example.sqlbrite.ui.MarqueeTextView
+        android:id="@+id/tvMarqueeOne"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerInParent="true"
+        android:background="@color/LightGrey"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="@color/gray"
+        android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:padding="10dp"
+        android:singleLine="true"
+        android:text="温馨提示，点击进入拍照识别模式，长击进入相册选择识别模式！" />
 
-</android.support.constraint.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_image"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:textSize="40sp"
+                android:layout_gravity="center"
+                android:gravity="center|bottom"
+                android:layout_weight="1"
+                android:textColor="@color/green"
+                android:text="@string/str_image"
+                android:textAlignment="center" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:gravity="center|top"
+                android:layout_weight="2"
+                android:textSize="13sp"
+                android:text="图像识别" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="1dp"
+            android:layout_height="120dp"
+            android:background="@color/LightGrey"/>
+
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_tx"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:textSize="40sp"
+                android:layout_gravity="center"
+                android:gravity="center|bottom"
+                android:layout_weight="1"
+                android:textColor="@color/green"
+                android:text="@string/str_text"
+                android:textAlignment="center" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center|top"
+                android:layout_weight="2"
+                android:textSize="13sp"
+                android:text="图文识别" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

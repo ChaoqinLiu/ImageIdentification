@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">SQLBrite</string>
+    <string name="app_name">图片识别</string>
+    <string name="str_back">&#xe78a;</string>
+    <string name="str_image">&#xe602;</string>
+    <string name="str_text">&#xe614;</string>
+    <string name="srt_result">识别结果</string>
+    <string name="str_translation">翻译</string>
 </resources>
