@@ -8,10 +8,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.adapter.ResultAdapter;
@@ -46,13 +46,11 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import sun.misc.BASE64Encoder;
 
-
 public class IntelligentDetectionActivity extends BaseActivity {
 
-    private static final String API_KEY_IMAGE = "rcBBY03vg6qf9GDLCwZwMMrZ";
-    private static final String SECRET_KEY_IMAGE = "FFNDh7p3AGagLHSuNdEPYazn6zbUUeun";
-    private static final String API_KEY_TEXT = "BSvVZBfk78U0P5rp3vkMbvwX";
-    private static final String SECRET_KEY_TEXT = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+    private static String API_KEY;
+    private static String SECRET_KEY;
+    private String requestUrl;
     private String path;
     private String type_image;
     private String type_text;
@@ -91,6 +89,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_intelligent_detection);
 
+
         Typeface iconfont = Typeface.createFromAsset(getAssets(), "iconfont/iconfont.ttf");
         back.setTypeface(iconfont);
 
@@ -107,20 +106,17 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
         //根据按钮传过来的类型执行相应的图片处理方法
         getTypeView();
-        //返回主页
-        ReturnToHome();
         //翻译
         initTranslation();
+        //返回主页
+        ReturnToHome();
     }
 
-    //处理type_image类型的图片
-    private void initUploadImage(String path){
+    private String initUploadImage(String path){
 
-        String access_token = getAccessToken(API_KEY_IMAGE,SECRET_KEY_IMAGE);
+        String access_token = getAccessToken(API_KEY,SECRET_KEY);
         //L.i("access_token = " + access_token);
-
         //拼接请求
-        String requestUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general";
         String contentType = "application/x-www-form-urlencoded";
         String urls = requestUrl + "?access_token=" + access_token;
         //L.i("urls =" + urls);
@@ -161,109 +157,14 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     bos.flush();
                 }
                 bos.close();
-                //L.i("result = " + bos.toString("utf-8"));
-                String resultStr = bos.toString("utf-8");
-                JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
-                //再转JsonArray 加上数据头
-                JsonArray jsonArray = jsonObject.getAsJsonArray("result");
-                Gson gson = new Gson();
-
-                //循环遍历
-                for (JsonElement result : jsonArray) {
-                    Result.ResultArray resultBean = gson.fromJson(result, new TypeToken<Result.ResultArray>() {}.getType());
-                    resultBeanList.add(resultBean);
-                }
-                //在主线程中执行UI操作
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter = new ResultAdapter(IntelligentDetectionActivity.this,resultBeanList);
-                        listView.setAdapter(adapter);
-                    }
-                });
+                return bos.toString("utf-8");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    //处理type_text类型的图片
-    private void initTextImage(String path){
-        String access_token = getAccessToken(API_KEY_TEXT,SECRET_KEY_TEXT);
-        L.i("access_token = " + access_token);
-
-        //拼接请求
-        String requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
-        String contentType = "application/x-www-form-urlencoded";
-        String urls = requestUrl + "?access_token=" + access_token;
-        L.i("urls =" + urls);
-
-        try {
-            URL url = new URL(urls);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            con.setDoInput(true);
-            con.setDoOutput(true);
-            con.setUseCaches(false);
-            con.setRequestProperty("Content-Type",contentType);
-            con.setRequestProperty("Connection", "Keep-Alive");
-            con.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
-
-            OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream(), "utf-8");
-
-            //将图片转换为byte[]再进行base64编码
-            byte[] bytes  = FileUtil.readFileByBytes(path);
-            BASE64Encoder encoder = new BASE64Encoder();
-            String str = encoder.encode(bytes);
-            //URLEncoder 使用指定的编码机制将字符串转换为 application/x-www-form-urlencoded 格式
-            String imageParam = URLEncoder.encode(str);
-            //API请求参数 image
-            String param = "image=" + imageParam;
-
-            out.write(param);
-            out.flush();
-            out.close();
-
-            if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                BufferedInputStream bis = new BufferedInputStream(con.getInputStream());
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                int len;
-                byte[] arr = new byte[1024];
-                while ((len = bis.read(arr)) != -1) {
-                    bos.write(arr, 0, len);
-                    bos.flush();
-                }
-                bos.close();
-                L.i("result = " + bos.toString("utf-8"));
-                String resultStr = bos.toString("utf-8");
-                JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
-                //再转JsonArray 加上数据头
-                JsonArray jsonArray = jsonObject.getAsJsonArray("words_result");
-                //L.i("jsonArray= " + jsonArray.toString());
-                Gson gson = new Gson();
-
-                //循环遍历
-                for (JsonElement result : jsonArray) {
-                    TextResult.WordsResult resultTextBean = gson.fromJson(result, new TypeToken<TextResult.WordsResult>() {}.getType());
-                    resultTextList.add(resultTextBean);
-                }
-                //在主线程中执行UI操作
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
-                        listView.setAdapter(tAdapter);
-                    }
-                });
-                wordsArray = jsonArray.toString();
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return null;
     }
 
     //翻译操作
@@ -276,6 +177,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         Intent intent = new Intent(IntelligentDetectionActivity.this, TextTranslationActivity.class);
                         intent.putExtra("translationArr", wordsArray);
                         startActivityForResult(intent, TRANSLATION_RESULT_CODE);
+                        onDestroy();
                     }
                 });
     }
@@ -348,7 +250,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
-                        Intent intent = new Intent(IntelligentDetectionActivity.this, MainActivity.class);
+                        Intent intent = new Intent();
+                        intent.setClass(IntelligentDetectionActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
                 }, new Consumer<Throwable>() {
@@ -359,30 +262,83 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 });
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {// 重写系统返回键
+            Intent intent = new Intent();
+            intent.setClass(IntelligentDetectionActivity.this, MainActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     private void getTypeView(){
         if (type_image != null) {
             new Thread(new Runnable() {  //开启一个新的线程，防止在主线程中网络请求发生异常
                 @Override
                 public void run() {
-                    initUploadImage(path);
+                    API_KEY = "rcBBY03vg6qf9GDLCwZwMMrZ";
+                    SECRET_KEY = "FFNDh7p3AGagLHSuNdEPYazn6zbUUeun";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general";
+                    String resultStr = initUploadImage(path);
+                    JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
+                    //再转JsonArray 加上数据头
+                    JsonArray jsonArray = jsonObject.getAsJsonArray("result");
+                    Gson gson = new Gson();
+
+                    //循环遍历
+                    for (JsonElement result : jsonArray) {
+                        Result.ResultArray resultBean = gson.fromJson(result, new TypeToken<Result.ResultArray>() {}.getType());
+                        resultBeanList.add(resultBean);
+                    }
+                    //在主线程中执行UI操作
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter = new ResultAdapter(IntelligentDetectionActivity.this,resultBeanList);
+                            listView.setAdapter(adapter);
+                        }
+                    });
                 }
             }).start();
-        }
-
-        else if (type_text != null) {
+        } else if (type_text != null) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    initTextImage(path);
+                    API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                    SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
+                    String resultStr = initUploadImage(path);
+                    JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
+                    //再转JsonArray 加上数据头
+                    JsonArray jsonArray = jsonObject.getAsJsonArray("words_result");
+                    //L.i("jsonArray= " + jsonArray.toString());
+                    Gson gson = new Gson();
+
+                    //循环遍历
+                    for (JsonElement result : jsonArray) {
+                        TextResult.WordsResult resultTextBean = gson.fromJson(result, new TypeToken<TextResult.WordsResult>() {}.getType());
+                        resultTextList.add(resultTextBean);
+                    }
+                    //在主线程中执行UI操作
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
+                            listView.setAdapter(tAdapter);
+                            text_translation.setText("翻译");
+                        }
+                    });
+                    wordsArray = jsonArray.toString();
                 }
             }).start();
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    text_translation.setText("翻译");
-                }
-            });
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
 }

@@ -6,11 +6,18 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
+import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.app.BaseActivity;
+import com.example.sqlbrite.model.Language;
 import com.example.sqlbrite.model.TranslateResult;
 import com.example.sqlbrite.util.MD5Utils;
 import com.google.gson.Gson;
@@ -26,24 +33,23 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 public class TextTranslationActivity extends BaseActivity {
 
-    private static final int TRANSLATION_RESULT_CODE = 1;
-
     private String wordsKeyArr;
-    private String signUrl;
     private static String queryStr = "";
-    private static String query;
     private static final String appid = "20190401000283388";
     private static final String key = "SkTeVqucOItasS35k8tJ";
     private static final String salt = "1435660288";
     private static String sign;
     private String signStr;
     private String dst;
+    private static String lan = "en";  //翻译目标语言,默认为英文
 
     private ProgressDialog progressDialog = null;
     private Handler handler = new Handler();
@@ -57,6 +63,8 @@ public class TextTranslationActivity extends BaseActivity {
     @InjectView(R.id.tx_Translation)
     TextView translation;
 
+    @InjectView(R.id.sp_language)
+    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,13 +97,18 @@ public class TextTranslationActivity extends BaseActivity {
         progressDialog = ProgressDialog.show(TextTranslationActivity.this,"请稍后", "正在翻译中...",true);
         handler.postDelayed(mCloseDialog,1500);
 
+        getTranslationResult();
+        initSpinner();
+        initView();
+    }
+
+    private void getTranslationResult(){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 String result = Translation();
                 TranslateResult translateResult = new Gson().fromJson(result,TranslateResult.class);
                 dst = translateResult.getTrans_result().get(0).getDst();
-                //L.i("dst = " + dst);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -107,16 +120,13 @@ public class TextTranslationActivity extends BaseActivity {
                 });
             }
         }).start();
-
-        initView();
-
     }
 
-    private static String Translation(){
+    public static String Translation(){
 
         StringBuffer buffer = new StringBuffer();
 
-        String requestUrl = "https://fanyi-api.baidu.com/api/trans/vip/translate?q=" + queryStr + "&from=auto&to=en&appid=" + appid + "&salt=" + salt + "&sign=" + sign;
+        String requestUrl = "https://fanyi-api.baidu.com/api/trans/vip/translate?q=" + queryStr + "&from=auto&to=" + lan + "&appid=" + appid + "&salt=" + salt + "&sign=" + sign;
         //L.i("requestUrl =" + requestUrl);
 
         try {
@@ -158,6 +168,7 @@ public class TextTranslationActivity extends BaseActivity {
                     public void accept(@NonNull Object o) throws Exception {
                         Intent intent = new Intent(TextTranslationActivity.this, MainActivity.class);
                         startActivity(intent);
+                        onDestroy();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -165,6 +176,17 @@ public class TextTranslationActivity extends BaseActivity {
                         L.i("onError = " + throwable.getMessage());
                     }
                 });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {// 重写系统返回键
+            Intent intent = new Intent();
+            intent.setClass(TextTranslationActivity.this, MainActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private Runnable mCloseDialog = new Runnable() {
@@ -176,5 +198,47 @@ public class TextTranslationActivity extends BaseActivity {
         }
     };
 
+    private void initSpinner(){
+        List<Language> languages = new ArrayList<Language>();
+        languages.add(new Language("en", "英文"));
+        languages.add(new Language("zh", "中文"));
+        languages.add(new Language("yue", "粤语"));
+        languages.add(new Language("jp", "日语"));
+        languages.add(new Language("kor", "韩语"));
+        languages.add(new Language("fra", "法语"));
+        languages.add(new Language("spa", "西班牙语"));
+        languages.add(new Language("th", "泰语"));
+        languages.add(new Language("ara", "阿拉伯语"));
+        languages.add(new Language("ru", "俄语"));
+        languages.add(new Language("pt", "葡萄牙语"));
+        languages.add(new Language("de", "德语"));
+        languages.add(new Language("it", "意大利语"));
+        languages.add(new Language("vie", "越南语"));
+        ArrayAdapter<Language> adapter = new ArrayAdapter<Language>(this,R.layout.item_language_text,languages);
+        adapter.setDropDownViewResource(R.layout.item_language_drop_down);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(0,true);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position==0){
+                    return;
+                }else {
+                    wordsKeyArr = original.getText().toString();
+                    lan = ((Language)spinner.getSelectedItem()).getKey();
+                    getTranslationResult();
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
 }

@@ -53,7 +53,7 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".activity.TextTranslationActivity"></activity>
+        <activity android:name=".activity.TextTranslationActivity" />
     </application>
 
 </manifest>

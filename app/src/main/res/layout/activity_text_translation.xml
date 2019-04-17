@@ -32,6 +32,31 @@
 
     </FrameLayout>
 
+    <FrameLayout
+        android:layout_height="45dp"
+        android:layout_width="match_parent"
+        android:layout_gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/blue"
+            android:text="自动检测"/>
+
+        <Spinner
+            android:id="@+id/sp_language"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="right"
+            android:layout_marginRight="6dp"
+            android:spinnerMode="dropdown"/>
+
+    </FrameLayout>
+
     <TextView
         android:layout_height="1dp"
         android:layout_width="match_parent"
@@ -42,7 +67,8 @@
     <FrameLayout
         android:layout_height="230dp"
         android:layout_width="match_parent"
-        android:layout_margin="8dp">
+        android:layout_margin="8dp"
+        android:background="@drawable/translation_border">
 
         <TextView
             android:id="@+id/text_original"
@@ -50,8 +76,7 @@
             android:layout_height="wrap_content"
             android:maxLines = "30"
             android:scrollbars = "vertical"
-            android:textSize="16sp"
-            android:background="@drawable/translation_border"/>
+            android:textSize="16sp"/>
     </FrameLayout>
 
     <TextView
