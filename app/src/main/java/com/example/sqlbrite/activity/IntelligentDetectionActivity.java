@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.adapter.ResultAdapter;
@@ -27,6 +28,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.safframework.injectview.annotations.InjectView;
+import com.safframework.log.L;
+
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -209,69 +212,117 @@ public class IntelligentDetectionActivity extends BaseActivity {
             new Thread(new Runnable() {  //开启一个新的线程，防止在主线程中网络请求发生异常
                 @Override
                 public void run() {
-                    API_KEY = "rcBBY03vg6qf9GDLCwZwMMrZ";
-                    SECRET_KEY = "FFNDh7p3AGagLHSuNdEPYazn6zbUUeun";
-                    requestUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general";
-                    String resultStr = initUploadImage(path);
-                    JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
-                    //再转JsonArray 加上数据头
-                    JsonArray jsonArray = jsonObject.getAsJsonArray("result");
-                    Gson gson = new Gson();
+                    try {
+                        API_KEY = "rcBBY03vg6qf9GDLCwZwMMrZ";
+                        SECRET_KEY = "FFNDh7p3AGagLHSuNdEPYazn6zbUUeun";
+                        requestUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general";
+                        String resultStr = initUploadImage(path);
+                        if (resultStr == null || resultStr.equals(" ")) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Thread.sleep(6000);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).start();
+                        } else {
+                            JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
+                            //再转JsonArray 加上数据头
+                            JsonArray jsonArray = jsonObject.getAsJsonArray("result");
+                            Gson gson = new Gson();
 
-                    //循环遍历
-                    for (JsonElement result : jsonArray) {
-                        Result.ResultArray resultBean = gson.fromJson(result, new TypeToken<Result.ResultArray>() {}.getType());
-                        resultBeanList.add(resultBean);
-                    }
-                    //在主线程中执行UI操作
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                adapter = new ResultAdapter(IntelligentDetectionActivity.this,resultBeanList);
-                                listView.setAdapter(adapter);
-                                progressDialog.dismiss();
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            //循环遍历
+                            for (JsonElement result : jsonArray) {
+                                Result.ResultArray resultBean = gson.fromJson(result, new TypeToken<Result.ResultArray>() {}.getType());
+                                resultBeanList.add(resultBean);
                             }
+                            //在主线程中执行UI操作
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        adapter = new ResultAdapter(IntelligentDetectionActivity.this,resultBeanList);
+                                        listView.setAdapter(adapter);
+                                        progressDialog.dismiss();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
                         }
-                    });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }).start();
         } else if (type_text != null) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    try {
                     API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
                     String resultStr = initUploadImage(path);
-                    JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
-                    //再转JsonArray 加上数据头
-                    JsonArray jsonArray = jsonObject.getAsJsonArray("words_result");
-                    //L.i("jsonArray= " + jsonArray.toString());
-                    Gson gson = new Gson();
+                        if (resultStr == null || resultStr.equals(" ")) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Thread.sleep(6000);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).start();
+                        } else {
+                           JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
+                           //再转JsonArray 加上数据头
+                           JsonArray jsonArray = jsonObject.getAsJsonArray("words_result");
+                           //L.i("jsonArray= " + jsonArray.toString());
+                           Gson gson = new Gson();
 
-                    //循环遍历
-                    for (JsonElement result : jsonArray) {
-                        TextResult.WordsResult resultTextBean = gson.fromJson(result, new TypeToken<TextResult.WordsResult>() {}.getType());
-                        resultTextList.add(resultTextBean);
-                    }
-                    //在主线程中执行UI操作
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
-                                listView.setAdapter(tAdapter);
-                                progressDialog.dismiss();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                           //循环遍历
+                           for (JsonElement result : jsonArray) {
+                               TextResult.WordsResult resultTextBean = gson.fromJson(result, new TypeToken<TextResult.WordsResult>() {}.getType());
+                               resultTextList.add(resultTextBean);
+                           }
+                           //在主线程中执行UI操作
+                           runOnUiThread(new Runnable() {
+                               @Override
+                               public void run() {
+                                   try {
+                                       tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
+                                       listView.setAdapter(tAdapter);
+                                       progressDialog.dismiss();
+                                   } catch (Exception e) {
+                                       e.printStackTrace();
+                                   }
+                               }
+                           });
+                           wordsArray = jsonArray.toString();
+                           initFragment(); //向TranslationFragment传递数据
                         }
-                    });
-                    wordsArray = jsonArray.toString();
-                    initFragment(); //向TranslationFragment传递数据
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }).start();
         }
