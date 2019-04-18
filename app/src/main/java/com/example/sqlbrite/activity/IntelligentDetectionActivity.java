@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
@@ -58,9 +57,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     public static Bitmap bitmap;
     private static String wordsArray;
 
-
     private ProgressDialog progressDialog = null;
-    private Handler handler = new Handler();
 
     @InjectView(R.id.view_list)
     ListView listView;
@@ -68,10 +65,6 @@ public class IntelligentDetectionActivity extends BaseActivity {
     @Override
     @SuppressLint("NewApi")
     protected void onCreate(Bundle savedInstanceState) {
-
-        //防止主线程中进行网络请求异常（但不建议这样）
-        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        //StrictMode.setThreadPolicy(policy);
 
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -86,7 +79,6 @@ public class IntelligentDetectionActivity extends BaseActivity {
         bitmap = BitmapFactory.decodeFile(path, null);
 
         progressDialog = ProgressDialog.show(IntelligentDetectionActivity.this,"请稍后", "正在识别中...",true);
-        handler.postDelayed(mCloseDialog,1500);
 
         //根据按钮传过来的类型执行相应的图片处理方法
         getTypeView();
@@ -201,15 +193,6 @@ public class IntelligentDetectionActivity extends BaseActivity {
         return null;
     }
 
-    private Runnable mCloseDialog = new Runnable() {
-        @Override
-        public void run() {
-            if (progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-        }
-    };
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {// 重写系统返回键
@@ -247,6 +230,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                             try {
                                 adapter = new ResultAdapter(IntelligentDetectionActivity.this,resultBeanList);
                                 listView.setAdapter(adapter);
+                                progressDialog.dismiss();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -280,6 +264,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                             try {
                                 tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
                                 listView.setAdapter(tAdapter);
+                                progressDialog.dismiss();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

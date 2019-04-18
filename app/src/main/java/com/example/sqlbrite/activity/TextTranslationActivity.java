@@ -3,7 +3,6 @@ package com.example.sqlbrite.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.app.BaseActivity;
@@ -21,7 +19,6 @@ import com.example.sqlbrite.model.TranslateResult;
 import com.example.sqlbrite.util.MD5Utils;
 import com.google.gson.Gson;
 import com.safframework.injectview.annotations.InjectView;
-import com.safframework.log.L;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,7 +44,6 @@ public class TextTranslationActivity extends BaseActivity {
     private static String lan = "en";  //翻译目标语言,默认为英文
 
     private ProgressDialog progressDialog = null;
-    private Handler handler = new Handler();
 
     @InjectView(R.id.text_original)
     TextView original;
@@ -84,7 +80,6 @@ public class TextTranslationActivity extends BaseActivity {
         //L.i(sign);
 
         progressDialog = ProgressDialog.show(TextTranslationActivity.this,"请稍后", "正在翻译中...",true);
-        handler.postDelayed(mCloseDialog,1500);
 
         getTranslationResult();
         initSpinner();
@@ -105,6 +100,7 @@ public class TextTranslationActivity extends BaseActivity {
                             translation.setText(dst);
                             original.setMovementMethod(new ScrollingMovementMethod());
                             translation.setMovementMethod(new ScrollingMovementMethod());
+                            progressDialog.dismiss();
                         }
                     });
                 } catch (Exception e) {
@@ -163,15 +159,6 @@ public class TextTranslationActivity extends BaseActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
-    private Runnable mCloseDialog = new Runnable() {
-        @Override
-        public void run() {
-            if (progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-        }
-    };
 
     private void initSpinner(){
         List<Language> languages = new ArrayList<Language>();
