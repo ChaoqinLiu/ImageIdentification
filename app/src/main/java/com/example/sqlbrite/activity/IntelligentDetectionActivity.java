@@ -5,18 +5,19 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.adapter.ResultAdapter;
 import com.example.sqlbrite.adapter.ResultTextAdapter;
 import com.example.sqlbrite.app.BaseActivity;
+import com.example.sqlbrite.fragment.TranslationFragment;
 import com.example.sqlbrite.model.Result;
 import com.example.sqlbrite.model.TextResult;
 import com.example.sqlbrite.util.FileUtil;
@@ -26,9 +27,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.injectview.annotations.InjectView;
-import com.safframework.log.L;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -40,10 +39,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import sun.misc.BASE64Encoder;
 
 public class IntelligentDetectionActivity extends BaseActivity {
@@ -61,21 +56,14 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private ArrayList<TextResult.WordsResult> resultTextList = new ArrayList<TextResult.WordsResult>();
 
     public static Bitmap bitmap;
-    private String wordsArray;
+    private static String wordsArray;
 
-    private static final int TRANSLATION_RESULT_CODE = 1;
 
     private ProgressDialog progressDialog = null;
     private Handler handler = new Handler();
 
     @InjectView(R.id.view_list)
     ListView listView;
-
-    @InjectView(R.id.back)
-    TextView back;
-
-    @InjectView(R.id.text_translation)
-    TextView text_translation;
 
     @Override
     @SuppressLint("NewApi")
@@ -89,15 +77,11 @@ public class IntelligentDetectionActivity extends BaseActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_intelligent_detection);
 
-
-        Typeface iconfont = Typeface.createFromAsset(getAssets(), "iconfont/iconfont.ttf");
-        back.setTypeface(iconfont);
-
         Intent intent = getIntent();
         path =  intent.getStringExtra("image_path");
         type_image = intent.getStringExtra("type_image");
         type_text = intent.getStringExtra("type_text");
-        L.i("ImagePath= " + path);
+        //L.i("ImagePath= " + path);
 
         bitmap = BitmapFactory.decodeFile(path, null);
 
@@ -106,10 +90,6 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
         //根据按钮传过来的类型执行相应的图片处理方法
         getTypeView();
-        //翻译
-        initTranslation();
-        //返回主页
-        ReturnToHome();
     }
 
     private String initUploadImage(String path){
@@ -165,21 +145,6 @@ public class IntelligentDetectionActivity extends BaseActivity {
             e.printStackTrace();
         }
         return null;
-    }
-
-    //翻译操作
-    private void initTranslation() {
-        RxView.clicks(text_translation)
-                .throttleFirst(600, TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception{
-                        Intent intent = new Intent(IntelligentDetectionActivity.this, TextTranslationActivity.class);
-                        intent.putExtra("translationArr", wordsArray);
-                        startActivityForResult(intent, TRANSLATION_RESULT_CODE);
-                        onDestroy();
-                    }
-                });
     }
 
     //获取AccessToken
@@ -245,23 +210,6 @@ public class IntelligentDetectionActivity extends BaseActivity {
         }
     };
 
-    private void ReturnToHome(){
-        RxView.clicks(back)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        Intent intent = new Intent();
-                        intent.setClass(IntelligentDetectionActivity.this, MainActivity.class);
-                        startActivity(intent);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        L.i("onError = " + throwable.getMessage());
-                    }
-                });
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {// 重写系统返回键
@@ -296,8 +244,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            adapter = new ResultAdapter(IntelligentDetectionActivity.this,resultBeanList);
-                            listView.setAdapter(adapter);
+                            try {
+                                adapter = new ResultAdapter(IntelligentDetectionActivity.this,resultBeanList);
+                                listView.setAdapter(adapter);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 }
@@ -325,20 +277,30 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
-                            listView.setAdapter(tAdapter);
-                            text_translation.setText("翻译");
+                            try {
+                                tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
+                                listView.setAdapter(tAdapter);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                     wordsArray = jsonArray.toString();
+                    initFragment(); //向TranslationFragment传递数据
                 }
             }).start();
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    private void initFragment(){
+        FragmentManager manager = this.getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        TranslationFragment fragment = new TranslationFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("words",wordsArray);
+        fragment.setArguments(bundle);
+        transaction.add(R.id.text_translation,fragment);
+        transaction.commit();
     }
 
 }

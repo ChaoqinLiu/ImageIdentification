@@ -11,13 +11,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.view.KeyEvent;
 import android.view.Window;
-import android.widget.ImageView;
 
-import com.example.sqlbrite.R;
 import com.example.sqlbrite.app.BaseActivity;
-import com.safframework.injectview.annotations.InjectView;
-import com.safframework.log.L;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -190,6 +187,17 @@ public class TakePictureActivity extends BaseActivity {
         }
         //最后通知图库更新
         this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,Uri.parse("file://" + mImagePath)));
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {// 重写系统返回键
+            Intent intent = new Intent();
+            intent.setClass(TakePictureActivity.this, MainActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
  }

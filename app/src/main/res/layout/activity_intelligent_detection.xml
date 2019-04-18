@@ -4,24 +4,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
+    <LinearLayout
+        android:id="@+id/layout"
         android:layout_height="65dp"
         android:layout_width="match_parent"
         android:layout_gravity="center"
+        android:orientation="horizontal"
         android:background="@color/blue">
 
-        <TextView
-            android:id="@+id/back"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/str_back"
+        <fragment
+            android:id="@+id/fragment_back"
+            android:name="com.example.sqlbrite.fragment.BackFragment"
+            android:layout_width="0dp"
             android:layout_gravity="center"
-            android:textSize="20sp"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/white"/>
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="@string/srt_result"
             android:layout_gravity="center"
@@ -29,17 +31,14 @@
             android:textSize="22sp"
             android:textColor="@color/white"/>
 
-        <TextView
+        <RelativeLayout
             android:id="@+id/text_translation"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:textSize="15sp"
+            android:layout_height="20dp"
             android:layout_gravity="center"
-            android:gravity="right|center"
-            android:layout_marginRight="15dp"
-            android:textColor="@color/white"/>
-
-    </FrameLayout>
+            android:layout_width="0dp"
+            android:layout_weight="1">
+        </RelativeLayout>
+    </LinearLayout>
 
     <ListView
         android:id="@+id/view_list"

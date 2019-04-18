@@ -2,7 +2,6 @@ package com.example.sqlbrite.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
@@ -21,7 +20,6 @@ import com.example.sqlbrite.model.Language;
 import com.example.sqlbrite.model.TranslateResult;
 import com.example.sqlbrite.util.MD5Utils;
 import com.google.gson.Gson;
-import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.injectview.annotations.InjectView;
 import com.safframework.log.L;
 
@@ -35,9 +33,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 public class TextTranslationActivity extends BaseActivity {
 
@@ -54,9 +49,6 @@ public class TextTranslationActivity extends BaseActivity {
     private ProgressDialog progressDialog = null;
     private Handler handler = new Handler();
 
-    @InjectView(R.id.text_back)
-    TextView back;
-
     @InjectView(R.id.text_original)
     TextView original;
 
@@ -71,9 +63,6 @@ public class TextTranslationActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_text_translation);
-
-        Typeface iconfont = Typeface.createFromAsset(getAssets(), "iconfont/iconfont.ttf");
-        back.setTypeface(iconfont);
 
         Intent intent = getIntent();
         wordsKeyArr = intent.getStringExtra("translationArr");
@@ -99,25 +88,28 @@ public class TextTranslationActivity extends BaseActivity {
 
         getTranslationResult();
         initSpinner();
-        initView();
     }
 
     private void getTranslationResult(){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String result = Translation();
-                TranslateResult translateResult = new Gson().fromJson(result,TranslateResult.class);
-                dst = translateResult.getTrans_result().get(0).getDst();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        original.setText(queryStr);
-                        translation.setText(dst);
-                        original.setMovementMethod(new ScrollingMovementMethod());
-                        translation.setMovementMethod(new ScrollingMovementMethod());
-                    }
-                });
+                try {
+                    String result = Translation();
+                    TranslateResult translateResult = new Gson().fromJson(result,TranslateResult.class);
+                    dst = translateResult.getTrans_result().get(0).getDst();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            original.setText(queryStr);
+                            translation.setText(dst);
+                            original.setMovementMethod(new ScrollingMovementMethod());
+                            translation.setMovementMethod(new ScrollingMovementMethod());
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }
@@ -159,23 +151,6 @@ public class TextTranslationActivity extends BaseActivity {
             e.printStackTrace();
         }
         return buffer.toString();
-    }
-
-    private void initView(){
-        RxView.clicks(back)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        Intent intent = new Intent(TextTranslationActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        onDestroy();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        L.i("onError = " + throwable.getMessage());
-                    }
-                });
     }
 
     @Override
@@ -234,11 +209,6 @@ public class TextTranslationActivity extends BaseActivity {
 
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
 }

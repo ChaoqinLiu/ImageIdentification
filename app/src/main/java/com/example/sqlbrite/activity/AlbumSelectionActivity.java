@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -182,6 +183,17 @@ public class AlbumSelectionActivity extends BaseActivity {
         intent.setDataAndType(uri, "image/*");
 
         startActivityForResult(intent,CROP_PHOTO_RESULT_CODE); //启动裁剪程序
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {// 重写系统返回键
+            Intent intent = new Intent();
+            intent.setClass(AlbumSelectionActivity.this, MainActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }
