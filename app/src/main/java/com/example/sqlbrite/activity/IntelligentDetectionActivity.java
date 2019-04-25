@@ -28,7 +28,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.safframework.injectview.annotations.InjectView;
-import com.safframework.log.L;
 
 import org.json.JSONObject;
 
@@ -202,6 +201,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
             Intent intent = new Intent();
             intent.setClass(IntelligentDetectionActivity.this, MainActivity.class);
             startActivity(intent);
+            onDestroy();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -222,7 +222,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                 @Override
                                 public void run() {
                                     try {
-                                        Thread.sleep(6000);
+                                        Thread.sleep(3000);
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -279,7 +279,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                 @Override
                                 public void run() {
                                     try {
-                                        Thread.sleep(6000);
+                                        Thread.sleep(3000);
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -337,6 +337,11 @@ public class IntelligentDetectionActivity extends BaseActivity {
         fragment.setArguments(bundle);
         transaction.add(R.id.text_translation,fragment);
         transaction.commit();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
     }
 
 }

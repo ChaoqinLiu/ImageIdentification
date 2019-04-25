@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.app.BaseActivity;
@@ -25,6 +27,8 @@ public class MainActivity extends BaseActivity {
 
     private static final String TYPE_IMAGE = "type_image";  //识别图片，包括动物，植物等等
     private static final String TYPE_TEXT = "type_text";   //文字识别
+
+    private long mExitTime; //用于存放上一点击“返回键”的时刻
 
     @InjectView(R.id.text_image)
     TextView text_image;
@@ -142,6 +146,25 @@ public class MainActivity extends BaseActivity {
                         System.out.println("onError()" + throwable.getMessage());
                     }
                 });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //判断用户是否点击了“返回键”
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //与上次点击返回键时刻作差
+            if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                //大于2000ms则认为是误操作，使用Toast进行提示
+                Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                //并记录下本次点击“返回键”的时刻，以便下次进行判断
+                mExitTime = System.currentTimeMillis();
+            } else {
+                //小于2000ms则认为是用户确实希望退出程序-调用System.exit()方法进行退出
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }

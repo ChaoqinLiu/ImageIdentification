@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.app.BaseActivity;
@@ -19,6 +20,7 @@ import com.example.sqlbrite.model.TranslateResult;
 import com.example.sqlbrite.util.MD5Utils;
 import com.google.gson.Gson;
 import com.safframework.injectview.annotations.InjectView;
+import com.safframework.log.L;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -91,18 +93,38 @@ public class TextTranslationActivity extends BaseActivity {
             public void run() {
                 try {
                     String result = Translation();
-                    TranslateResult translateResult = new Gson().fromJson(result,TranslateResult.class);
-                    dst = translateResult.getTrans_result().get(0).getDst();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            original.setText(queryStr);
-                            translation.setText(dst);
-                            original.setMovementMethod(new ScrollingMovementMethod());
-                            translation.setMovementMethod(new ScrollingMovementMethod());
-                            progressDialog.dismiss();
-                        }
-                    });
+                    if (result.contains("error_code")) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(3000);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(TextTranslationActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else {
+                        TranslateResult translateResult = new Gson().fromJson(result,TranslateResult.class);
+                        dst = translateResult.getTrans_result().get(0).getDst();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                original.setText(queryStr);
+                                translation.setText(dst);
+                                original.setMovementMethod(new ScrollingMovementMethod());
+                                translation.setMovementMethod(new ScrollingMovementMethod());
+                                progressDialog.dismiss();
+                            }
+                        });
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -155,6 +177,7 @@ public class TextTranslationActivity extends BaseActivity {
             Intent intent = new Intent();
             intent.setClass(TextTranslationActivity.this, MainActivity.class);
             startActivity(intent);
+            onDestroy();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -183,9 +206,9 @@ public class TextTranslationActivity extends BaseActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position==0){
+                if (position == 0){
                     return;
-                }else {
+                } else {
                     wordsKeyArr = original.getText().toString();
                     lan = ((Language)spinner.getSelectedItem()).getKey();
                     getTranslationResult();
@@ -196,6 +219,15 @@ public class TextTranslationActivity extends BaseActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+    }
+
+    public void onDestroyActivity(){   //用来在TBackFragment中销毁Activity
+        onDestroy();
     }
 
 }
