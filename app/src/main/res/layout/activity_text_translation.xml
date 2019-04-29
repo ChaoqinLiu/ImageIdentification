@@ -13,7 +13,7 @@
 
         <fragment
             android:id="@+id/fragment_back"
-            android:name="com.example.sqlbrite.fragment.TBackFragment"
+            android:name="com.example.sqlbrite.fragment.TextBackFragment"
             android:layout_width="0dp"
             android:layout_gravity="center"
             android:gravity="center"

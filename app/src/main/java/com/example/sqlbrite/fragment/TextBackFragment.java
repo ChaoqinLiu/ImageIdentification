@@ -15,7 +15,7 @@ import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.MainActivity;
 import com.example.sqlbrite.activity.TextTranslationActivity;
 
-public class TBackFragment extends Fragment implements View.OnClickListener {
+public class TextBackFragment extends Fragment implements View.OnClickListener {
 
     private TextTranslationActivity activity;
     protected View view;
