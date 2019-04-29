@@ -17,14 +17,16 @@ import com.example.sqlbrite.activity.TextTranslationActivity;
 
 public class TBackFragment extends Fragment implements View.OnClickListener {
 
-    private AppCompatActivity activity;
+    private TextTranslationActivity activity;
     protected View view;
     protected Context context;
+    private TextTranslationActivity textTranslationActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = (TextTranslationActivity) getActivity();
+        textTranslationActivity = (TextTranslationActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_back,container,false);
         TextView back = view.findViewById(R.id.back);
         Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
@@ -44,6 +46,7 @@ public class TBackFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v){
         Intent intent = new Intent(context, MainActivity.class);
         startActivity(intent);
+        textTranslationActivity.finish();
     }
 
     @Override

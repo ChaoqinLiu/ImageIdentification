@@ -20,7 +20,6 @@ import com.example.sqlbrite.model.TranslateResult;
 import com.example.sqlbrite.util.MD5Utils;
 import com.google.gson.Gson;
 import com.safframework.injectview.annotations.InjectView;
-import com.safframework.log.L;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,10 +32,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class TextTranslationActivity extends BaseActivity {
 
     private String wordsKeyArr;
-    private static String queryStr = "";
+    private String queryStr = "";
     private static final String appid = "20190401000283388";
     private static final String key = "SkTeVqucOItasS35k8tJ";
     private static final String salt = "1435660288";
@@ -44,6 +44,8 @@ public class TextTranslationActivity extends BaseActivity {
     private String signStr;
     private String dst;
     private static String lan = "en";  //翻译目标语言,默认为英文
+
+    boolean stopThread = false;
 
     private ProgressDialog progressDialog = null;
 
@@ -55,6 +57,7 @@ public class TextTranslationActivity extends BaseActivity {
 
     @InjectView(R.id.sp_language)
     Spinner spinner;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,52 +90,55 @@ public class TextTranslationActivity extends BaseActivity {
         initSpinner();
     }
 
+
     private void getTranslationResult(){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    String result = Translation();
-                    if (result.contains("error_code")) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(TextTranslationActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                if (!stopThread) {
+                    try {
+                        String result = Translation();
+                        if (result.contains("error_code")) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Thread.sleep(3000);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(TextTranslationActivity.this,"获取数据失败",Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            }
-                        }).start();
-                    } else {
-                        TranslateResult translateResult = new Gson().fromJson(result,TranslateResult.class);
-                        dst = translateResult.getTrans_result().get(0).getDst();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                original.setText(queryStr);
-                                translation.setText(dst);
-                                original.setMovementMethod(new ScrollingMovementMethod());
-                                translation.setMovementMethod(new ScrollingMovementMethod());
-                                progressDialog.dismiss();
-                            }
-                        });
+                            }).start();
+                        } else {
+                            TranslateResult translateResult = new Gson().fromJson(result,TranslateResult.class);
+                            dst = translateResult.getTrans_result().get(0).getDst();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    original.setText(queryStr);
+                                    translation.setText(dst);
+                                    original.setMovementMethod(new ScrollingMovementMethod());
+                                    translation.setMovementMethod(new ScrollingMovementMethod());
+                                    progressDialog.dismiss();
+                                }
+                            });
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         }).start();
     }
 
-    public static String Translation(){
+    public String Translation(){
 
         StringBuffer buffer = new StringBuffer();
 
@@ -177,7 +183,7 @@ public class TextTranslationActivity extends BaseActivity {
             Intent intent = new Intent();
             intent.setClass(TextTranslationActivity.this, MainActivity.class);
             startActivity(intent);
-            onDestroy();
+            finish();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -223,11 +229,8 @@ public class TextTranslationActivity extends BaseActivity {
 
     @Override
     protected void onDestroy(){
+        stopThread = true;
         super.onDestroy();
-    }
-
-    public void onDestroyActivity(){   //用来在TBackFragment中销毁Activity
-        onDestroy();
     }
 
 }

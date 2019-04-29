@@ -57,7 +57,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private ArrayList<TextResult.WordsResult> resultTextList = new ArrayList<TextResult.WordsResult>();
 
     public static Bitmap bitmap;
-    private static String wordsArray;
+    private String wordsArray;
 
     private ProgressDialog progressDialog = null;
 
@@ -201,7 +201,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
             Intent intent = new Intent();
             intent.setClass(IntelligentDetectionActivity.this, MainActivity.class);
             startActivity(intent);
-            onDestroy();
+            finish();
             return true;
         }
         return super.onKeyDown(keyCode, event);

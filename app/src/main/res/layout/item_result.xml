@@ -41,7 +41,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="50dp"
+                        android:layout_width="60dp"
                         android:layout_height="wrap_content"
                         android:text="相似度:"
                         android:textColor="@color/black"
@@ -66,10 +66,10 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="50dp"
+                        android:layout_width="60dp"
                         android:textColor="@color/black"
                         android:layout_height="wrap_content"
-                        android:text="属 性:"
+                        android:text="属  性:"
                         android:textSize="14sp"/>
 
                     <TextView

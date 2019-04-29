@@ -81,7 +81,8 @@
             android:layout_height="wrap_content"
             android:maxLines = "30"
             android:scrollbars = "vertical"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textIsSelectable="true"/>
     </FrameLayout>
 
     <TextView
@@ -104,7 +105,8 @@
             android:maxLines = "30"
             android:textColor="@color/white"
             android:scrollbars = "vertical"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textIsSelectable="true"/>
     </FrameLayout>
 
 </LinearLayout>

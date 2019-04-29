@@ -11,4 +11,5 @@ public class BaseActivity extends AppCompatActivity {
         super.setContentView(layoutResID);
         Injector.injectInto(this);
     }
+
 }
