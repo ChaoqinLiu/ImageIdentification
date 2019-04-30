@@ -75,13 +75,13 @@
         android:layout_margin="8dp"
         android:background="@drawable/translation_border">
 
-        <TextView
+        <EditText
             android:id="@+id/text_original"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines = "30"
-            android:scrollbars = "vertical"
+            android:background="@null"
             android:textSize="16sp"
+            android:scrollbars = "vertical"
             android:textIsSelectable="true"/>
     </FrameLayout>
 
@@ -102,7 +102,6 @@
             android:id="@+id/tx_Translation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines = "30"
             android:textColor="@color/white"
             android:scrollbars = "vertical"
             android:textSize="16sp"

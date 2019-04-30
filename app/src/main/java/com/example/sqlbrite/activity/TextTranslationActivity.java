@@ -3,12 +3,12 @@ package com.example.sqlbrite.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,14 +50,13 @@ public class TextTranslationActivity extends BaseActivity {
     private ProgressDialog progressDialog = null;
 
     @InjectView(R.id.text_original)
-    TextView original;
+    EditText original;
 
     @InjectView(R.id.tx_Translation)
     TextView translation;
 
     @InjectView(R.id.sp_language)
     Spinner spinner;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +88,6 @@ public class TextTranslationActivity extends BaseActivity {
         getTranslationResult();
         initSpinner();
     }
-
 
     private void getTranslationResult(){
         new Thread(new Runnable() {
@@ -124,8 +122,6 @@ public class TextTranslationActivity extends BaseActivity {
                                 public void run() {
                                     original.setText(queryStr);
                                     translation.setText(dst);
-                                    original.setMovementMethod(new ScrollingMovementMethod());
-                                    translation.setMovementMethod(new ScrollingMovementMethod());
                                     progressDialog.dismiss();
                                 }
                             });
@@ -212,13 +208,11 @@ public class TextTranslationActivity extends BaseActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0){
-                    return;
-                } else {
-                    wordsKeyArr = original.getText().toString();
-                    lan = ((Language)spinner.getSelectedItem()).getKey();
-                    getTranslationResult();
-                }
+                queryStr = original.getText().toString();
+                signStr = appid + queryStr + salt + key;
+                sign = MD5Utils.MD5Encode(signStr,"UTF-8");
+                lan = ((Language)spinner.getSelectedItem()).getKey();
+                getTranslationResult();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
