@@ -10,8 +10,12 @@
     <color name="translucent">#0D000000</color>
     <color name="gray">#808080</color>
     <color name="LightGrey">#D3D3D3</color>
-    <color name="doderBlue">#1E90FF</color>
+    <color name="doderBlue">#00BFFF</color>
+    <color name="DeepSkyBlue">#1E90FF</color>
     <color name="lightSlateGray">#333333</color>
     <color name="cyan">#00FFFF</color>
     <color name="transparent">#00000000</color>
+    <color name="tab_text_selected">#0084e8</color>
+    <color name="tab_text_normal">#7597b3</color>
+    <color name="common_color">#34B04C</color>
 </resources>

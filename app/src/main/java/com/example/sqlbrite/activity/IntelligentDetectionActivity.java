@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
@@ -14,11 +15,15 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.sqlbrite.R;
-import com.example.sqlbrite.adapter.ResultAdapter;
+import com.example.sqlbrite.adapter.ResultIDCardForBackAdapter;
+import com.example.sqlbrite.adapter.ResultIDCardForFrontAdapter;
+import com.example.sqlbrite.adapter.ResultImageAdapter;
 import com.example.sqlbrite.adapter.ResultTextAdapter;
 import com.example.sqlbrite.app.BaseActivity;
 import com.example.sqlbrite.fragment.TranslationFragment;
-import com.example.sqlbrite.model.Result;
+import com.example.sqlbrite.model.IDCardForBackResult;
+import com.example.sqlbrite.model.IDCardForFrontResult;
+import com.example.sqlbrite.model.ImageResult;
 import com.example.sqlbrite.model.TextResult;
 import com.example.sqlbrite.util.FileUtil;
 import com.google.gson.Gson;
@@ -28,6 +33,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.safframework.injectview.annotations.InjectView;
+import com.safframework.log.L;
 
 import org.json.JSONObject;
 
@@ -40,6 +46,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+
 import sun.misc.BASE64Encoder;
 
 public class IntelligentDetectionActivity extends BaseActivity {
@@ -50,11 +57,26 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private String path;
     private String type_image;
     private String type_text;
-    private ResultAdapter adapter;
-    private ResultTextAdapter tAdapter;
+    private String type_id_card;
 
-    private ArrayList<Result.ResultArray> resultBeanList = new ArrayList<Result.ResultArray>();
+    private String id_card_side;
+
+    private ResultImageAdapter adapter;
+    private ResultTextAdapter tAdapter;
+    private ResultIDCardForFrontAdapter idCardAdapter;
+    private ResultIDCardForBackAdapter idCardForBackAdapter;
+
+    //训练数据路径，必须包含tesseract文件夹
+    static final String TESSBASE_PATH = Environment.getExternalStorageDirectory() + "/";
+    //识别语言英文
+    static final String DEFAULT_LANGUAGE = "eng";
+    //识别语言简体中文
+    static final String CHINESE_LANGUAGE = "chi_sim";
+
+    private ArrayList<ImageResult.ResultArray> resultBeanList = new ArrayList<ImageResult.ResultArray>();
     private ArrayList<TextResult.WordsResult> resultTextList = new ArrayList<TextResult.WordsResult>();
+    private ArrayList<IDCardForFrontResult> idCardList = new ArrayList<IDCardForFrontResult>();
+    private ArrayList<IDCardForBackResult> idCardForBackList = new ArrayList<IDCardForBackResult>();
 
     public static Bitmap bitmap;
     private String wordsArray;
@@ -76,6 +98,9 @@ public class IntelligentDetectionActivity extends BaseActivity {
         path =  intent.getStringExtra("image_path");
         type_image = intent.getStringExtra("type_image");
         type_text = intent.getStringExtra("type_text");
+        type_id_card = intent.getStringExtra("type_id_card");
+
+        id_card_side = intent.getStringExtra("id_card_side");
         //L.i("ImagePath= " + path);
 
         bitmap = BitmapFactory.decodeFile(path, null);
@@ -116,6 +141,61 @@ public class IntelligentDetectionActivity extends BaseActivity {
             String imageParam = URLEncoder.encode(str);
             //API请求参数 image
             String param = "image=" + imageParam;
+
+            out.write(param);
+            out.flush();
+            out.close();
+
+            if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                BufferedInputStream bis = new BufferedInputStream(con.getInputStream());
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                int len;
+                byte[] arr = new byte[1024];
+                while ((len = bis.read(arr)) != -1) {
+                    bos.write(arr, 0, len);
+                    bos.flush();
+                }
+                bos.close();
+                return bos.toString("utf-8");
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String IDCardImage(String path){
+
+        String access_token = getAccessToken(API_KEY,SECRET_KEY);
+        //L.i("access_token = " + access_token);
+        //拼接请求
+        String contentType = "application/x-www-form-urlencoded";
+        String urls = requestUrl + "?access_token=" + access_token;
+        //L.i("urls =" + urls);
+
+        try {
+            URL url = new URL(urls);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setDoInput(true);
+            con.setDoOutput(true);
+            con.setUseCaches(false);
+            con.setRequestProperty("Content-Type",contentType);
+            con.setRequestProperty("Connection", "Keep-Alive");
+            con.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
+
+            OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream(), "utf-8");
+
+            //将图片转换为byte[]再进行base64编码
+            byte[] bytes  = FileUtil.readFileByBytes(path);
+            BASE64Encoder encoder = new BASE64Encoder();
+            String str = encoder.encode(bytes);
+            //URLEncoder 使用指定的编码机制将字符串转换为 application/x-www-form-urlencoded 格式
+            String imageParam = URLEncoder.encode(str);
+            //API请求参数 image
+            String param = "id_card_side=" + id_card_side + "&" + "image=" + imageParam;
 
             out.write(param);
             out.flush();
@@ -243,7 +323,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
                             //循环遍历
                             for (JsonElement result : jsonArray) {
-                                Result.ResultArray resultBean = gson.fromJson(result, new TypeToken<Result.ResultArray>() {}.getType());
+                                ImageResult.ResultArray resultBean = gson.fromJson(result, new TypeToken<ImageResult.ResultArray>() {}.getType());
                                 resultBeanList.add(resultBean);
                             }
                             //在主线程中执行UI操作
@@ -251,7 +331,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                 @Override
                                 public void run() {
                                     try {
-                                        adapter = new ResultAdapter(IntelligentDetectionActivity.this,resultBeanList);
+                                        adapter = new ResultImageAdapter(IntelligentDetectionActivity.this,resultBeanList);
                                         listView.setAdapter(adapter);
                                         progressDialog.dismiss();
                                     } catch (Exception e) {
@@ -325,7 +405,146 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     }
                 }
             }).start();
+        } else if (type_id_card != null) {
+            String Back = "back";
+            String Front = "front";
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                        SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                        requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard";
+                        String InfoStr = IDCardImage(path);
+                        if (InfoStr == null || InfoStr.equals(" ")) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Thread.sleep(3000);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).start();
+                        } else {
+                            if (id_card_side.equals(Front)) {
+                                getIDCardInfoForFront(InfoStr);
+                            } else if (id_card_side.equals(Back)) {
+                                getIDCardInfoForBack(InfoStr);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
+    }
+
+    private void getIDCardInfoForFront(String idCardStr){
+        JsonObject jsonObject = new JsonParser().parse(idCardStr).getAsJsonObject();
+        JsonElement wordsResult = jsonObject.get("words_result");
+        JsonObject object = wordsResult.getAsJsonObject();
+        IDCardForFrontResult idCardForFrontResult = new IDCardForFrontResult();
+
+        JsonElement address = object.get("住址");
+        JsonObject addrssObject = address.getAsJsonObject();
+        JsonElement addressElement = addrssObject.get("words");
+        String addressStr = addressElement.toString();
+        idCardForFrontResult.setAddress(addressStr.replace('"',' '));
+
+        JsonElement birthday = object.get("出生");
+        JsonObject birthdayObject = birthday.getAsJsonObject();
+        JsonElement birthdayElement = birthdayObject.get("words");
+        String birthdayStr = birthdayElement.toString();
+        idCardForFrontResult.setBirthday(birthdayStr.replace('"',' '));
+
+        JsonElement userName = object.get("姓名");
+        JsonObject userNameObject = userName.getAsJsonObject();
+        JsonElement userNameElement = userNameObject.get("words");
+        String userNameStr = userNameElement.toString();
+        idCardForFrontResult.setUserName(userNameStr.replace('"',' '));
+
+        JsonElement idNumber = object.get("公民身份号码");
+        JsonObject idNumberObject = idNumber.getAsJsonObject();
+        JsonElement idNumberElement = idNumberObject.get("words");
+        String idNumberStr = idNumberElement.toString();
+        idCardForFrontResult.setIdNumber(idNumberStr.replace('"',' '));
+
+        JsonElement gender = object.get("性别");
+        JsonObject genderObject = gender.getAsJsonObject();
+        JsonElement genderElement = genderObject.get("words");
+        String genderStr = genderElement.toString();
+        idCardForFrontResult.setGender(genderStr.replace('"',' '));
+
+        JsonElement nationality = object.get("民族");
+        JsonObject nationalityObject = nationality.getAsJsonObject();
+        JsonElement nationalityElement = nationalityObject.get("words");
+        String nationalityStr = nationalityElement.toString();
+        idCardForFrontResult.setNationality(nationalityStr.replace('"',' '));
+
+        idCardList.add(idCardForFrontResult);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    idCardAdapter = new ResultIDCardForFrontAdapter(IntelligentDetectionActivity.this, idCardList);
+                    listView.setAdapter(idCardAdapter);
+                    progressDialog.dismiss();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void getIDCardInfoForBack(String idCardStr){
+        JsonObject jsonObject = new JsonParser().parse(idCardStr).getAsJsonObject();
+        JsonElement wordsResult = jsonObject.get("words_result");
+        JsonObject object = wordsResult.getAsJsonObject();
+        IDCardForBackResult idCardForBackResult = new IDCardForBackResult();
+
+        JsonElement issuingAuthority = object.get("签发机关");
+        JsonObject issuingAuthorityObject = issuingAuthority.getAsJsonObject();
+        JsonElement issuingAuthorityElement = issuingAuthorityObject.get("words");
+        String issuingAuthorityStr = issuingAuthorityElement.toString();
+        idCardForBackResult.setIssuingAuthority(issuingAuthorityStr.replace('"',' '));
+
+        JsonElement dateOfIssue = object.get("签发日期");
+        JsonObject dateOfIssueObject = dateOfIssue.getAsJsonObject();
+        JsonElement dateOfIssueElement = dateOfIssueObject.get("words");
+        String dateOfIssueStr = dateOfIssueElement.toString();
+        idCardForBackResult.setDateOfIssue(dateOfIssueStr.replace('"',' '));
+
+        JsonElement expirationDate = object.get("失效日期");
+        JsonObject expirationDateObject = expirationDate.getAsJsonObject();
+        JsonElement expirationDateElement = expirationDateObject.get("words");
+        String expirationDateStr = expirationDateElement.toString();
+        idCardForBackResult.setExpirationDate(expirationDateStr.replace('"',' '));
+
+        idCardForBackList.add(idCardForBackResult);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    idCardForBackAdapter = new ResultIDCardForBackAdapter(IntelligentDetectionActivity.this, idCardForBackList);
+                    listView.setAdapter(idCardForBackAdapter);
+                    progressDialog.dismiss();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void initFragment(){

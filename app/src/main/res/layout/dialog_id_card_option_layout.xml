@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tv_id_card_back"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="正面(国徽)"
+        android:gravity="center"
+        android:textSize="15sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/LightGrey"/>
+
+    <TextView
+        android:id="@+id/tv_id_card_front"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="反面(照片)"
+        android:gravity="center"
+        android:textSize="15sp"/>
+
+
+</LinearLayout>

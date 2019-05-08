@@ -36,6 +36,9 @@ public class TakePictureActivity extends BaseActivity {
 
     private String type_image;
     private String type_text;
+    private String type_id_card;
+
+    private String id_card_side;
 
 
     @Override
@@ -46,6 +49,9 @@ public class TakePictureActivity extends BaseActivity {
 
         type_image = getIntent().getStringExtra("type_image");
         type_text = getIntent().getStringExtra("type_text");
+        type_id_card = getIntent().getStringExtra("type_id_card");
+
+        id_card_side = getIntent().getStringExtra("id_card_side");
 
         startCamera();
 
@@ -108,14 +114,14 @@ public class TakePictureActivity extends BaseActivity {
                     //处理华为裁剪区域是圆形的问题
                     if (Build.MANUFACTURER.equals("HUAWEI")) {
                         intent.putExtra("aspectX", 9998);
-                        intent.putExtra("aspectY", 9999);
+                        intent.putExtra("aspectY", 6999);
                     } else {
-                        intent.putExtra("aspectX", 1);
-                        intent.putExtra("aspectY", 1);
+                        intent.putExtra("aspectX", 3);
+                        intent.putExtra("aspectY", 2);
                     }
                     intent.putExtra("crop", true);
-                    intent.putExtra("outputX", 500); //裁剪区的宽
-                    intent.putExtra("outputY" , 600);//裁剪区的高
+                    intent.putExtra("outputX", 750); //裁剪区的宽
+                    intent.putExtra("outputY" , 500);//裁剪区的高
                     intent.putExtra("scale", true);  //是否保留比例
                     intent.putExtra("return-data", false);//是否在Intent中返回图片
                     intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());//设置输出图片的格式
@@ -144,7 +150,9 @@ public class TakePictureActivity extends BaseActivity {
                         Intent intent = new Intent(TakePictureActivity.this, IntelligentDetectionActivity.class);
                         intent.putExtra("type_image", type_image);
                         intent.putExtra("type_text", type_text);
+                        intent.putExtra("type_id_card", type_id_card);
                         intent.putExtra("image_path", mImagePath);
+                        intent.putExtra("id_card_side",id_card_side);
                         startActivityForResult(intent, RESULT_CODE);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();

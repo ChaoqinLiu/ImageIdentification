@@ -15,13 +15,8 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.view.KeyEvent;
 import android.view.Window;
-import android.widget.Button;
-import android.widget.ImageView;
 
-import com.example.sqlbrite.R;
 import com.example.sqlbrite.app.BaseActivity;
-import com.safframework.injectview.annotations.InjectView;
-import com.safframework.log.L;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,6 +34,9 @@ public class AlbumSelectionActivity extends BaseActivity {
 
     private String type_image;
     private String type_text;
+    private String type_id_card;
+
+    private String id_card_side;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +46,8 @@ public class AlbumSelectionActivity extends BaseActivity {
 
         type_image = getIntent().getStringExtra("type_image");
         type_text = getIntent().getStringExtra("type_text");
+        type_id_card = getIntent().getStringExtra("type_id_card");
+        id_card_side = getIntent().getStringExtra("id_card_side");
 
         chooseAlbum();
     }
@@ -83,7 +83,9 @@ public class AlbumSelectionActivity extends BaseActivity {
                        Intent intent = new Intent(AlbumSelectionActivity.this, IntelligentDetectionActivity.class);
                        intent.putExtra("type_image", type_image);
                        intent.putExtra("type_text", type_text);
+                       intent.putExtra("type_id_card", type_id_card);
                        intent.putExtra("image_path", imagePath);
+                       intent.putExtra("id_card_side",id_card_side);
                        startActivityForResult(intent, RESULT_CODE);
                    } catch (FileNotFoundException e) {
                        e.printStackTrace();
@@ -160,14 +162,14 @@ public class AlbumSelectionActivity extends BaseActivity {
         //处理华为裁剪区域是圆形的问题
         if (Build.MANUFACTURER.equals("HUAWEI")) {
             intent.putExtra("aspectX", 9998);
-            intent.putExtra("aspectY", 9999);
+            intent.putExtra("aspectY", 6999);
         } else {
-            intent.putExtra("aspectX", 1);
+            intent.putExtra("aspectX", 3);
             intent.putExtra("aspectY", 2);
         }
         intent.putExtra("crop", true);
-        intent.putExtra("outputX", 500); //裁剪区的宽
-        intent.putExtra("outputY" , 600);//裁剪区的高
+        intent.putExtra("outputX", 750); //裁剪区的宽
+        intent.putExtra("outputY" , 500);//裁剪区的高
         //miui系统 特殊处理 return-data的方式只适用于小图。
         if (Build.MANUFACTURER.contains("Xiaomi")){
             //裁剪后的图片Uri路径，uritempFile为Uri类变量
