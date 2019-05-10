@@ -58,7 +58,7 @@ public class ResultIDCardForBackAdapter extends BaseAdapter {
         }
 
         IDCardForBackResult result = arrayList.get(position);
-        holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap));
+        holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap,300,189));
         holder.dateOfIssue.setText(result.words_result.dateOfIssue.getWords());
         holder.issuingAuthority.setText(result.words_result.issuingAuthority.getWords());
         holder.expirationDate.setText(result.words_result.expirationDate.getWords());

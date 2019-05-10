@@ -15,6 +15,8 @@ import com.example.sqlbrite.model.ImageResult.ResultArray;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
+
 public class ResultImageAdapter extends BaseAdapter {
 
     private Context mContext;
@@ -56,7 +58,7 @@ public class ResultImageAdapter extends BaseAdapter {
         }
 
         ResultArray result = arrayList.get(position);
-        holder.imageView.setImageBitmap(IntelligentDetectionActivity.bitmap);
+        holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap,70,70));
         holder.keyword.setText(result.keyword);
         //将浮点数转换为两位小数点的百分比显示
         double d_score = result.score * 100;

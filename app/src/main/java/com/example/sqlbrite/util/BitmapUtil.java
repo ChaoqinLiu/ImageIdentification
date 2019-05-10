@@ -86,24 +86,6 @@ public class BitmapUtil {
         return context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/";
     }
 
-    // 按照新的宽高缩放位图对象
-    public static Bitmap zoomImage(Bitmap origImage, double newWidth, double newHeight) {
-        // 获取原始位图的宽度
-        float width = origImage.getWidth();
-        // 获取原始位图的高度
-        float height = origImage.getHeight();
-        // 创建操作图片用的矩阵对象
-        Matrix matrix = new Matrix();
-        // 计算宽度的缩放率
-        float scaleWidth = ((float) newWidth) / width;
-        // 计算高度的缩放率
-        float scaleHeight = ((float) newHeight) / height;
-        // 执行图片的缩放动作
-        matrix.postScale(scaleWidth, scaleHeight);
-        // 创建并返回缩放后的位图对象
-        return Bitmap.createBitmap(origImage, 0, 0, (int) width, (int) height, matrix, true);
-    }
-
     // 将图片的旋转角度置为0，此方法可以解决某些机型拍照后，图像出现了旋转情况
     public static void setPictureDegreeZero(String path) {
         try {
@@ -118,12 +100,9 @@ public class BitmapUtil {
     }
 
     //根据bitmap将图片改成指定大小
-    public static Bitmap changeBitmapSize(Bitmap bitmap) {
+    public static Bitmap changeBitmapSize(Bitmap bitmap,int newWidth,int newHeight) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
-        //设置图片大小
-        int newWidth = 300;
-        int newHeight = 189;
         //计算压缩的比率
         float scaleWidth = ((float)newWidth)/width;
         float scaleHeight=((float)newHeight)/height;
@@ -136,4 +115,5 @@ public class BitmapUtil {
         bitmap.getHeight();
         return bitmap;
     }
+
 }

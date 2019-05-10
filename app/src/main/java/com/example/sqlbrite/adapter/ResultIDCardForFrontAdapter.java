@@ -60,7 +60,7 @@ public class ResultIDCardForFrontAdapter extends BaseAdapter {
         }
 
         IDCardForFrontResult result = arrayList.get(position);
-        holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap));
+        holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap,300,189));
         holder.userName.setText(result.words_result.userName.getWords());
         holder.gender.setText(result.words_result.gender.getWords());
         holder.nationality.setText(result.words_result.nationality.getWords());

@@ -61,7 +61,7 @@ public class ResultBankCardAdapter extends BaseAdapter {
         }
 
         BankCardResult bankResult = arrayList.get(position);
-        holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap));
+        holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap,300,189));
         holder.bank_card_number.setText(bankResult.result.getBank_card_number());
         holder.bank_name.setText(bankResult.result.getBank_name());
         holder.valid_date.setText(bankResult.result.getValid_date());
