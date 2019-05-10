@@ -78,10 +78,10 @@ public class ResultBankCardAdapter extends BaseAdapter {
     }
 
     public final class ViewHolder {
-        public TextView bank_card_number;
-        public TextView valid_date;
-        public TextView bank_name;
-        public TextView bank_card_type;
-        public ImageView imageView;
+        private TextView bank_card_number;
+        private TextView valid_date;
+        private TextView bank_name;
+        private TextView bank_card_type;
+        private ImageView imageView;
     }
 }

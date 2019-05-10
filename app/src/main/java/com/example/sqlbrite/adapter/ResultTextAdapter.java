@@ -55,6 +55,6 @@ public class ResultTextAdapter extends BaseAdapter {
     }
 
     public final class ViewHolder {
-        public TextView words;
+        private TextView words;
     }
 }

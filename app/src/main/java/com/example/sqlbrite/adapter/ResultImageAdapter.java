@@ -77,9 +77,9 @@ public class ResultImageAdapter extends BaseAdapter {
     }
 
     public final class ViewHolder {
-        public TextView score;
-        public TextView root;
-        public TextView keyword;
-        public ImageView imageView;
+        private TextView score;
+        private TextView root;
+        private TextView keyword;
+        private ImageView imageView;
     }
 }
