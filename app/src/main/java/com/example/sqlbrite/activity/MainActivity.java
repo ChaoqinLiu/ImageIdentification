@@ -39,11 +39,13 @@ public class MainActivity extends BaseActivity {
     private static final int ID_CARD_BACK_RESULT_CODE = 40;
     private static final int ID_CARD_FRONT_RESULT_CODE = 50;
     private static final int BANK_CARD_FRONT_RESULT_CODE = 60;
+    private static final int LICENSE_PLATE_RESULT_CODE = 70;
 
     private static final String TYPE_IMAGE = "type_image";  //识别图片，包括动物，植物等等
     private static final String TYPE_TEXT = "type_text";   //文字识别
     private static final String TYPE_ID_CARD = "type_id_card";  //身份证
     private static final String TYPE_BANK_CARD = "type_bank_card";  //银行卡
+    private static final String TYPE_LICENSE_PLATE = "type_license_plate";
 
     private static final String TAG = "MainActivity";
     private FragmentTabHost tabHost; // 声明一个碎片标签栏对象
@@ -270,6 +272,50 @@ public class MainActivity extends BaseActivity {
                             Intent intent = new Intent(MainActivity.this, AlbumSelectionActivity.class);
                             intent.putExtra("type_bank_card", TYPE_BANK_CARD);
                             startActivityForResult(intent, BANK_CARD_FRONT_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(text_license_plate)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, TakePictureActivity.class);
+                            intent.putExtra("type_license_plate", TYPE_LICENSE_PLATE);
+                            startActivityForResult(intent, LICENSE_PLATE_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.longClicks(text_license_plate)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, AlbumSelectionActivity.class);
+                            intent.putExtra("type_license_plate", TYPE_LICENSE_PLATE);
+                            startActivityForResult(intent, LICENSE_PLATE_RESULT_CODE);
                         }
                     }
                 }, new Consumer<Throwable>() {

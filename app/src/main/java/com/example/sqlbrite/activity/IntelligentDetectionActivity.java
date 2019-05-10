@@ -18,6 +18,7 @@ import com.example.sqlbrite.adapter.ResultBankCardAdapter;
 import com.example.sqlbrite.adapter.ResultIDCardForBackAdapter;
 import com.example.sqlbrite.adapter.ResultIDCardForFrontAdapter;
 import com.example.sqlbrite.adapter.ResultImageAdapter;
+import com.example.sqlbrite.adapter.ResultLicensePlateAdapter;
 import com.example.sqlbrite.adapter.ResultTextAdapter;
 import com.example.sqlbrite.app.BaseActivity;
 import com.example.sqlbrite.fragment.TranslationFragment;
@@ -25,6 +26,7 @@ import com.example.sqlbrite.model.BankCardResult;
 import com.example.sqlbrite.model.IDCardForBackResult;
 import com.example.sqlbrite.model.IDCardForFrontResult;
 import com.example.sqlbrite.model.ImageResult;
+import com.example.sqlbrite.model.LicensePlateResult;
 import com.example.sqlbrite.model.TextResult;
 import com.example.sqlbrite.util.FileUtil;
 import com.example.sqlbrite.util.GsonUtil;
@@ -62,6 +64,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private String type_text;
     private String type_id_card;
     private String type_bank_card;
+    private String type_license_plate;
 
     private String id_card_side;
 
@@ -70,12 +73,14 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private ResultIDCardForFrontAdapter idCardAdapter;
     private ResultIDCardForBackAdapter idCardForBackAdapter;
     private ResultBankCardAdapter bankCardAdapter;
+    private ResultLicensePlateAdapter licensePlateAdapter;
 
     private ArrayList<ImageResult.ResultArray> resultBeanList = new ArrayList<ImageResult.ResultArray>();
     private ArrayList<TextResult.WordsResult> resultTextList = new ArrayList<TextResult.WordsResult>();
     private List<IDCardForFrontResult> idCardList = new ArrayList<IDCardForFrontResult>();
     private List<IDCardForBackResult> idCardForBackList = new ArrayList<IDCardForBackResult>();
     private List<BankCardResult> bankResultBeanList = new ArrayList<BankCardResult>();
+    private List<LicensePlateResult> licensePlateResultList = new ArrayList<LicensePlateResult>();
 
     public static Bitmap bitmap;
     private String wordsArray;
@@ -99,6 +104,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         type_text = intent.getStringExtra("type_text");
         type_id_card = intent.getStringExtra("type_id_card");
         type_bank_card = intent.getStringExtra("type_bank_card");
+        type_license_plate = intent.getStringExtra("type_license_plate");
 
         id_card_side = intent.getStringExtra("id_card_side");
         //L.i("ImagePath= " + path);
@@ -289,214 +295,287 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     private void getImageInformationByType(){
         if (type_image != null) {
-            new Thread(new Runnable() {  //开启一个新的线程，防止在主线程中网络请求发生异常
-                @Override
-                public void run() {
-                    try {
-                        API_KEY = "rcBBY03vg6qf9GDLCwZwMMrZ";
-                        SECRET_KEY = "FFNDh7p3AGagLHSuNdEPYazn6zbUUeun";
-                        requestUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general";
-                        String resultStr = initUploadImage(path);
-                        L.i(resultStr);
-                        if (resultStr == null || resultStr.equals(" ")) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        Thread.sleep(3000);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }).start();
-                        } else {
-                            JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
-                            //再转JsonArray 加上数据头
-                            JsonArray jsonArray = jsonObject.getAsJsonArray("result");
-                            Gson gson = new Gson();
-
-                            //循环遍历
-                            for (JsonElement result : jsonArray) {
-                                ImageResult.ResultArray resultBean = gson.fromJson(result, new TypeToken<ImageResult.ResultArray>() {}.getType());
-                                resultBeanList.add(resultBean);
-                            }
-                            //在主线程中执行UI操作
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        adapter = new ResultImageAdapter(IntelligentDetectionActivity.this,resultBeanList);
-                                        listView.setAdapter(adapter);
-                                        progressDialog.dismiss();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
+            getImageInformation();
         } else if (type_text != null) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
+            getTextImageInformation();
+        } else if (type_id_card != null) {
+            getIDCardImageInformation();
+        } else if (type_bank_card != null) {
+            getBankCardImageInformation();
+        } else if (type_license_plate != null) {
+            getLicenseLlateImageInformation();
+        }
+    }
+
+    //图像识别
+    private void getImageInformation(){
+        new Thread(new Runnable() {  //开启一个新的线程，防止在主线程中网络请求发生异常
+            @Override
+            public void run() {
+                try {
+                    API_KEY = "rcBBY03vg6qf9GDLCwZwMMrZ";
+                    SECRET_KEY = "FFNDh7p3AGagLHSuNdEPYazn6zbUUeun";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general";
+                    String resultStr = initUploadImage(path);
+                    if (resultStr == null || resultStr.equals(" ")) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(3000);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else {
+                        JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
+                        //再转JsonArray 加上数据头
+                        JsonArray jsonArray = jsonObject.getAsJsonArray("result");
+                        Gson gson = new Gson();
+
+                        //循环遍历
+                        for (JsonElement result : jsonArray) {
+                            ImageResult.ResultArray resultBean = gson.fromJson(result, new TypeToken<ImageResult.ResultArray>() {}.getType());
+                            resultBeanList.add(resultBean);
+                        }
+                        //在主线程中执行UI操作
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    adapter = new ResultImageAdapter(IntelligentDetectionActivity.this,resultBeanList);
+                                    listView.setAdapter(adapter);
+                                    progressDialog.dismiss();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //图文识别
+    private void getTextImageInformation() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
                     API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
                     String resultStr = initUploadImage(path);
-                        if (resultStr == null || resultStr.equals(" ")) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        Thread.sleep(3000);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                    if (resultStr == null || resultStr.equals(" ")) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(3000);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            }).start();
-                        } else {
-                           JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
-                           JsonArray jsonArray = jsonObject.getAsJsonArray("words_result");
-                           Gson gson = new Gson();
-
-                           //循环遍历
-                           for (JsonElement result : jsonArray) {
-                               TextResult.WordsResult resultTextBean = gson.fromJson(result, new TypeToken<TextResult.WordsResult>() {}.getType());
-                               resultTextList.add(resultTextBean);
-                           }
-                           //在主线程中执行UI操作
-                           runOnUiThread(new Runnable() {
-                               @Override
-                               public void run() {
-                                   try {
-                                       tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
-                                       listView.setAdapter(tAdapter);
-                                       progressDialog.dismiss();
-                                   } catch (Exception e) {
-                                       e.printStackTrace();
-                                   }
-                               }
-                           });
-                           wordsArray = jsonArray.toString();
-                           initFragment(); //向TranslationFragment传递数据
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-        } else if (type_id_card != null) {
-            String Back = "back";
-            String Front = "front";
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
-                        SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
-                        requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard";
-                        String IDCardStr = initUploadIDCardImage(path);
-                        if (IDCardStr == null || IDCardStr.equals(" ")) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        Thread.sleep(3000);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }).start();
-                        } else {
-                            if (id_card_side.equals(Front)) {
-                                getIDCardInfoForFront(IDCardStr);
-                            } else if (id_card_side.equals(Back)) {
-                                getIDCardInfoForBack(IDCardStr);
                             }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-        } else if (type_bank_card != null) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
-                        SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
-                        requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/bankcard";
-                        String bankCardStr = initUploadImage(path);
-                        if (bankCardStr == null || bankCardStr.equals(" ")) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        Thread.sleep(3000);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }).start();
-                        } else {
-                            //往实体类 BankCardResult 中添加对象 bankCardResult
-                            BankCardResult bankCardResult = GsonUtil.parseJsonWithGson(bankCardStr,BankCardResult.class);
-                            bankResultBeanList.add(bankCardResult);
+                        }).start();
+                    } else {
+                        JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
+                        JsonArray jsonArray = jsonObject.getAsJsonArray("words_result");
+                        Gson gson = new Gson();
 
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        bankCardAdapter = new ResultBankCardAdapter(IntelligentDetectionActivity.this,bankResultBeanList);
-                                        listView.setAdapter(bankCardAdapter);
-                                        progressDialog.dismiss();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
+                        //循环遍历
+                        for (JsonElement result : jsonArray) {
+                            TextResult.WordsResult resultTextBean = gson.fromJson(result, new TypeToken<TextResult.WordsResult>() {}.getType());
+                            resultTextList.add(resultTextBean);
                         }
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        //在主线程中执行UI操作
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
+                                    listView.setAdapter(tAdapter);
+                                    progressDialog.dismiss();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        wordsArray = jsonArray.toString();
+                        initFragment(); //向TranslationFragment传递数据
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }).start();
-        }
+            }
+        }).start();
+    }
+
+    //身份证识别
+    private void getIDCardImageInformation(){
+        String Back = "back";
+        String Front = "front";
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                    SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard";
+                    String IDCardStr = initUploadIDCardImage(path);
+                    if (IDCardStr == null || IDCardStr.equals(" ")) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(3000);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else {
+                        if (id_card_side.equals(Front)) {
+                            getIDCardInfoForFront(IDCardStr);
+                        } else if (id_card_side.equals(Back)) {
+                            getIDCardInfoForBack(IDCardStr);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //银行卡识别
+    private void getBankCardImageInformation(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                    SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/bankcard";
+                    String bankCardStr = initUploadImage(path);
+                    if (bankCardStr == null || bankCardStr.equals(" ")) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(3000);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else {
+                        //往实体类 BankCardResult 中添加对象 bankCardResult
+                        BankCardResult bankCardResult = GsonUtil.parseJsonWithGson(bankCardStr,BankCardResult.class);
+                        bankResultBeanList.add(bankCardResult);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    bankCardAdapter = new ResultBankCardAdapter(IntelligentDetectionActivity.this,bankResultBeanList);
+                                    listView.setAdapter(bankCardAdapter);
+                                    progressDialog.dismiss();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //车牌识别
+    private void getLicenseLlateImageInformation(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                    SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/license_plate";
+                    String LicensePlateStr = initUploadImage(path);
+                    if (LicensePlateStr == null || LicensePlateStr.equals(" ")) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(3000);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else {
+                        LicensePlateResult licensePlateResult = GsonUtil.parseJsonWithGson(LicensePlateStr,LicensePlateResult.class);
+                        licensePlateResultList.add(licensePlateResult);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    licensePlateAdapter = new ResultLicensePlateAdapter(IntelligentDetectionActivity.this,licensePlateResultList);
+                                    listView.setAdapter(licensePlateAdapter);
+                                    progressDialog.dismiss();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void getIDCardInfoForFront(String idCardStr){

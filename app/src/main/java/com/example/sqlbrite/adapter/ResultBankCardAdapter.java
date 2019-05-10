@@ -66,12 +66,16 @@ public class ResultBankCardAdapter extends BaseAdapter {
         holder.bank_name.setText(bankResult.result.getBank_name());
         holder.valid_date.setText(bankResult.result.getValid_date());
         int bank_card_type = Integer.parseInt(bankResult.result.getBank_card_type());
-        if (bank_card_type == 0) {
-            bankCardType = "不能识别";
-        } else if (bank_card_type == 1) {
-            bankCardType = "借记卡";
-        } else if (bank_card_type == 2) {
-            bankCardType = "信用卡";
+        try {
+            if (bank_card_type == 0) {
+                bankCardType = "不能识别";
+            } else if (bank_card_type == 1) {
+                bankCardType = "借记卡";
+            } else if (bank_card_type == 2) {
+                bankCardType = "信用卡";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         holder.bank_card_type.setText(bankCardType);
         return convertView;

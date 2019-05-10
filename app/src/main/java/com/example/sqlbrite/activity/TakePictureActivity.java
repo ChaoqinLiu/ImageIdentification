@@ -38,6 +38,7 @@ public class TakePictureActivity extends BaseActivity {
     private String type_text;
     private String type_id_card;
     private String type_bank_card;
+    private String type_license_plate;
 
     private String id_card_side;
 
@@ -52,6 +53,7 @@ public class TakePictureActivity extends BaseActivity {
         type_text = getIntent().getStringExtra("type_text");
         type_id_card = getIntent().getStringExtra("type_id_card");
         type_bank_card = getIntent().getStringExtra("type_bank_card");
+        type_license_plate = getIntent().getStringExtra("type_license_plate");
 
         id_card_side = getIntent().getStringExtra("id_card_side");
 
@@ -154,6 +156,7 @@ public class TakePictureActivity extends BaseActivity {
                         intent.putExtra("type_text", type_text);
                         intent.putExtra("type_id_card", type_id_card);
                         intent.putExtra("type_bank_card",type_bank_card);
+                        intent.putExtra("type_license_plate",type_license_plate);
                         intent.putExtra("image_path", mImagePath);
                         intent.putExtra("id_card_side",id_card_side);
                         startActivityForResult(intent, RESULT_CODE);
