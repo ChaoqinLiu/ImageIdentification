@@ -1,8 +1,6 @@
 package com.example.sqlbrite.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +12,16 @@ import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.IntelligentDetectionActivity;
 import com.example.sqlbrite.model.IDCardForFrontResult;
 import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
 
 public class ResultIDCardForFrontAdapter extends BaseAdapter {
 
     private Context mContext;
-    private ArrayList<IDCardForFrontResult> arrayList = new ArrayList<IDCardForFrontResult>();
+    private List<IDCardForFrontResult> arrayList = new ArrayList<IDCardForFrontResult>();
 
-    public ResultIDCardForFrontAdapter(Context context, ArrayList<IDCardForFrontResult> result_list){
+    public ResultIDCardForFrontAdapter(Context context, List<IDCardForFrontResult> result_list){
         mContext = context;
         arrayList = result_list;
     }
@@ -60,12 +61,12 @@ public class ResultIDCardForFrontAdapter extends BaseAdapter {
 
         IDCardForFrontResult result = arrayList.get(position);
         holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap));
-        holder.userName.setText(result.getUserName());
-        holder.gender.setText(result.getGender());
-        holder.nationality.setText(result.getNationality());
-        holder.birthday.setText(result.getBirthday());
-        holder.idNumber.setText(result.getIdNumber());
-        holder.address.setText(result.getAddress());
+        holder.userName.setText(result.words_result.userName.getWords());
+        holder.gender.setText(result.words_result.gender.getWords());
+        holder.nationality.setText(result.words_result.nationality.getWords());
+        holder.birthday.setText(result.words_result.birthday.getWords());
+        holder.idNumber.setText(result.words_result.idNumber.getWords());
+        holder.address.setText(result.words_result.address.getWords());
         return convertView;
     }
 
@@ -79,22 +80,4 @@ public class ResultIDCardForFrontAdapter extends BaseAdapter {
         private TextView nationality;
     }
 
-    private Bitmap changeBitmapSize(Bitmap bitmap) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        //设置图片大小
-        int newWidth=300;
-        int newHeight=185;
-        //计算压缩的比率
-        float scaleWidth = ((float)newWidth)/width;
-        float scaleHeight=((float)newHeight)/height;
-        //获取想要缩放的matrix
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth,scaleHeight);
-        //获取新的bitmap
-        bitmap = Bitmap.createBitmap(bitmap,0,0,width,height,matrix,true);
-        bitmap.getWidth();
-        bitmap.getHeight();
-        return bitmap;
-    }
 }

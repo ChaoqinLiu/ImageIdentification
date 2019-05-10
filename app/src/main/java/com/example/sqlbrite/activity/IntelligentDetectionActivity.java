@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
@@ -15,17 +14,20 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.sqlbrite.R;
+import com.example.sqlbrite.adapter.ResultBankCardAdapter;
 import com.example.sqlbrite.adapter.ResultIDCardForBackAdapter;
 import com.example.sqlbrite.adapter.ResultIDCardForFrontAdapter;
 import com.example.sqlbrite.adapter.ResultImageAdapter;
 import com.example.sqlbrite.adapter.ResultTextAdapter;
 import com.example.sqlbrite.app.BaseActivity;
 import com.example.sqlbrite.fragment.TranslationFragment;
+import com.example.sqlbrite.model.BankCardResult;
 import com.example.sqlbrite.model.IDCardForBackResult;
 import com.example.sqlbrite.model.IDCardForFrontResult;
 import com.example.sqlbrite.model.ImageResult;
 import com.example.sqlbrite.model.TextResult;
 import com.example.sqlbrite.util.FileUtil;
+import com.example.sqlbrite.util.GsonUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -46,6 +48,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 import sun.misc.BASE64Encoder;
 
@@ -58,6 +61,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private String type_image;
     private String type_text;
     private String type_id_card;
+    private String type_bank_card;
 
     private String id_card_side;
 
@@ -65,18 +69,13 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private ResultTextAdapter tAdapter;
     private ResultIDCardForFrontAdapter idCardAdapter;
     private ResultIDCardForBackAdapter idCardForBackAdapter;
-
-    //训练数据路径，必须包含tesseract文件夹
-    static final String TESSBASE_PATH = Environment.getExternalStorageDirectory() + "/";
-    //识别语言英文
-    static final String DEFAULT_LANGUAGE = "eng";
-    //识别语言简体中文
-    static final String CHINESE_LANGUAGE = "chi_sim";
+    private ResultBankCardAdapter bankCardAdapter;
 
     private ArrayList<ImageResult.ResultArray> resultBeanList = new ArrayList<ImageResult.ResultArray>();
     private ArrayList<TextResult.WordsResult> resultTextList = new ArrayList<TextResult.WordsResult>();
-    private ArrayList<IDCardForFrontResult> idCardList = new ArrayList<IDCardForFrontResult>();
-    private ArrayList<IDCardForBackResult> idCardForBackList = new ArrayList<IDCardForBackResult>();
+    private List<IDCardForFrontResult> idCardList = new ArrayList<IDCardForFrontResult>();
+    private List<IDCardForBackResult> idCardForBackList = new ArrayList<IDCardForBackResult>();
+    private List<BankCardResult> bankResultBeanList = new ArrayList<BankCardResult>();
 
     public static Bitmap bitmap;
     private String wordsArray;
@@ -99,6 +98,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         type_image = intent.getStringExtra("type_image");
         type_text = intent.getStringExtra("type_text");
         type_id_card = intent.getStringExtra("type_id_card");
+        type_bank_card = intent.getStringExtra("type_bank_card");
 
         id_card_side = intent.getStringExtra("id_card_side");
         //L.i("ImagePath= " + path);
@@ -108,7 +108,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         progressDialog = ProgressDialog.show(IntelligentDetectionActivity.this,"请稍后", "正在识别中...",true);
 
         //根据按钮传过来的类型执行相应的图片处理方法
-        getTypeView();
+        getImageInformationByType();
     }
 
     private String initUploadImage(String path){
@@ -166,7 +166,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         return null;
     }
 
-    private String IDCardImage(String path){
+    private String initUploadIDCardImage(String path){
 
         String access_token = getAccessToken(API_KEY,SECRET_KEY);
         //L.i("access_token = " + access_token);
@@ -287,7 +287,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    private void getTypeView(){
+    private void getImageInformationByType(){
         if (type_image != null) {
             new Thread(new Runnable() {  //开启一个新的线程，防止在主线程中网络请求发生异常
                 @Override
@@ -297,6 +297,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         SECRET_KEY = "FFNDh7p3AGagLHSuNdEPYazn6zbUUeun";
                         requestUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general";
                         String resultStr = initUploadImage(path);
+                        L.i(resultStr);
                         if (resultStr == null || resultStr.equals(" ")) {
                             new Thread(new Runnable() {
                                 @Override
@@ -374,9 +375,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                             }).start();
                         } else {
                            JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
-                           //再转JsonArray 加上数据头
                            JsonArray jsonArray = jsonObject.getAsJsonArray("words_result");
-                           //L.i("jsonArray= " + jsonArray.toString());
                            Gson gson = new Gson();
 
                            //循环遍历
@@ -415,8 +414,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
                         SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                         requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard";
-                        String InfoStr = IDCardImage(path);
-                        if (InfoStr == null || InfoStr.equals(" ")) {
+                        String IDCardStr = initUploadIDCardImage(path);
+                        if (IDCardStr == null || IDCardStr.equals(" ")) {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -436,11 +435,62 @@ public class IntelligentDetectionActivity extends BaseActivity {
                             }).start();
                         } else {
                             if (id_card_side.equals(Front)) {
-                                getIDCardInfoForFront(InfoStr);
+                                getIDCardInfoForFront(IDCardStr);
                             } else if (id_card_side.equals(Back)) {
-                                getIDCardInfoForBack(InfoStr);
+                                getIDCardInfoForBack(IDCardStr);
                             }
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        } else if (type_bank_card != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                        SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                        requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/bankcard";
+                        String bankCardStr = initUploadImage(path);
+                        if (bankCardStr == null || bankCardStr.equals(" ")) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Thread.sleep(3000);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).start();
+                        } else {
+                            //往实体类 BankCardResult 中添加对象 bankCardResult
+                            BankCardResult bankCardResult = GsonUtil.parseJsonWithGson(bankCardStr,BankCardResult.class);
+                            bankResultBeanList.add(bankCardResult);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        bankCardAdapter = new ResultBankCardAdapter(IntelligentDetectionActivity.this,bankResultBeanList);
+                                        listView.setAdapter(bankCardAdapter);
+                                        progressDialog.dismiss();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -450,48 +500,9 @@ public class IntelligentDetectionActivity extends BaseActivity {
     }
 
     private void getIDCardInfoForFront(String idCardStr){
-        JsonObject jsonObject = new JsonParser().parse(idCardStr).getAsJsonObject();
-        JsonElement wordsResult = jsonObject.get("words_result");
-        JsonObject object = wordsResult.getAsJsonObject();
-        IDCardForFrontResult idCardForFrontResult = new IDCardForFrontResult();
 
-        JsonElement address = object.get("住址");
-        JsonObject addrssObject = address.getAsJsonObject();
-        JsonElement addressElement = addrssObject.get("words");
-        String addressStr = addressElement.toString();
-        idCardForFrontResult.setAddress(addressStr.replace('"',' '));
-
-        JsonElement birthday = object.get("出生");
-        JsonObject birthdayObject = birthday.getAsJsonObject();
-        JsonElement birthdayElement = birthdayObject.get("words");
-        String birthdayStr = birthdayElement.toString();
-        idCardForFrontResult.setBirthday(birthdayStr.replace('"',' '));
-
-        JsonElement userName = object.get("姓名");
-        JsonObject userNameObject = userName.getAsJsonObject();
-        JsonElement userNameElement = userNameObject.get("words");
-        String userNameStr = userNameElement.toString();
-        idCardForFrontResult.setUserName(userNameStr.replace('"',' '));
-
-        JsonElement idNumber = object.get("公民身份号码");
-        JsonObject idNumberObject = idNumber.getAsJsonObject();
-        JsonElement idNumberElement = idNumberObject.get("words");
-        String idNumberStr = idNumberElement.toString();
-        idCardForFrontResult.setIdNumber(idNumberStr.replace('"',' '));
-
-        JsonElement gender = object.get("性别");
-        JsonObject genderObject = gender.getAsJsonObject();
-        JsonElement genderElement = genderObject.get("words");
-        String genderStr = genderElement.toString();
-        idCardForFrontResult.setGender(genderStr.replace('"',' '));
-
-        JsonElement nationality = object.get("民族");
-        JsonObject nationalityObject = nationality.getAsJsonObject();
-        JsonElement nationalityElement = nationalityObject.get("words");
-        String nationalityStr = nationalityElement.toString();
-        idCardForFrontResult.setNationality(nationalityStr.replace('"',' '));
-
-        idCardList.add(idCardForFrontResult);
+        IDCardForFrontResult frontResult = GsonUtil.parseJsonWithGson(idCardStr,IDCardForFrontResult.class);
+        idCardList.add(frontResult);
 
         runOnUiThread(new Runnable() {
             @Override
@@ -508,30 +519,9 @@ public class IntelligentDetectionActivity extends BaseActivity {
     }
 
     private void getIDCardInfoForBack(String idCardStr){
-        JsonObject jsonObject = new JsonParser().parse(idCardStr).getAsJsonObject();
-        JsonElement wordsResult = jsonObject.get("words_result");
-        JsonObject object = wordsResult.getAsJsonObject();
-        IDCardForBackResult idCardForBackResult = new IDCardForBackResult();
 
-        JsonElement issuingAuthority = object.get("签发机关");
-        JsonObject issuingAuthorityObject = issuingAuthority.getAsJsonObject();
-        JsonElement issuingAuthorityElement = issuingAuthorityObject.get("words");
-        String issuingAuthorityStr = issuingAuthorityElement.toString();
-        idCardForBackResult.setIssuingAuthority(issuingAuthorityStr.replace('"',' '));
-
-        JsonElement dateOfIssue = object.get("签发日期");
-        JsonObject dateOfIssueObject = dateOfIssue.getAsJsonObject();
-        JsonElement dateOfIssueElement = dateOfIssueObject.get("words");
-        String dateOfIssueStr = dateOfIssueElement.toString();
-        idCardForBackResult.setDateOfIssue(dateOfIssueStr.replace('"',' '));
-
-        JsonElement expirationDate = object.get("失效日期");
-        JsonObject expirationDateObject = expirationDate.getAsJsonObject();
-        JsonElement expirationDateElement = expirationDateObject.get("words");
-        String expirationDateStr = expirationDateElement.toString();
-        idCardForBackResult.setExpirationDate(expirationDateStr.replace('"',' '));
-
-        idCardForBackList.add(idCardForBackResult);
+        IDCardForBackResult backResult = GsonUtil.parseJsonWithGson(idCardStr,IDCardForBackResult.class);
+        idCardForBackList.add(backResult);
 
         runOnUiThread(new Runnable() {
             @Override

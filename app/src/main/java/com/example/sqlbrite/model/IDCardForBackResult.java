@@ -1,33 +1,57 @@
 package com.example.sqlbrite.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class IDCardForBackResult {
 
-    private String dateOfIssue;
-    private String issuingAuthority;
-    private String expirationDate;
+    public IDCardForBackResultWordsResult words_result;
 
-    public void setDateOfIssue(String dateOfIssue){
-        this.dateOfIssue = dateOfIssue;
-    }
+    public class IDCardForBackResultWordsResult {
 
-    public String getDateOfIssue(){
-        return dateOfIssue;
-    }
+        @SerializedName("签发日期")
+        public DateOfIssue dateOfIssue;
 
-    public void setIssuingAuthority(String issuingAuthority){
-        this.issuingAuthority = issuingAuthority;
-    }
+        @SerializedName("签发机关")
+        public IssuingAuthority issuingAuthority;
 
-    public String getIssuingAuthority(){
-        return issuingAuthority;
-    }
+        @SerializedName("失效日期")
+        public ExpirationDate expirationDate;
 
-    public void setExpirationDate(String expirationDate){
-        this.expirationDate = expirationDate;
-    }
+        public class DateOfIssue {
+            private String words;
 
-    public String getExpirationDate(){
-        return expirationDate;
+            public void setWords(String words) {
+                this.words = words;
+            }
+
+            public String getWords() {
+                return words;
+            }
+        }
+
+        public class IssuingAuthority {
+            private String words;
+
+            public void setWords(String words) {
+                this.words = words;
+            }
+
+            public String getWords() {
+                return words;
+            }
+        }
+
+        public class ExpirationDate {
+            private String words;
+
+            public void setWords(String words) {
+                this.words = words;
+            }
+
+            public String getWords() {
+                return words;
+            }
+        }
     }
 
 }

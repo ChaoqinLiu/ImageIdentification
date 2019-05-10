@@ -116,4 +116,24 @@ public class BitmapUtil {
             e.printStackTrace();
         }
     }
+
+    //根据bitmap将图片改成指定大小
+    public static Bitmap changeBitmapSize(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        //设置图片大小
+        int newWidth=300;
+        int newHeight=185;
+        //计算压缩的比率
+        float scaleWidth = ((float)newWidth)/width;
+        float scaleHeight=((float)newHeight)/height;
+        //获取想要缩放的matrix
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth,scaleHeight);
+        //获取新的bitmap
+        bitmap = Bitmap.createBitmap(bitmap,0,0,width,height,matrix,true);
+        bitmap.getWidth();
+        bitmap.getHeight();
+        return bitmap;
+    }
 }

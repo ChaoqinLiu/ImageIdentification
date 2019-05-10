@@ -38,10 +38,12 @@ public class MainActivity extends BaseActivity {
     private static final int TYPE_TEXT_RESULT_CODE = 20;
     private static final int ID_CARD_BACK_RESULT_CODE = 40;
     private static final int ID_CARD_FRONT_RESULT_CODE = 50;
+    private static final int BANK_CARD_FRONT_RESULT_CODE = 60;
 
     private static final String TYPE_IMAGE = "type_image";  //识别图片，包括动物，植物等等
     private static final String TYPE_TEXT = "type_text";   //文字识别
-    private static final String TYPE_ID_CARD = "type_id_card";
+    private static final String TYPE_ID_CARD = "type_id_card";  //身份证
+    private static final String TYPE_BANK_CARD = "type_bank_card";  //银行卡
 
     private static final String TAG = "MainActivity";
     private FragmentTabHost tabHost; // 声明一个碎片标签栏对象
@@ -50,8 +52,10 @@ public class MainActivity extends BaseActivity {
     private boolean ClickTypeForIDCard;  //身份证识别点击类型的标识,true为点击，false为长击
     private Class activity;    //目标 Activity
 
-    private TextView id_card_back;
-    private TextView id_card_front;
+    private LinearLayout id_card_back;
+    private LinearLayout id_card_front;
+    private TextView icon_back;
+    private TextView icon_front;
     private static final String ID_CARD_BACK = "back";  //身份证正面（国徽面）
     private static final String ID_CARD_FRONT = "front";//身份证反面（照片面）
 
@@ -230,6 +234,50 @@ public class MainActivity extends BaseActivity {
                         System.out.println("onError()" + throwable.getMessage());
                     }
                 });
+
+        RxView.clicks(text_bank_card)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, TakePictureActivity.class);
+                            intent.putExtra("type_bank_card", TYPE_BANK_CARD);
+                            startActivityForResult(intent, BANK_CARD_FRONT_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.longClicks(text_bank_card)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, AlbumSelectionActivity.class);
+                            intent.putExtra("type_bank_card", TYPE_BANK_CARD);
+                            startActivityForResult(intent, BANK_CARD_FRONT_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
     }
 
     private void showIDCardOptionDialog(){
@@ -253,6 +301,12 @@ public class MainActivity extends BaseActivity {
         //设置对话框大小
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.show();
+
+        Typeface iconfont = Typeface.createFromAsset(getAssets(), "iconfont/iconfont.ttf");
+        icon_back = dialog.findViewById(R.id.icon_back);
+        icon_front = dialog.findViewById(R.id.icon_front);
+        icon_back.setTypeface(iconfont);
+        icon_front.setTypeface(iconfont);
 
         id_card_back = dialog.findViewById(R.id.tv_id_card_back);
         id_card_front = dialog.findViewById(R.id.tv_id_card_front);

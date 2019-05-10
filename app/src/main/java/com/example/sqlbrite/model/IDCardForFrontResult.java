@@ -1,61 +1,102 @@
 package com.example.sqlbrite.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class IDCardForFrontResult {
 
-    private String address;
-    private String birthday;
-    private String userName;
-    private String idNumber;
-    private String gender;
-    private String nationality;
+    public IDCardForFrontResultWordsResult words_result;
 
-    public void setAddress(String address){
-        this.address = address;
+    public class IDCardForFrontResultWordsResult {
+
+        @SerializedName("住址")
+        public Address address;
+
+        @SerializedName("出生")
+        public Birthday birthday;
+
+        @SerializedName("姓名")
+        public UserName userName;
+
+        @SerializedName("公民身份号码")
+        public IDNumber idNumber;
+
+        @SerializedName("性别")
+        public Gender gender;
+
+        @SerializedName("民族")
+        public Nationality nationality;
+
+        public class Address {
+            private String words;
+
+            public void setWords(String words) {
+                this.words = words;
+            }
+
+            public String getWords() {
+                return words;
+            }
+        }
+
+        public class Birthday {
+            private String words;
+
+            public void setWords(String words) {
+                this.words = words;
+            }
+
+            public String getWords() {
+                return words;
+            }
+        }
+
+        public class UserName {
+            private String words;
+
+            public void setWords(String words) {
+                this.words = words;
+            }
+
+            public String getWords() {
+                return words;
+            }
+        }
+
+        public class IDNumber {
+            private String words;
+
+            public void setWords(String words) {
+                this.words = words;
+            }
+
+            public String getWords() {
+                return words;
+            }
+        }
+
+        public class Gender {
+            private String words;
+
+            public void setWords(String words) {
+                this.words = words;
+            }
+
+            public String getWords() {
+                return words;
+            }
+        }
+
+        public class Nationality {
+            private String words;
+
+            public void setWords(String words) {
+                this.words = words;
+            }
+
+            public String getWords() {
+                return words;
+            }
+        }
     }
-
-    public String getAddress(){
-        return address;
-    }
-
-    public void setBirthday(String birthday){
-        this.birthday = birthday;
-    }
-
-    public String getBirthday(){
-        return birthday;
-    }
-
-    public void setUserName(String userName){
-        this.userName = userName;
-    }
-
-    public String getUserName(){
-        return userName;
-    }
-
-    public void setIdNumber(String idNumber){
-        this.idNumber = idNumber;
-    }
-
-    public String getIdNumber(){
-        return idNumber;
-    }
-
-    public void setGender(String gender){
-        this.gender = gender;
-    }
-
-    public String getGender(){
-        return gender;
-    }
-
-    public void setNationality(String nationality){
-        this.nationality = nationality;
-    }
-
-    public String getNationality(){
-        return nationality;
-    }
-
 
 }

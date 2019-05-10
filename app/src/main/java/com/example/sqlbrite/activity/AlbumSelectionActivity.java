@@ -35,6 +35,7 @@ public class AlbumSelectionActivity extends BaseActivity {
     private String type_image;
     private String type_text;
     private String type_id_card;
+    private String type_bank_card;
 
     private String id_card_side;
 
@@ -46,6 +47,7 @@ public class AlbumSelectionActivity extends BaseActivity {
 
         type_image = getIntent().getStringExtra("type_image");
         type_text = getIntent().getStringExtra("type_text");
+        type_bank_card = getIntent().getStringExtra("type_bank_card");
         type_id_card = getIntent().getStringExtra("type_id_card");
         id_card_side = getIntent().getStringExtra("id_card_side");
 
@@ -83,6 +85,7 @@ public class AlbumSelectionActivity extends BaseActivity {
                        Intent intent = new Intent(AlbumSelectionActivity.this, IntelligentDetectionActivity.class);
                        intent.putExtra("type_image", type_image);
                        intent.putExtra("type_text", type_text);
+                       intent.putExtra("type_bank_card",type_bank_card);
                        intent.putExtra("type_id_card", type_id_card);
                        intent.putExtra("image_path", imagePath);
                        intent.putExtra("id_card_side",id_card_side);

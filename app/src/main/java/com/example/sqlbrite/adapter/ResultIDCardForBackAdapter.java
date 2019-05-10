@@ -1,8 +1,6 @@
 package com.example.sqlbrite.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +13,16 @@ import com.example.sqlbrite.activity.IntelligentDetectionActivity;
 import com.example.sqlbrite.model.IDCardForBackResult;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
 
 public class ResultIDCardForBackAdapter extends BaseAdapter {
 
     private Context mContext;
-    private ArrayList<IDCardForBackResult> arrayList = new ArrayList<IDCardForBackResult>();
+    private List<IDCardForBackResult> arrayList = new ArrayList<IDCardForBackResult>();
 
-    public ResultIDCardForBackAdapter(Context context, ArrayList<IDCardForBackResult> result_list){
+    public ResultIDCardForBackAdapter(Context context, List<IDCardForBackResult> result_list){
         mContext = context;
         arrayList = result_list;
     }
@@ -58,9 +59,9 @@ public class ResultIDCardForBackAdapter extends BaseAdapter {
 
         IDCardForBackResult result = arrayList.get(position);
         holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap));
-        holder.dateOfIssue.setText(result.getDateOfIssue());
-        holder.issuingAuthority.setText(result.getIssuingAuthority());
-        holder.expirationDate.setText(result.getExpirationDate());
+        holder.dateOfIssue.setText(result.words_result.dateOfIssue.getWords());
+        holder.issuingAuthority.setText(result.words_result.issuingAuthority.getWords());
+        holder.expirationDate.setText(result.words_result.expirationDate.getWords());
         return convertView;
     }
 
@@ -71,22 +72,4 @@ public class ResultIDCardForBackAdapter extends BaseAdapter {
         private TextView expirationDate;
     }
 
-    private Bitmap changeBitmapSize(Bitmap bitmap) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        //设置图片大小
-        int newWidth=300;
-        int newHeight=185;
-        //计算压缩的比率
-        float scaleWidth = ((float)newWidth)/width;
-        float scaleHeight=((float)newHeight)/height;
-        //获取想要缩放的matrix
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth,scaleHeight);
-        //获取新的bitmap
-        bitmap = Bitmap.createBitmap(bitmap,0,0,width,height,matrix,true);
-        bitmap.getWidth();
-        bitmap.getHeight();
-        return bitmap;
-    }
 }
