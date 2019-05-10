@@ -122,8 +122,8 @@ public class BitmapUtil {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         //设置图片大小
-        int newWidth=300;
-        int newHeight=185;
+        int newWidth = 300;
+        int newHeight = 189;
         //计算压缩的比率
         float scaleWidth = ((float)newWidth)/width;
         float scaleHeight=((float)newHeight)/height;

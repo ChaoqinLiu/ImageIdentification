@@ -6,7 +6,7 @@
 
     <ImageView
         android:id="@+id/image_id_card"
-        android:layout_height="185dp"
+        android:layout_height="189dp"
         android:layout_width="300dp"
         android:layout_gravity="center"
         android:layout_marginBottom="8dp"

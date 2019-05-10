@@ -164,14 +164,14 @@ public class AlbumSelectionActivity extends BaseActivity {
         }
         //处理华为裁剪区域是圆形的问题
         if (Build.MANUFACTURER.equals("HUAWEI")) {
-            intent.putExtra("aspectX", 9998);
-            intent.putExtra("aspectY", 6999);
+            intent.putExtra("aspectX", 0.1);
+            intent.putExtra("aspectY", 0.1);
         } else {
-            intent.putExtra("aspectX", 3);
-            intent.putExtra("aspectY", 2);
+            intent.putExtra("aspectX", 0.1);
+            intent.putExtra("aspectY", 0.1);
         }
         intent.putExtra("crop", true);
-        intent.putExtra("outputX", 750); //裁剪区的宽
+        intent.putExtra("outputX", 795); //裁剪区的宽
         intent.putExtra("outputY" , 500);//裁剪区的高
         //miui系统 特殊处理 return-data的方式只适用于小图。
         if (Build.MANUFACTURER.contains("Xiaomi")){
