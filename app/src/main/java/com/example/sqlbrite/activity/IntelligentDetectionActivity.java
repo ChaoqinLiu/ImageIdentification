@@ -303,7 +303,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         } else if (type_bank_card != null) {
             getBankCardImageInformation();
         } else if (type_license_plate != null) {
-            getLicenseLlateImageInformation();
+            getLicensePlateImageInformation();
         }
     }
 
@@ -527,7 +527,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     }
 
     //车牌识别
-    private void getLicenseLlateImageInformation(){
+    private void getLicensePlateImageInformation(){
         new Thread(new Runnable() {
             @Override
             public void run() {
