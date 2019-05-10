@@ -65,8 +65,8 @@ public class ResultBankCardAdapter extends BaseAdapter {
         holder.bank_card_number.setText(bankResult.result.getBank_card_number());
         holder.bank_name.setText(bankResult.result.getBank_name());
         holder.valid_date.setText(bankResult.result.getValid_date());
-        int bank_card_type = Integer.parseInt(bankResult.result.getBank_card_type());
         try {
+            int bank_card_type = Integer.parseInt(bankResult.result.getBank_card_type());
             if (bank_card_type == 0) {
                 bankCardType = "不能识别";
             } else if (bank_card_type == 1) {

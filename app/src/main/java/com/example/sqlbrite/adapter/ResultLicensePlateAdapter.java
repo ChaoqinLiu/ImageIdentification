@@ -60,8 +60,8 @@ public class ResultLicensePlateAdapter extends BaseAdapter {
 
         LicensePlateResult licensePlateResult = arrayList.get(position);
         holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap,300,189));
-        String colorType = licensePlateResult.words_result.getColor();
         try {
+            String colorType = licensePlateResult.words_result.getColor();
             if (colorType.contains("yellow")) {
                 licensePlateColor = "黄色";
             } else if (colorType.contains("blue")) {
