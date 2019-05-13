@@ -41,6 +41,9 @@ public class MainActivity extends BaseActivity {
     private static final int BANK_CARD_FRONT_RESULT_CODE = 60;
     private static final int LICENSE_PLATE_RESULT_CODE = 70;
     private static final int DRIVER_LICENSE_RESULT_CODE = 80;
+    private static final int TRAIN_TICKET_RESULT_CODE = 90;
+    private static final int HongKongAndMacauPass_RESULT_CODE = 100;
+    private static final int DRIVING_LICENSE_RESULT_CODE = 110;
 
     private static final String TYPE_IMAGE = "type_image";  //识别图片，包括动物，植物等等
     private static final String TYPE_TEXT = "type_text";   //文字识别
@@ -48,6 +51,9 @@ public class MainActivity extends BaseActivity {
     private static final String TYPE_BANK_CARD = "type_bank_card";  //银行卡
     private static final String TYPE_LICENSE_PLATE = "type_license_plate";
     private static final String TYPE_DRIVER_LICENSE = "type_driver_license";
+    private static final String TYPE_TRAIN_TICKET = "type_train_ticket";
+    private static final String TYPE_HongKongAndMacauPass = "type_hong_kong_and_macau_pass";
+    private static final String TYPE_DRIVING_LICENSE = "type_driving_license";
 
     private static final String TAG = "MainActivity";
     private FragmentTabHost tabHost; // 声明一个碎片标签栏对象
@@ -69,8 +75,8 @@ public class MainActivity extends BaseActivity {
     @InjectView(R.id.text_tx)
     TextView text_tx;
 
-    @InjectView(R.id.text_form)
-    TextView text_form;
+    @InjectView(R.id.text_driving_license)
+    TextView text_driving_license;
 
     @InjectView(R.id.text_id_card)
     TextView text_id_card;
@@ -108,7 +114,7 @@ public class MainActivity extends BaseActivity {
         text_train_ticket.setTypeface(iconfont);
         text_bank_card.setTypeface(iconfont);
         text_HongKong_and_MacauPass.setTypeface(iconfont);
-        text_form.setTypeface(iconfont);
+        text_driving_license.setTypeface(iconfont);
 
         initHomeView();
         //startTabFragment();
@@ -362,6 +368,138 @@ public class MainActivity extends BaseActivity {
                             Intent intent = new Intent(MainActivity.this, AlbumSelectionActivity.class);
                             intent.putExtra("type_driver_license", TYPE_DRIVER_LICENSE);
                             startActivityForResult(intent, DRIVER_LICENSE_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(text_train_ticket)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, TakePictureActivity.class);
+                            intent.putExtra("type_train_ticket", TYPE_TRAIN_TICKET);
+                            startActivityForResult(intent, TRAIN_TICKET_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.longClicks(text_train_ticket)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, AlbumSelectionActivity.class);
+                            intent.putExtra("type_train_ticket", TYPE_TRAIN_TICKET);
+                            startActivityForResult(intent, TRAIN_TICKET_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(text_HongKong_and_MacauPass)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, TakePictureActivity.class);
+                            intent.putExtra("type_hong_kong_and_macau_pass", TYPE_HongKongAndMacauPass);
+                            startActivityForResult(intent, HongKongAndMacauPass_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.longClicks(text_HongKong_and_MacauPass)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, AlbumSelectionActivity.class);
+                            intent.putExtra("type_hong_kong_and_macau_pass", TYPE_HongKongAndMacauPass);
+                            startActivityForResult(intent, HongKongAndMacauPass_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(text_driving_license)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, TakePictureActivity.class);
+                            intent.putExtra("type_driving_license", TYPE_DRIVING_LICENSE);
+                            startActivityForResult(intent, DRIVING_LICENSE_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.longClicks(text_driving_license)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, AlbumSelectionActivity.class);
+                            intent.putExtra("type_driving_license", TYPE_DRIVING_LICENSE);
+                            startActivityForResult(intent, DRIVING_LICENSE_RESULT_CODE);
                         }
                     }
                 }, new Consumer<Throwable>() {

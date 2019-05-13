@@ -16,20 +16,24 @@ import android.widget.Toast;
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.adapter.ResultBankCardAdapter;
 import com.example.sqlbrite.adapter.ResultDriverLicenseAdapter;
+import com.example.sqlbrite.adapter.ResultDrivingLicenseAdapter;
 import com.example.sqlbrite.adapter.ResultIDCardForBackAdapter;
 import com.example.sqlbrite.adapter.ResultIDCardForFrontAdapter;
 import com.example.sqlbrite.adapter.ResultImageAdapter;
 import com.example.sqlbrite.adapter.ResultLicensePlateAdapter;
 import com.example.sqlbrite.adapter.ResultTextAdapter;
+import com.example.sqlbrite.adapter.ResultTrainTicketAdapter;
 import com.example.sqlbrite.app.BaseActivity;
 import com.example.sqlbrite.fragment.TranslationFragment;
 import com.example.sqlbrite.model.BankCardResult;
 import com.example.sqlbrite.model.DriverLicenseResult;
+import com.example.sqlbrite.model.DrivingLicenseResult;
 import com.example.sqlbrite.model.IDCardForBackResult;
 import com.example.sqlbrite.model.IDCardForFrontResult;
 import com.example.sqlbrite.model.ImageResult;
 import com.example.sqlbrite.model.LicensePlateResult;
 import com.example.sqlbrite.model.TextResult;
+import com.example.sqlbrite.model.TrainTicketResult;
 import com.example.sqlbrite.util.FileUtil;
 import com.example.sqlbrite.util.GsonUtil;
 import com.google.gson.Gson;
@@ -68,6 +72,9 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private String type_bank_card;
     private String type_license_plate;
     private String type_driver_license;
+    private String type_train_ticket;
+    private String type_hong_kong_and_macau_pass;
+    private String type_driving_license;
 
     private String id_card_side;
 
@@ -78,6 +85,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private ResultBankCardAdapter bankCardAdapter;
     private ResultLicensePlateAdapter licensePlateAdapter;
     private ResultDriverLicenseAdapter driverLicenseAdapter;
+    private ResultTrainTicketAdapter trainTicketAdapter;
+    private ResultDrivingLicenseAdapter drivingLicenseAdapter;
 
     private List<ImageResult.ResultArray> resultBeanList = new ArrayList<ImageResult.ResultArray>();
     private List<TextResult.WordsResult> resultTextList = new ArrayList<TextResult.WordsResult>();
@@ -86,6 +95,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private List<BankCardResult> bankResultBeanList = new ArrayList<BankCardResult>();
     private List<LicensePlateResult> licensePlateResultList = new ArrayList<LicensePlateResult>();
     private List<DriverLicenseResult> driverLicenseResultList = new ArrayList<DriverLicenseResult>();
+    private List<TrainTicketResult> trainTicketResultList = new ArrayList<TrainTicketResult>();
+    private List<DrivingLicenseResult> drivingLicenseResultList = new ArrayList<DrivingLicenseResult>();
 
     public static Bitmap bitmap;
     private String wordsArray;
@@ -111,6 +122,9 @@ public class IntelligentDetectionActivity extends BaseActivity {
         type_bank_card = intent.getStringExtra("type_bank_card");
         type_license_plate = intent.getStringExtra("type_license_plate");
         type_driver_license = intent.getStringExtra("type_driver_license");
+        type_train_ticket = intent.getStringExtra("type_train_ticket");
+        type_hong_kong_and_macau_pass = intent.getStringExtra("type_hong_kong_and_macau_pass");
+        type_driving_license = intent.getStringExtra("type_driving_license");
 
         id_card_side = intent.getStringExtra("id_card_side");
         //L.i("ImagePath= " + path);
@@ -312,6 +326,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
             getLicensePlateImageInformation();
         } else if (type_driver_license != null) {
             getDriverLicenseImageInformation();
+        } else if (type_train_ticket != null) {
+            getTrainTicketImageInformation();
+        } else if (type_hong_kong_and_macau_pass != null) {
+            getHongKongAndMacauPassImageInformation();
+        } else if (type_driving_license != null) {
+            getDrivingLicenseImageInformation();
         }
     }
 
@@ -634,6 +654,131 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+        }).start();
+    }
+
+    //火车票识别
+    private void getTrainTicketImageInformation(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                    SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/train_ticket";
+                    String TrainTicketStr = initUploadImage(path);
+                    if (TrainTicketStr == null || TrainTicketStr.equals(" ")) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(3000);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else {
+
+                        TrainTicketResult trainTicketResult = GsonUtil.parseJsonWithGson(TrainTicketStr,TrainTicketResult.class);
+                        trainTicketResultList.add(trainTicketResult);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    trainTicketAdapter = new ResultTrainTicketAdapter(IntelligentDetectionActivity.this,trainTicketResultList);
+                                    listView.setAdapter(trainTicketAdapter);
+                                    progressDialog.dismiss();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //港澳通行证识别
+    private void getHongKongAndMacauPassImageInformation(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                    SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/HK_Macau_exitentrypermit";
+                    String HongKongAndMacauPassStr = initUploadImage(path);
+                    //L.i(HongKongAndMacauPassStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //行驶证识别
+    private void getDrivingLicenseImageInformation(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                    SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_license";
+                    String DrivingLicenseStr = initUploadImage(path);
+                    if (DrivingLicenseStr == null || DrivingLicenseStr.equals(" ")) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(3000);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else {
+
+                        DrivingLicenseResult drivingLicenseResult = GsonUtil.parseJsonWithGson(DrivingLicenseStr,DrivingLicenseResult.class);
+                        drivingLicenseResultList.add(drivingLicenseResult);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    drivingLicenseAdapter = new ResultDrivingLicenseAdapter(IntelligentDetectionActivity.this,drivingLicenseResultList);
+                                    listView.setAdapter(drivingLicenseAdapter);
+                                    progressDialog.dismiss();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         }).start();
     }
