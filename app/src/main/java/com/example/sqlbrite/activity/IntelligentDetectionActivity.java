@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.adapter.ResultBankCardAdapter;
+import com.example.sqlbrite.adapter.ResultDriverLicenseAdapter;
 import com.example.sqlbrite.adapter.ResultIDCardForBackAdapter;
 import com.example.sqlbrite.adapter.ResultIDCardForFrontAdapter;
 import com.example.sqlbrite.adapter.ResultImageAdapter;
@@ -23,6 +24,7 @@ import com.example.sqlbrite.adapter.ResultTextAdapter;
 import com.example.sqlbrite.app.BaseActivity;
 import com.example.sqlbrite.fragment.TranslationFragment;
 import com.example.sqlbrite.model.BankCardResult;
+import com.example.sqlbrite.model.DriverLicenseResult;
 import com.example.sqlbrite.model.IDCardForBackResult;
 import com.example.sqlbrite.model.IDCardForFrontResult;
 import com.example.sqlbrite.model.ImageResult;
@@ -65,6 +67,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private String type_id_card;
     private String type_bank_card;
     private String type_license_plate;
+    private String type_driver_license;
 
     private String id_card_side;
 
@@ -74,6 +77,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private ResultIDCardForBackAdapter idCardForBackAdapter;
     private ResultBankCardAdapter bankCardAdapter;
     private ResultLicensePlateAdapter licensePlateAdapter;
+    private ResultDriverLicenseAdapter driverLicenseAdapter;
 
     private ArrayList<ImageResult.ResultArray> resultBeanList = new ArrayList<ImageResult.ResultArray>();
     private ArrayList<TextResult.WordsResult> resultTextList = new ArrayList<TextResult.WordsResult>();
@@ -81,6 +85,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private List<IDCardForBackResult> idCardForBackList = new ArrayList<IDCardForBackResult>();
     private List<BankCardResult> bankResultBeanList = new ArrayList<BankCardResult>();
     private List<LicensePlateResult> licensePlateResultList = new ArrayList<LicensePlateResult>();
+    private List<DriverLicenseResult> driverLicenseResultList = new ArrayList<DriverLicenseResult>();
 
     public static Bitmap bitmap;
     private String wordsArray;
@@ -105,6 +110,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         type_id_card = intent.getStringExtra("type_id_card");
         type_bank_card = intent.getStringExtra("type_bank_card");
         type_license_plate = intent.getStringExtra("type_license_plate");
+        type_driver_license = intent.getStringExtra("type_driver_license");
 
         id_card_side = intent.getStringExtra("id_card_side");
         //L.i("ImagePath= " + path);
@@ -304,6 +310,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
             getBankCardImageInformation();
         } else if (type_license_plate != null) {
             getLicensePlateImageInformation();
+        } else if (type_driver_license != null) {
+            getDriverLicenseImageInformation();
         }
     }
 
@@ -564,6 +572,58 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                 try {
                                     licensePlateAdapter = new ResultLicensePlateAdapter(IntelligentDetectionActivity.this,licensePlateResultList);
                                     listView.setAdapter(licensePlateAdapter);
+                                    progressDialog.dismiss();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //驾驶证识别
+    private void getDriverLicenseImageInformation() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                    SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/driving_license";
+                    String DriverLicenseStr = initUploadImage(path);
+                    if (DriverLicenseStr == null || DriverLicenseStr.equals(" ")) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(3000);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else {
+                        DriverLicenseResult driverLicenseResult = GsonUtil.parseJsonWithGson(DriverLicenseStr,DriverLicenseResult.class);
+                        driverLicenseResultList.add(driverLicenseResult);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    driverLicenseAdapter = new ResultDriverLicenseAdapter(IntelligentDetectionActivity.this, driverLicenseResultList);
+                                    listView.setAdapter(driverLicenseAdapter);
                                     progressDialog.dismiss();
                                 } catch (Exception e) {
                                     e.printStackTrace();

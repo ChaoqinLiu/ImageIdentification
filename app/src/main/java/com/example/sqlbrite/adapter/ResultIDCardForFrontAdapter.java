@@ -32,7 +32,7 @@ public class ResultIDCardForFrontAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position){ ;
+    public Object getItem(int position){
         return arrayList.get(position);
     }
 
