@@ -79,8 +79,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private ResultLicensePlateAdapter licensePlateAdapter;
     private ResultDriverLicenseAdapter driverLicenseAdapter;
 
-    private ArrayList<ImageResult.ResultArray> resultBeanList = new ArrayList<ImageResult.ResultArray>();
-    private ArrayList<TextResult.WordsResult> resultTextList = new ArrayList<TextResult.WordsResult>();
+    private List<ImageResult.ResultArray> resultBeanList = new ArrayList<ImageResult.ResultArray>();
+    private List<TextResult.WordsResult> resultTextList = new ArrayList<TextResult.WordsResult>();
     private List<IDCardForFrontResult> idCardList = new ArrayList<IDCardForFrontResult>();
     private List<IDCardForBackResult> idCardForBackList = new ArrayList<IDCardForBackResult>();
     private List<BankCardResult> bankResultBeanList = new ArrayList<BankCardResult>();

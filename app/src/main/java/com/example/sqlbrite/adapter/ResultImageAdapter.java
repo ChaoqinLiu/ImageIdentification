@@ -14,15 +14,16 @@ import com.example.sqlbrite.model.ImageResult.ResultArray;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
 
 public class ResultImageAdapter extends BaseAdapter {
 
     private Context mContext;
-    private ArrayList<ResultArray> arrayList = new ArrayList<ResultArray>();
+    private List<ResultArray> arrayList = new ArrayList<ResultArray>();
 
-    public ResultImageAdapter(Context context, ArrayList<ResultArray> result_list){
+    public ResultImageAdapter(Context context, List<ResultArray> result_list){
         mContext = context;
         arrayList = result_list;
     }

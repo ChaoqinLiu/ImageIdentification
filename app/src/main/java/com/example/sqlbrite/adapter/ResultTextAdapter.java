@@ -11,13 +11,14 @@ import com.example.sqlbrite.R;
 import com.example.sqlbrite.model.TextResult;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ResultTextAdapter extends BaseAdapter {
 
     private Context mContext;
-    private ArrayList<TextResult.WordsResult> arrayList = new ArrayList<TextResult.WordsResult>();
+    private List<TextResult.WordsResult> arrayList = new ArrayList<TextResult.WordsResult>();
 
-    public ResultTextAdapter(Context context, ArrayList<TextResult.WordsResult> result_list){
+    public ResultTextAdapter(Context context, List<TextResult.WordsResult> result_list){
         mContext = context;
         arrayList = result_list;
     }
