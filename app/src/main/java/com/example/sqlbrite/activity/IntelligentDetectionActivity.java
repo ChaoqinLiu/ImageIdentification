@@ -384,8 +384,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
-                    String resultStr = initUploadImage(path);
-                    if (resultStr == null || resultStr.equals(" ")) {
+                    String resultTextStr = initUploadImage(path);
+                    if (resultTextStr == null || resultTextStr.equals(" ")) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -404,7 +404,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                             }
                         }).start();
                     } else {
-                        JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
+                        JsonObject jsonObject = new JsonParser().parse(resultTextStr).getAsJsonObject();
                         JsonArray jsonArray = jsonObject.getAsJsonArray("words_result");
                         Gson gson = new Gson();
 
