@@ -44,6 +44,7 @@ public class MainActivity extends BaseActivity {
     private static final int TRAIN_TICKET_RESULT_CODE = 90;
     private static final int PASSPORT_RESULT_CODE = 100;
     private static final int DRIVING_LICENSE_RESULT_CODE = 110;
+    private static final int BUSINESS_LICENSE_RESULT_CODE = 120;
 
     private static final String TYPE_IMAGE = "type_image";  //识别图片，包括动物，植物等等
     private static final String TYPE_TEXT = "type_text";   //文字识别
@@ -54,6 +55,7 @@ public class MainActivity extends BaseActivity {
     private static final String TYPE_TRAIN_TICKET = "type_train_ticket";
     private static final String TYPE_PASSPORT = "type_passport";
     private static final String TYPE_DRIVING_LICENSE = "type_driving_license";
+    private static final String TYPE_BUSINESS_LICENSE = "type_business_license";
 
     private static final String TAG = "MainActivity";
     private FragmentTabHost tabHost; // 声明一个碎片标签栏对象
@@ -81,8 +83,8 @@ public class MainActivity extends BaseActivity {
     @InjectView(R.id.text_id_card)
     TextView text_id_card;
 
-    @InjectView(R.id.text_account_book)
-    TextView text_account_book;
+    @InjectView(R.id.text_business_license)
+    TextView text_business_license;
 
     @InjectView(R.id.text_bank_card)
     TextView text_bank_card;
@@ -108,7 +110,7 @@ public class MainActivity extends BaseActivity {
         text_image.setTypeface(iconfont);
         text_tx.setTypeface(iconfont);
         text_id_card.setTypeface(iconfont);
-        text_account_book.setTypeface(iconfont);
+        text_business_license.setTypeface(iconfont);
         text_license_plate.setTypeface(iconfont);
         text_driver_license.setTypeface(iconfont);
         text_train_ticket.setTypeface(iconfont);
@@ -500,6 +502,50 @@ public class MainActivity extends BaseActivity {
                             Intent intent = new Intent(MainActivity.this, AlbumSelectionActivity.class);
                             intent.putExtra("type_driving_license", TYPE_DRIVING_LICENSE);
                             startActivityForResult(intent, DRIVING_LICENSE_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(text_business_license)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, TakePictureActivity.class);
+                            intent.putExtra("type_business_license", TYPE_BUSINESS_LICENSE);
+                            startActivityForResult(intent, BUSINESS_LICENSE_RESULT_CODE);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        System.out.println("onError()" + throwable.getMessage());
+                    }
+                });
+
+        RxView.longClicks(text_business_license)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
+                    @Override
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(MainActivity.this, AlbumSelectionActivity.class);
+                            intent.putExtra("type_business_license", TYPE_BUSINESS_LICENSE);
+                            startActivityForResult(intent, BUSINESS_LICENSE_RESULT_CODE);
                         }
                     }
                 }, new Consumer<Throwable>() {

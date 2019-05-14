@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.adapter.ResultBankCardAdapter;
+import com.example.sqlbrite.adapter.ResultBusinessLicenseAdapter;
 import com.example.sqlbrite.adapter.ResultDriverLicenseAdapter;
 import com.example.sqlbrite.adapter.ResultDrivingLicenseAdapter;
 import com.example.sqlbrite.adapter.ResultIDCardForBackAdapter;
@@ -27,6 +28,7 @@ import com.example.sqlbrite.adapter.ResultTrainTicketAdapter;
 import com.example.sqlbrite.app.BaseActivity;
 import com.example.sqlbrite.fragment.TranslationFragment;
 import com.example.sqlbrite.model.BankCardResult;
+import com.example.sqlbrite.model.BusinessLicenseResult;
 import com.example.sqlbrite.model.DriverLicenseResult;
 import com.example.sqlbrite.model.DrivingLicenseResult;
 import com.example.sqlbrite.model.IDCardForBackResult;
@@ -77,6 +79,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private String type_train_ticket;
     private String type_passport;
     private String type_driving_license;
+    private String type_business_license;
 
     private String id_card_side;
 
@@ -90,6 +93,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private ResultTrainTicketAdapter trainTicketAdapter;
     private ResultDrivingLicenseAdapter drivingLicenseAdapter;
     private ResultPassportAdapter passportAdapter;
+    private ResultBusinessLicenseAdapter businessLicenseAdapter;
 
     private List<ImageResult.ResultArray> resultBeanList = new ArrayList<ImageResult.ResultArray>();
     private List<TextResult.WordsResult> resultTextList = new ArrayList<TextResult.WordsResult>();
@@ -101,6 +105,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private List<TrainTicketResult> trainTicketResultList = new ArrayList<TrainTicketResult>();
     private List<DrivingLicenseResult> drivingLicenseResultList = new ArrayList<DrivingLicenseResult>();
     private List<PassportResult> passportResultList = new ArrayList<PassportResult>();
+    private List<BusinessLicenseResult> businessLicenseResultList = new ArrayList<BusinessLicenseResult>();
 
     public static Bitmap bitmap;
     private String wordsArray;
@@ -129,9 +134,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
         type_train_ticket = intent.getStringExtra("type_train_ticket");
         type_passport = intent.getStringExtra("type_passport");
         type_driving_license = intent.getStringExtra("type_driving_license");
-
+        type_business_license = intent.getStringExtra("type_business_license");
         id_card_side = intent.getStringExtra("id_card_side");
-        //L.i("ImagePath= " + path);
 
         bitmap = BitmapFactory.decodeFile(path, null);
 
@@ -336,6 +340,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
             getPassportImageInformation();
         } else if (type_driving_license != null) {
             getDrivingLicenseImageInformation();
+        } else if (type_business_license != null) {
+            getBusinessLicenseImageInformation();
         }
     }
 
@@ -818,6 +824,59 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     e.printStackTrace();
                 }
 
+            }
+        }).start();
+    }
+
+    //营业执照识别
+    private void getBusinessLicenseImageInformation() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    API_KEY = "BSvVZBfk78U0P5rp3vkMbvwX";
+                    SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
+                    requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/business_license";
+                    String BusinessLicenseStr = initUploadImage(path);
+                    if (BusinessLicenseStr == null || BusinessLicenseStr.equals(" ")) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(3000);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else {
+
+                        BusinessLicenseResult businessLicenseResult = GsonUtil.parseJsonWithGson(BusinessLicenseStr,BusinessLicenseResult.class);
+                        businessLicenseResultList.add(businessLicenseResult);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    businessLicenseAdapter = new ResultBusinessLicenseAdapter(IntelligentDetectionActivity.this,businessLicenseResultList);
+                                    listView.setAdapter(businessLicenseAdapter);
+                                    progressDialog.dismiss();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }

@@ -1,16 +1,17 @@
 <resources>
     <string name="app_name">图片识别</string>
-    <string name="str_back">&#xe608;</string>
-    <string name="str_image">&#xe603;</string>
+    <string name="str_back">&#xe66e;</string>
+    <string name="str_image">&#xe626;</string>
     <string name="str_text">&#xe60d;</string>
-    <string name="str_IDCard">&#xe635;</string>
-    <string name="str_BankCard">&#xe659;</string>
+    <string name="str_IDCard">&#xe50b;</string>
+    <string name="str_BankCard">&#xe602;</string>
     <string name="str_DriverLicense">&#xe629;</string>
+    <string name="str_DrivingLicense">&#xe667;</string>
     <string name="str_LicensePlate">&#xe621;</string>
-    <string name="str_AccountBook">&#xe501;</string>
+    <string name="str_BusinessLicense">&#xe508;</string>
     <string name="str_form">&#xe605;</string>
-    <string name="str_HongKongAndMacauPass">&#xe618;</string>
-    <string name="str_TrainTicket">&#xe660;</string>
+    <string name="str_TrainTicket">&#xe66d;</string>
+    <string name="str_Passport">&#xe6a9;</string>
     <string name="srt_result">识别结果</string>
     <string name="str_translation">翻译</string>
     <string name="str_home">识别</string>

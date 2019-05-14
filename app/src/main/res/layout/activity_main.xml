@@ -131,7 +131,7 @@
                         android:gravity="center|bottom"
                         android:layout_weight="1"
                         android:textColor="@color/doderBlue"
-                        android:text="@string/str_DriverLicense"
+                        android:text="@string/str_DrivingLicense"
                         android:textAlignment="center" />
 
                     <TextView
@@ -200,15 +200,15 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/text_account_book"
+                        android:id="@+id/text_business_license"
                         android:layout_height="match_parent"
                         android:layout_width="match_parent"
-                        android:textSize="32sp"
+                        android:textSize="34sp"
                         android:layout_gravity="center"
                         android:gravity="center|bottom"
                         android:layout_weight="1"
                         android:textColor="@color/doderBlue"
-                        android:text="@string/str_AccountBook"
+                        android:text="@string/str_BusinessLicense"
                         android:textAlignment="center" />
 
                     <TextView
@@ -218,7 +218,7 @@
                         android:gravity="center|top"
                         android:layout_weight="2"
                         android:textSize="13sp"
-                        android:text="户口本识别" />
+                        android:text="营业执照识别" />
                 </LinearLayout>
 
                 <TextView
@@ -237,7 +237,7 @@
                         android:id="@+id/text_bank_card"
                         android:layout_height="match_parent"
                         android:layout_width="match_parent"
-                        android:textSize="43sp"
+                        android:textSize="40sp"
                         android:layout_gravity="center"
                         android:gravity="center|bottom"
                         android:layout_weight="1"
@@ -357,12 +357,12 @@
                         android:id="@+id/text_passport"
                         android:layout_height="match_parent"
                         android:layout_width="match_parent"
-                        android:textSize="40sp"
+                        android:textSize="36sp"
                         android:layout_gravity="center"
                         android:gravity="center|bottom"
                         android:layout_weight="1"
                         android:textColor="@color/doderBlue"
-                        android:text="@string/str_HongKongAndMacauPass"
+                        android:text="@string/str_Passport"
                         android:textAlignment="center" />
 
                     <TextView
@@ -391,7 +391,7 @@
                         android:id="@+id/text_train_ticket"
                         android:layout_height="match_parent"
                         android:layout_width="match_parent"
-                        android:textSize="42sp"
+                        android:textSize="45sp"
                         android:layout_gravity="center"
                         android:gravity="center|bottom"
                         android:layout_weight="1"
