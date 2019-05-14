@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/image_passport"
+        android:layout_height="200dp"
+        android:layout_width="300dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars = "vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="30dp"
+                    android:text="国家码"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_country_code"
+                    android:layout_width="230dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:textIsSelectable="true"
+                    android:gravity="left"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:text="姓名"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_owner_name"
+                    android:layout_width="250dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:textIsSelectable="true"
+                    android:gravity="left"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="姓名拼音"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_pinyin_of_name"
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:textIsSelectable="true"
+                    android:gravity="left"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:text="生日"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_owner_birthday"
+                    android:layout_width="250dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="60dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
+                    android:text="出生地点"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_birth_place"
+                    android:layout_width="200dp"
+                    android:layout_height="60dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:text="性别"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_sex"
+                    android:layout_width="250dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="签发日期"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_passport_date_of_issue"
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="有效期至"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_valid_until"
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="护照号码"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_vehicle_passport_number"
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="60dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="60dp"
+                    android:text="护照签发地点"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_passport_issuance_location"
+                    android:layout_width="180dp"
+                    android:layout_height="60dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

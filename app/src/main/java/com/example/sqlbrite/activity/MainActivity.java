@@ -42,7 +42,7 @@ public class MainActivity extends BaseActivity {
     private static final int LICENSE_PLATE_RESULT_CODE = 70;
     private static final int DRIVER_LICENSE_RESULT_CODE = 80;
     private static final int TRAIN_TICKET_RESULT_CODE = 90;
-    private static final int HongKongAndMacauPass_RESULT_CODE = 100;
+    private static final int PASSPORT_RESULT_CODE = 100;
     private static final int DRIVING_LICENSE_RESULT_CODE = 110;
 
     private static final String TYPE_IMAGE = "type_image";  //识别图片，包括动物，植物等等
@@ -52,7 +52,7 @@ public class MainActivity extends BaseActivity {
     private static final String TYPE_LICENSE_PLATE = "type_license_plate";
     private static final String TYPE_DRIVER_LICENSE = "type_driver_license";
     private static final String TYPE_TRAIN_TICKET = "type_train_ticket";
-    private static final String TYPE_HongKongAndMacauPass = "type_hong_kong_and_macau_pass";
+    private static final String TYPE_PASSPORT = "type_passport";
     private static final String TYPE_DRIVING_LICENSE = "type_driving_license";
 
     private static final String TAG = "MainActivity";
@@ -96,8 +96,8 @@ public class MainActivity extends BaseActivity {
     @InjectView(R.id.text_license_plate)
     TextView text_license_plate;
 
-    @InjectView(R.id.text_HongKong_and_MacauPass)
-    TextView text_HongKong_and_MacauPass;
+    @InjectView(R.id.text_passport)
+    TextView text_passport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +113,7 @@ public class MainActivity extends BaseActivity {
         text_driver_license.setTypeface(iconfont);
         text_train_ticket.setTypeface(iconfont);
         text_bank_card.setTypeface(iconfont);
-        text_HongKong_and_MacauPass.setTypeface(iconfont);
+        text_passport.setTypeface(iconfont);
         text_driving_license.setTypeface(iconfont);
 
         initHomeView();
@@ -421,7 +421,7 @@ public class MainActivity extends BaseActivity {
                     }
                 });
 
-        RxView.clicks(text_HongKong_and_MacauPass)
+        RxView.clicks(text_passport)
                 .throttleFirst(600,TimeUnit.MILLISECONDS)
                 .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.READ_EXTERNAL_STORAGE))
@@ -432,8 +432,8 @@ public class MainActivity extends BaseActivity {
 
                         if (granted) {
                             Intent intent = new Intent(MainActivity.this, TakePictureActivity.class);
-                            intent.putExtra("type_hong_kong_and_macau_pass", TYPE_HongKongAndMacauPass);
-                            startActivityForResult(intent, HongKongAndMacauPass_RESULT_CODE);
+                            intent.putExtra("type_passport", TYPE_PASSPORT);
+                            startActivityForResult(intent, PASSPORT_RESULT_CODE);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -443,7 +443,7 @@ public class MainActivity extends BaseActivity {
                     }
                 });
 
-        RxView.longClicks(text_HongKong_and_MacauPass)
+        RxView.longClicks(text_passport)
                 .throttleFirst(600,TimeUnit.MILLISECONDS)
                 .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.READ_EXTERNAL_STORAGE))
@@ -454,8 +454,8 @@ public class MainActivity extends BaseActivity {
 
                         if (granted) {
                             Intent intent = new Intent(MainActivity.this, AlbumSelectionActivity.class);
-                            intent.putExtra("type_hong_kong_and_macau_pass", TYPE_HongKongAndMacauPass);
-                            startActivityForResult(intent, HongKongAndMacauPass_RESULT_CODE);
+                            intent.putExtra("type_hong_kong_and_macau_pass", TYPE_PASSPORT);
+                            startActivityForResult(intent, PASSPORT_RESULT_CODE);
                         }
                     }
                 }, new Consumer<Throwable>() {

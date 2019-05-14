@@ -1,5 +1,7 @@
 package com.example.sqlbrite.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class TrainTicketResult {
 
     public TrainTicketResultWordsResult words_result;
@@ -8,12 +10,16 @@ public class TrainTicketResult {
 
         private String starting_station;
         private String destination_station;
-        private String passenger_name;
         private String seat_category;
-        private String departure_date;
         private String ticket_rates;
         private String ticket_num;
         private String train_num;
+
+        @SerializedName("name")
+        private String passenger_name;
+
+        @SerializedName("date")
+        private String departure_date;
 
         public void setStartingStation(String starting_station) {
             this.starting_station = starting_station;

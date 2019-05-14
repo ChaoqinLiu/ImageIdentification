@@ -6,41 +6,41 @@ public class BankCardResult {
 
     public class BankCardResultArray {
 
-        public String bank_card_number;
-        public String valid_date;
-        public String bank_name;
-        public String bank_card_type;
+        private String bank_card_number;
+        private String valid_date;
+        private String bank_name;
+        private String bank_card_type;
 
 
-        public void setBank_card_number(String bank_card_number) {
+        public void setBankCardNumber(String bank_card_number) {
             this.bank_card_number = bank_card_number;
         }
 
-        public String getBank_card_number() {
+        public String getBankCardNumber() {
             return bank_card_number;
         }
 
-        public void setValid_date(String valid_date) {
+        public void setValidDate(String valid_date) {
             this.valid_date = valid_date;
         }
 
-        public String getValid_date() {
+        public String getValidDate() {
             return valid_date;
         }
 
-        public void setBank_name(String bank_name) {
+        public void setBankName(String bank_name) {
             this.bank_name = bank_name;
         }
 
-        public String getBank_name() {
+        public String getBankName() {
             return bank_name;
         }
 
-        public void setBank_card_type(String bank_card_type) {
+        public void setBankCardType(String bank_card_type) {
             this.bank_card_type = bank_card_type;
         }
 
-        public String getBank_card_type() {
+        public String getBankCardType() {
             return bank_card_type;
         }
     }

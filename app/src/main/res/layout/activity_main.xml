@@ -354,7 +354,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/text_HongKong_and_MacauPass"
+                        android:id="@+id/text_passport"
                         android:layout_height="match_parent"
                         android:layout_width="match_parent"
                         android:textSize="40sp"
@@ -372,7 +372,7 @@
                         android:gravity="center|top"
                         android:layout_weight="2"
                         android:textSize="13sp"
-                        android:text="港澳通行证识别" />
+                        android:text="护照识别" />
                 </LinearLayout>
 
                 <TextView

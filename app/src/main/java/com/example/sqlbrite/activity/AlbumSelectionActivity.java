@@ -39,7 +39,7 @@ public class AlbumSelectionActivity extends BaseActivity {
     private String type_license_plate;
     private String type_driver_license;
     private String type_train_ticket;
-    private String type_hong_kong_and_macau_pass;
+    private String type_passport;
     private String type_driving_license;
 
     private String id_card_side;
@@ -58,7 +58,7 @@ public class AlbumSelectionActivity extends BaseActivity {
         type_license_plate = getIntent().getStringExtra("type_license_plate");
         type_driver_license = getIntent().getStringExtra("type_driver_license");
         type_train_ticket = getIntent().getStringExtra("type_train_ticket");
-        type_hong_kong_and_macau_pass = getIntent().getStringExtra("type_hong_kong_and_macau_pass");
+        type_passport = getIntent().getStringExtra("type_passport");
         type_driving_license = getIntent().getStringExtra("type_driving_license");
 
         chooseAlbum();
@@ -99,7 +99,7 @@ public class AlbumSelectionActivity extends BaseActivity {
                        intent.putExtra("type_license_plate",type_license_plate);
                        intent.putExtra("type_driver_license",type_driver_license);
                        intent.putExtra("type_train_ticket",type_train_ticket);
-                       intent.putExtra("type_hong_kong_and_macau_pass",type_hong_kong_and_macau_pass);
+                       intent.putExtra("type_passport",type_passport);
                        intent.putExtra("type_driving_license",type_driving_license);
                        intent.putExtra("type_id_card", type_id_card);
                        intent.putExtra("image_path", imagePath);
