@@ -1,4 +1,13 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_selected="true" android:drawable="@drawable/tab_bg_selected" />
-    <item android:drawable="@drawable/tab_bg_normal" />
+    <item android:state_selected="true">
+        <shape>
+            <solid android:color="#FFC4C4C4" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <solid android:color="@color/transparent" />
+        </shape>
+    </item>
+
 </selector>

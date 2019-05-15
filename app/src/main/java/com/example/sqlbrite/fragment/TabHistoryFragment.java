@@ -21,11 +21,6 @@ public class TabHistoryFragment extends Fragment {
         context = getActivity();
         view = inflater.inflate(R.layout.fragment_tab_history,container,false);
 
-        String desc = String.format("我是%s页面，来自%s",
-                "历史", getArguments().getString("tag"));
-        TextView tv_first = view.findViewById(R.id.tv_history);
-        tv_first.setText(desc);
-
         return view;
     }
 

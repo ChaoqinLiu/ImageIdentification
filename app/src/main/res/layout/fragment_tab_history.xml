@@ -12,6 +12,7 @@
         android:layout_height="match_parent"
         android:gravity="bottom|center"
         android:textColor="#000000"
-        android:textSize="17sp" />
+        android:textSize="17sp"
+        android:text="历史页面"/>
 
 </LinearLayout>
