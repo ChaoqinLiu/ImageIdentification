@@ -2,7 +2,11 @@ package com.example.sqlbrite.activity;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -26,6 +30,7 @@ import com.example.sqlbrite.adapter.ResultPassportAdapter;
 import com.example.sqlbrite.adapter.ResultTextAdapter;
 import com.example.sqlbrite.adapter.ResultTrainTicketAdapter;
 import com.example.sqlbrite.app.BaseActivity;
+import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.fragment.TranslationFragment;
 import com.example.sqlbrite.model.BankCardResult;
 import com.example.sqlbrite.model.BusinessLicenseResult;
@@ -48,7 +53,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.safframework.injectview.annotations.InjectView;
 import com.safframework.log.L;
+import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite.SqlBrite;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -62,6 +70,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.schedulers.Schedulers;
 import sun.misc.BASE64Encoder;
 
 public class IntelligentDetectionActivity extends BaseActivity {
@@ -107,8 +116,17 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private List<PassportResult> passportResultList = new ArrayList<PassportResult>();
     private List<BusinessLicenseResult> businessLicenseResultList = new ArrayList<BusinessLicenseResult>();
 
+    private String imageStr;
+
     public static Bitmap bitmap;
     private String wordsArray;
+    private String textStr = "";
+
+    private IdentificationDatabaseHelper dbHelper;
+    private SQLiteDatabase sqLiteDatabase;
+
+    private BriteDatabase briteDatabase;
+    private SqlBrite sqlBrite;
 
     private ProgressDialog progressDialog = null;
 
@@ -143,6 +161,21 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
         //根据按钮传过来的类型执行相应的图片处理方法
         getImageInformationByType();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        dbHelper = IdentificationDatabaseHelper.getInstance(this,11);
+        sqLiteDatabase = dbHelper.getWritableDatabase();
+        sqlBrite = SqlBrite.create();
+        briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper, Schedulers.io());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dbHelper.closeLink();
     }
 
     private String initUploadImage(String path){
@@ -354,8 +387,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     API_KEY = "rcBBY03vg6qf9GDLCwZwMMrZ";
                     SECRET_KEY = "FFNDh7p3AGagLHSuNdEPYazn6zbUUeun";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general";
-                    String resultStr = initUploadImage(path);
-                    if (resultStr == null || resultStr.equals(" ")) {
+                    imageStr = initUploadImage(path);
+                    if (imageStr == null || imageStr.equals(" ")) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -374,7 +407,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                             }
                         }).start();
                     } else {
-                        JsonObject jsonObject = new JsonParser().parse(resultStr).getAsJsonObject();
+                        JsonObject jsonObject = new JsonParser().parse(imageStr).getAsJsonObject();
                         //再转JsonArray 加上数据头
                         JsonArray jsonArray = jsonObject.getAsJsonArray("result");
                         Gson gson = new Gson();
@@ -392,6 +425,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     adapter = new ResultImageAdapter(IntelligentDetectionActivity.this,resultBeanList);
                                     listView.setAdapter(adapter);
                                     progressDialog.dismiss();
+                                    saveImageData();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -457,6 +491,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                             }
                         });
                         wordsArray = jsonArray.toString();
+                        saveTextData();
                         initFragment(); //向TranslationFragment传递数据
                     }
                 } catch (Exception e) {
@@ -550,6 +585,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     bankCardAdapter = new ResultBankCardAdapter(IntelligentDetectionActivity.this,bankResultBeanList);
                                     listView.setAdapter(bankCardAdapter);
                                     progressDialog.dismiss();
+                                    saveBankCardData();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -603,6 +639,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     licensePlateAdapter = new ResultLicensePlateAdapter(IntelligentDetectionActivity.this,licensePlateResultList);
                                     listView.setAdapter(licensePlateAdapter);
                                     progressDialog.dismiss();
+                                    saveLicensePlateData();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -655,6 +692,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     driverLicenseAdapter = new ResultDriverLicenseAdapter(IntelligentDetectionActivity.this, driverLicenseResultList);
                                     listView.setAdapter(driverLicenseAdapter);
                                     progressDialog.dismiss();
+                                    saveDriverLicenseData();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -708,6 +746,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     trainTicketAdapter = new ResultTrainTicketAdapter(IntelligentDetectionActivity.this,trainTicketResultList);
                                     listView.setAdapter(trainTicketAdapter);
                                     progressDialog.dismiss();
+                                    saveTrainTicketData();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -761,6 +800,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     passportAdapter = new ResultPassportAdapter(IntelligentDetectionActivity.this,passportResultList);
                                     listView.setAdapter(passportAdapter);
                                     progressDialog.dismiss();
+                                    savePassportData();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -814,6 +854,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     drivingLicenseAdapter = new ResultDrivingLicenseAdapter(IntelligentDetectionActivity.this,drivingLicenseResultList);
                                     listView.setAdapter(drivingLicenseAdapter);
                                     progressDialog.dismiss();
+                                    saveDrivingLicenseData();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -868,6 +909,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     businessLicenseAdapter = new ResultBusinessLicenseAdapter(IntelligentDetectionActivity.this,businessLicenseResultList);
                                     listView.setAdapter(businessLicenseAdapter);
                                     progressDialog.dismiss();
+                                    saveBusinessLicenseData();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -893,6 +935,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     idCardAdapter = new ResultIDCardForFrontAdapter(IntelligentDetectionActivity.this, idCardList);
                     listView.setAdapter(idCardAdapter);
                     progressDialog.dismiss();
+                    saveIDCardDataForFront();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -912,11 +955,287 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     idCardForBackAdapter = new ResultIDCardForBackAdapter(IntelligentDetectionActivity.this, idCardForBackList);
                     listView.setAdapter(idCardForBackAdapter);
                     progressDialog.dismiss();
+                    saveIDCardDataForBack();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
+    }
+
+    private void saveIDCardDataForFront() {
+        try {
+            for (int i = 0; i < idCardList.size(); i++) {
+                ContentValues values = new ContentValues();
+                String address = idCardList.get(i).words_result.address.getWords();
+                String birthday = idCardList.get(i).words_result.birthday.getWords();
+                String name = idCardList.get(i).words_result.userName.getWords();
+                String number = idCardList.get(i).words_result.idNumber.getWords();
+                String gender = idCardList.get(i).words_result.gender.getWords();
+                String nationality = idCardList.get(i).words_result.nationality.getWords();
+                values.put("address",address);
+                values.put("birthday",birthday);
+                values.put("name",name);
+                values.put("number",number);
+                values.put("gender",gender);
+                values.put("nationality",nationality);
+                values.put("path",path);
+                briteDatabase.insert("front_id_card",values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveIDCardDataForBack() {
+        try {
+            for (int i = 0; i < idCardForBackList.size(); i++) {
+                ContentValues values = new ContentValues();
+                String dateOfIssue = idCardForBackList.get(i).words_result.dateOfIssue.getWords();
+                String issuingAuthority = idCardForBackList.get(i).words_result.issuingAuthority.getWords();
+                String expirationDate = idCardForBackList.get(i).words_result.expirationDate.getWords();
+                values.put("dateOfIssue",dateOfIssue);
+                values.put("issuingAuthority",issuingAuthority);
+                values.put("expirationDate",expirationDate);
+                values.put("path",path);
+                briteDatabase.insert("back_id_card",values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveImageData() {
+        try {
+            for (int i = 0; i < resultBeanList.size(); i++) {
+                ContentValues values = new ContentValues();
+                float score = resultBeanList.get(i).score;
+                String root = resultBeanList.get(i).root;
+                String keyword = resultBeanList.get(i).keyword;
+                values.put("score", score);
+                values.put("root", root);
+                values.put("keyword", keyword);
+                values.put("path", path);
+                briteDatabase.insert("image", values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveDrivingLicenseData() {
+        try {
+            for (int i = 0; i < drivingLicenseResultList.size(); i++) {
+                ContentValues values = new ContentValues();
+                String address = drivingLicenseResultList.get(i).words_result.address.getWords();
+                String numberPlateNumber = drivingLicenseResultList.get(i).words_result.numberPlateNumber.getWords();
+                String vehicleType = drivingLicenseResultList.get(i).words_result.vehicleType.getWords();
+                String owner = drivingLicenseResultList.get(i).words_result.owner.getWords();
+                String natureOfUse = drivingLicenseResultList.get(i).words_result.natureOfUse.getWords();
+                String brandModelNumber = drivingLicenseResultList.get(i).words_result.brandModelNumber.getWords();
+                String engineNumber = drivingLicenseResultList.get(i).words_result.engineNumber.getWords();
+                String vehicleIdentificationNumber = drivingLicenseResultList.get(i).words_result.vehicleIdentificationNumber.getWords();
+                String registrationDate = drivingLicenseResultList.get(i).words_result.registrationDate.getWords();
+                String issuingCertificateOfDate = drivingLicenseResultList.get(i).words_result.issuingCertificateOfDate.getWords();
+                values.put("address",address);
+                values.put("numberPlateNumber",numberPlateNumber);
+                values.put("vehicleType",vehicleType);
+                values.put("owner",owner);
+                values.put("natureOfUse",natureOfUse);
+                values.put("brandModelNumber",brandModelNumber);
+                values.put("engineNumber",engineNumber);
+                values.put("vehicleIdentificationNumber",vehicleIdentificationNumber);
+                values.put("registrationDate",registrationDate);
+                values.put("issuingCertificateOfDate",issuingCertificateOfDate);
+                values.put("path",path);
+                briteDatabase.insert("driving_license",values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveDriverLicenseData() {
+        try {
+            for (int i = 0; i < driverLicenseResultList.size(); i++) {
+                ContentValues values = new ContentValues();
+                String address = driverLicenseResultList.get(i).words_result.address.getWords();
+                String birthday = driverLicenseResultList.get(i).words_result.birthday.getWords();
+                String name = driverLicenseResultList.get(i).words_result.userName.getWords();
+                String certificateNumber = driverLicenseResultList.get(i).words_result.certificateNumber.getWords();
+                String gender = driverLicenseResultList.get(i).words_result.gender.getWords();
+                String countryOfCitizenship = driverLicenseResultList.get(i).words_result.countryOfCitizenship.getWords();
+                String quasiDrivingModel = driverLicenseResultList.get(i).words_result.quasiDrivingModel.getWords();
+                String initialLicenseDate = driverLicenseResultList.get(i).words_result.initialLicenseDate.getWords();
+                String validityPeriod = driverLicenseResultList.get(i).words_result.validityPeriod.getWords();
+                String deadline = driverLicenseResultList.get(i).words_result.to.getWords();
+                values.put("address",address);
+                values.put("birthday",birthday);
+                values.put("name",name);
+                values.put("certificateNumber",certificateNumber);
+                values.put("gender",gender);
+                values.put("countryOfCitizenship",countryOfCitizenship);
+                values.put("quasiDrivingModel",quasiDrivingModel);
+                values.put("initialLicenseDate",initialLicenseDate);
+                values.put("validityPeriod",validityPeriod);
+                values.put("deadline",deadline);
+                values.put("path",path);
+                briteDatabase.insert("driver_license",values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveLicensePlateData() {
+        try {
+            for (int i = 0; i < licensePlateResultList.size(); i++) {
+                ContentValues values = new ContentValues();
+                String color = licensePlateResultList.get(i).words_result.getColor();
+                String number = licensePlateResultList.get(i).words_result.getNumber();
+                values.put("color",color);
+                values.put("number",number);
+                values.put("path",path);
+                briteDatabase.insert("license_plate",values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveBankCardData() {
+        try {
+            for (int i = 0; i < bankResultBeanList.size(); i++) {
+                ContentValues values = new ContentValues();
+                String bankCardNumber = bankResultBeanList.get(i).result.getBankCardNumber();
+                String validDate = bankResultBeanList.get(i).result.getValidDate();
+                String bankName = bankResultBeanList.get(i).result.getBankName();
+                String bankCardType = bankResultBeanList.get(i).result.getBankCardType();
+                values.put("bankCardNumber",bankCardNumber);
+                values.put("validDate",validDate);
+                values.put("bankName",bankName);
+                values.put("bankCardType",bankCardType);
+                values.put("path",path);
+                briteDatabase.insert("bank_card",values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveTextData() {
+        try {
+            JSONArray jsonArray = new JSONArray(wordsArray);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String words = jsonObject.getString("words");
+                textStr += words;
+                try {
+                    ContentValues values = new ContentValues();
+                    values.put("words", textStr);
+                    values.put("path", path);
+                    briteDatabase.insert("text", values);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveBusinessLicenseData() {
+        try {
+            for (int i = 0; i < businessLicenseResultList.size(); i++) {
+                ContentValues values = new ContentValues();
+                String registeredCapital = businessLicenseResultList.get(i).words_result.registeredCapital.getWords();
+                String socialCreditCode = businessLicenseResultList.get(i).words_result.socialCreditCode.getWords();
+                String companyName = businessLicenseResultList.get(i).words_result.companyName.getWords();
+                String legalPerson = businessLicenseResultList.get(i).words_result.legalPerson.getWords();
+                String documentNumber = businessLicenseResultList.get(i).words_result.documentNumber.getWords();
+                String formation = businessLicenseResultList.get(i).words_result.formation.getWords();
+                String dateOfEstablishment = businessLicenseResultList.get(i).words_result.dateOfEstablishment.getWords();
+                String companyAddress = businessLicenseResultList.get(i).words_result.companyAddress.getWords();
+                String businessScope = businessLicenseResultList.get(i).words_result.businessScope.getWords();
+                String typeOfCompany = businessLicenseResultList.get(i).words_result.typeOfCompany.getWords();
+                String ValidityPeriod = businessLicenseResultList.get(i).words_result.businessLicenseValidityPeriod.getWords();
+                values.put("registeredCapital",registeredCapital);
+                values.put("companyName",companyName);
+                values.put("socialCreditCode",socialCreditCode);
+                values.put("legalPerson",legalPerson);
+                values.put("documentNumber",documentNumber);
+                values.put("formation",formation);
+                values.put("dateOfEstablishment",dateOfEstablishment);
+                values.put("companyAddress",companyAddress);
+                values.put("businessScope",businessScope);
+                values.put("typeOfCompany",typeOfCompany);
+                values.put("ValidityPeriod",ValidityPeriod);
+                values.put("path",path);
+                briteDatabase.insert("business_license",values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveTrainTicketData() {
+        try {
+            for (int i = 0; i < trainTicketResultList.size(); i++) {
+                ContentValues values = new ContentValues();
+                String startingStation = trainTicketResultList.get(i).words_result.getStartingStation();
+                String destinationStation = trainTicketResultList.get(i).words_result.getDestinationstation();
+                String seatCategory = trainTicketResultList.get(i).words_result.getSeatCategory();
+                String ticketRates = trainTicketResultList.get(i).words_result.getTicketRates();
+                String ticketNum = trainTicketResultList.get(i).words_result.getTicketNum();
+                String trainNum = trainTicketResultList.get(i).words_result.getTrainNum();
+                String name = trainTicketResultList.get(i).words_result.getPassengerName();
+                String date = trainTicketResultList.get(i).words_result.getDepartureDate();
+                values.put("startingStation",startingStation);
+                values.put("destinationStation",destinationStation);
+                values.put("seatCategory",seatCategory);
+                values.put("ticketRates",ticketRates);
+                values.put("ticketNum",ticketNum);
+                values.put("trainNum",trainNum);
+                values.put("name",name);
+                values.put("date",date);
+                values.put("path",path);
+                briteDatabase.insert("train_ticket",values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void savePassportData() {
+        try {
+            for (int i = 0; i < passportResultList.size(); i++) {
+                ContentValues values = new ContentValues();
+                String countryCode = passportResultList.get(i).words_result.countryCode.getWords();
+                String passportIssuanceLocation = passportResultList.get(i).words_result.passportIssuanceLocation.getWords();
+                String validUntil = passportResultList.get(i).words_result.validUntil.getWords();
+                String passportNumber = passportResultList.get(i).words_result.passportNumber.getWords();
+                String passportDateOfIssue = passportResultList.get(i).words_result.passportDateOfIssue.getWords();
+                String birthPlace = passportResultList.get(i).words_result.birthPlace.getWords();
+                String name = passportResultList.get(i).words_result.ownerName.getWords();
+                String pinyinOfName = passportResultList.get(i).words_result.pinyinOfName.getWords();
+                String birthday = passportResultList.get(i).words_result.ownerBirthday.getWords();
+                String sex = passportResultList.get(i).words_result.sex.getWords();
+                values.put("countryCode",countryCode);
+                values.put("passportIssuanceLocation",passportIssuanceLocation);
+                values.put("validUntil",validUntil);
+                values.put("passportNumber",passportNumber);
+                values.put("passportDateOfIssue",passportDateOfIssue);
+                values.put("birthPlace",birthPlace);
+                values.put("name",name);
+                values.put("pinyinOfName",pinyinOfName);
+                values.put("birthday",birthday);
+                values.put("sex",sex);
+                values.put("path",path);
+                briteDatabase.insert("passport",values);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initFragment(){
@@ -925,6 +1244,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         TranslationFragment fragment = new TranslationFragment();
         Bundle bundle = new Bundle();
         bundle.putString("words",wordsArray);
+        bundle.putString("path",path);
         fragment.setArguments(bundle);
         transaction.add(R.id.text_translation,fragment);
         transaction.commit();

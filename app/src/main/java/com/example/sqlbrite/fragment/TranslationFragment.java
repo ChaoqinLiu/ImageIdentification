@@ -20,6 +20,7 @@ public class TranslationFragment extends Fragment implements View.OnClickListene
     protected View view;
     protected Context context;
     private String words;
+    private String path;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -30,6 +31,7 @@ public class TranslationFragment extends Fragment implements View.OnClickListene
         TextView textView = view.findViewById(R.id.text_translation);
         Bundle bundle = this.getArguments();
         words = bundle.getString("words");
+        path = bundle.getString("path");
         textView.setOnClickListener(this);
         return view;
     }
@@ -45,6 +47,7 @@ public class TranslationFragment extends Fragment implements View.OnClickListene
     public void onClick(View v){
         Intent intent = new Intent(context,TextTranslationActivity.class);
         intent.putExtra("translationArr",words);
+        intent.putExtra("path",path);
         startActivityForResult(intent,1);
         intelligentDetectionActivity.finish();
     }

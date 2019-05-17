@@ -1,9 +1,13 @@
 package com.example.sqlbrite.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -11,6 +15,7 @@ import android.widget.Toast;
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.adapter.TabFragmentPagerAdapter;
 import com.example.sqlbrite.app.BaseActivity;
+import com.facebook.stetho.Stetho;
 
 public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener,
         ViewPager.OnPageChangeListener {
@@ -28,13 +33,13 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     private TabFragmentPagerAdapter tabFragmentPagerAdapter;
     private ViewPager viewPager;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tabFragmentPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
         initView();
+        Stetho.initializeWithDefaults(this);
     }
 
     private void initView(){
@@ -111,6 +116,24 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.share, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        if (item.getItemId() == R.id.share) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            //intent.setType("text/plain");
+            //intent.putExtra(Intent.EXTRA_TEXT, "这是一段分享的文字");
+            startActivity(Intent.createChooser(intent, "分享"));
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

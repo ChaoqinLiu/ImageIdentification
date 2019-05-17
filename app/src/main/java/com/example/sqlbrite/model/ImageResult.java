@@ -10,11 +10,11 @@ public class ImageResult {
 
     public class ResultArray {
 
-        public double score;
+        public float score;
         public String root;
         public String keyword;
 
-        public ResultArray(double score, String root, String keyword) {
+        public ResultArray(float score, String root, String keyword) {
             this.score = score;
             this.root = root;
             this.keyword = keyword;

@@ -3,16 +3,440 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tv_history"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="bottom|center"
-        android:textColor="#000000"
-        android:textSize="17sp"
-        android:text="历史页面"/>
+        android:layout_height="45dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="历史记录"
+        android:textSize="16sp"/>
+
+    <View
+        android:layout_height="3dp"
+        android:layout_width="match_parent"
+        android:background="@color/LightGrey"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/layout_image"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/view_image"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:text="@string/str_image"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:text="图像识别"
+                    android:gravity="center_vertical|left"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/icon_image"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="10dp"
+                    android:textSize="14sp"
+                    android:text="@string/str_enter"
+                    android:layout_weight="4"/>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/LightGrey"/>
+
+            <LinearLayout
+                android:id="@+id/layout_text"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/view_text"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:text="@string/str_text"
+                    android:textSize="16sp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:text="图文识别"
+                    android:gravity="center_vertical|left"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/icon_text"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="10dp"
+                    android:textSize="14sp"
+                    android:text="@string/str_enter"
+                    android:layout_weight="4"/>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/LightGrey"/>
+
+            <LinearLayout
+                android:id="@+id/layout_driving_license"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:textSize="16sp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/view_driving_license"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:text="@string/str_DrivingLicense"
+                    android:textSize="16sp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:text="行驶证识别"
+                    android:gravity="center_vertical|left"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/icon_driving_license"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="10dp"
+                    android:textSize="14sp"
+                    android:text="@string/str_enter"
+                    android:layout_weight="4"/>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/LightGrey"/>
+
+            <LinearLayout
+                android:id="@+id/layout_id_card"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:textSize="16sp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/view_id_card"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:textSize="16sp"
+                    android:text="@string/str_IDCard"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:text="身份证识别"
+                    android:gravity="center_vertical|left"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/icon_id_card"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="10dp"
+                    android:textSize="14sp"
+                    android:text="@string/str_enter"
+                    android:layout_weight="4"/>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/LightGrey"/>
+
+            <LinearLayout
+                android:id="@+id/layout_business_license"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:textSize="16sp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/view_business_license"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:text="@string/str_BusinessLicense"
+                    android:textSize="16sp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:text="营业执照识别"
+                    android:gravity="center_vertical|left"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/icon_business_license"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:text="@string/str_enter"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="10dp"
+                    android:textSize="14sp"
+                    android:layout_weight="4"/>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/LightGrey"/>
+
+            <LinearLayout
+                android:id="@+id/layout_bank_card"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:textSize="16sp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/view_bank_card"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:text="@string/str_BankCard"
+                    android:textSize="16sp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:text="银行卡识别"
+                    android:gravity="center_vertical|left"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/icon_bank_card"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="10dp"
+                    android:textSize="14sp"
+                    android:text="@string/str_enter"
+                    android:layout_weight="4"/>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/LightGrey"/>
+
+            <LinearLayout
+                android:id="@+id/layout_driver_license"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:textSize="16sp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/view_driver_license"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:text="@string/str_DriverLicense"
+                    android:textSize="16sp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:text="驾驶证识别"
+                    android:gravity="center_vertical|left"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/icon_driver_license"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:textSize="14sp"
+                    android:text="@string/str_enter"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="4"/>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/LightGrey"/>
+
+            <LinearLayout
+                android:id="@+id/layout_license_plate"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:textSize="16sp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/view_license_plate"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:text="@string/str_LicensePlate"
+                    android:textSize="12sp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:text="车牌识别"
+                    android:gravity="center_vertical|left"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/icon_license_plate"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:textSize="14sp"
+                    android:text="@string/str_enter"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="4"/>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/LightGrey"/>
+
+            <LinearLayout
+                android:id="@+id/layout_passport"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:textSize="16sp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/view_passport"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:text="@string/str_Passport"
+                    android:textSize="16sp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:text="护照识别"
+                    android:gravity="center_vertical|left"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/icon_passport"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:textSize="14sp"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/str_enter"
+                    android:layout_weight="4"/>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/LightGrey"/>
+
+            <LinearLayout
+                android:id="@+id/layout_train_ticket"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:textSize="16sp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/view_train_ticket"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textColor="@color/DeepSkyBlue"
+                    android:text="@string/str_TrainTicket"
+                    android:textSize="19sp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:text="火车票识别"
+                    android:gravity="center_vertical|left"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/icon_train_ticket"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:textSize="14sp"
+                    android:text="@string/str_enter"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="4"/>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/LightGrey"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

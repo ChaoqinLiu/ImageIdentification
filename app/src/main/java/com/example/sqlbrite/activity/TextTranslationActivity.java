@@ -1,7 +1,9 @@
 package com.example.sqlbrite.activity;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -15,11 +17,14 @@ import android.widget.Toast;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.app.BaseActivity;
+import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.model.Language;
 import com.example.sqlbrite.model.TranslateResult;
 import com.example.sqlbrite.util.MD5Utils;
 import com.google.gson.Gson;
 import com.safframework.injectview.annotations.InjectView;
+import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite.SqlBrite;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,11 +37,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.schedulers.Schedulers;
+
 
 public class TextTranslationActivity extends BaseActivity {
 
     private String wordsKeyArr;
     private String queryStr = "";
+    private String path;
     private static final String appid = "20190401000283388";
     private static final String key = "SkTeVqucOItasS35k8tJ";
     private static final String salt = "1435660288";
@@ -46,6 +54,11 @@ public class TextTranslationActivity extends BaseActivity {
     private static String lan = "en";  //翻译目标语言,默认为英文
 
     boolean stopThread = false;
+    private IdentificationDatabaseHelper dbHelper;
+    private SQLiteDatabase sqLiteDatabase;
+
+    private BriteDatabase briteDatabase;
+    private SqlBrite sqlBrite;
 
     private ProgressDialog progressDialog = null;
 
@@ -66,6 +79,7 @@ public class TextTranslationActivity extends BaseActivity {
 
         Intent intent = getIntent();
         wordsKeyArr = intent.getStringExtra("translationArr");
+        path = intent.getStringExtra("path");
         //L.i("wordsKeyArr" + wordsKeyArr);
         try {
             JSONArray jsonArray = new JSONArray(wordsKeyArr);
@@ -87,6 +101,21 @@ public class TextTranslationActivity extends BaseActivity {
 
         getTranslationResult();
         initSpinner();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        dbHelper = IdentificationDatabaseHelper.getInstance(this,11);
+        sqLiteDatabase = dbHelper.getWritableDatabase();
+        sqlBrite = SqlBrite.create();
+        briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper, Schedulers.io());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dbHelper.closeLink();
     }
 
     private void getTranslationResult(){
@@ -123,6 +152,7 @@ public class TextTranslationActivity extends BaseActivity {
                                     original.setText(queryStr);
                                     translation.setText(dst);
                                     progressDialog.dismiss();
+                                    saveTranslationData();
                                 }
                             });
                         }
@@ -132,6 +162,18 @@ public class TextTranslationActivity extends BaseActivity {
                 }
             }
         }).start();
+    }
+
+    private void saveTranslationData() {
+        try {
+            ContentValues values = new ContentValues();
+            values.put("original", queryStr);
+            values.put("translation",dst);
+            values.put("path",path);
+            briteDatabase.insert("translation", values);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String Translation(){
