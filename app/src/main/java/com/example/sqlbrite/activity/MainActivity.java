@@ -16,6 +16,7 @@ import com.example.sqlbrite.R;
 import com.example.sqlbrite.adapter.TabFragmentPagerAdapter;
 import com.example.sqlbrite.app.BaseActivity;
 import com.facebook.stetho.Stetho;
+import com.safframework.log.L;
 
 public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener,
         ViewPager.OnPageChangeListener {
@@ -33,6 +34,8 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     private TabFragmentPagerAdapter tabFragmentPagerAdapter;
     private ViewPager viewPager;
 
+    private String flag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +43,16 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         tabFragmentPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
         initView();
         Stetho.initializeWithDefaults(this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        flag = getIntent().getStringExtra("flag");
+        if (flag != null) {
+            viewPager.setCurrentItem(PAGE_TWO);
+        }
     }
 
     private void initView(){

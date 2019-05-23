@@ -20,6 +20,7 @@ import com.example.sqlbrite.activity.AlbumSelectionActivity;
 import com.example.sqlbrite.activity.MainActivity;
 import com.example.sqlbrite.activity.TakePictureActivity;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.safframework.log.L;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.concurrent.TimeUnit;
@@ -138,7 +139,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -161,7 +162,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -183,7 +184,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -205,7 +206,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -221,7 +222,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -236,7 +237,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -258,7 +259,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -280,7 +281,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -302,7 +303,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -324,7 +325,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -346,7 +347,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -368,7 +369,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -390,7 +391,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -412,7 +413,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -434,7 +435,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -456,7 +457,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -478,7 +479,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -500,7 +501,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -522,7 +523,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -544,7 +545,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
     }
@@ -598,7 +599,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 
@@ -620,7 +621,7 @@ public class TabHomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError()" + throwable.getMessage());
+                        L.i(throwable.getMessage());
                     }
                 });
 

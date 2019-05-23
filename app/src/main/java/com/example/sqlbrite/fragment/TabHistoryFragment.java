@@ -1,6 +1,7 @@
 package com.example.sqlbrite.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,7 +12,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
+import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.activity.MainActivity;
+import com.jakewharton.rxbinding2.view.RxView;
+import com.safframework.log.L;
+
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 public class TabHistoryFragment extends Fragment {
 
@@ -48,6 +57,17 @@ public class TabHistoryFragment extends Fragment {
     private LinearLayout layout_train_ticket;
     private TextView view_train_ticket;
     private TextView icon_train_ticket;
+
+    private static final String TYPE_IMAGE = "type_image";
+    private static final String TYPE_TEXT = "type_text";
+    private static final String TYPE_ID_CARD = "type_id_card";
+    private static final String TYPE_BANK_CARD = "type_bank_card";
+    private static final String TYPE_LICENSE_PLATE = "type_license_plate";
+    private static final String TYPE_DRIVER_LICENSE = "type_driver_license";
+    private static final String TYPE_TRAIN_TICKET = "type_train_ticket";
+    private static final String TYPE_PASSPORT = "type_passport";
+    private static final String TYPE_DRIVING_LICENSE = "type_driving_license";
+    private static final String TYPE_BUSINESS_LICENSE = "type_business_license";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,7 +128,59 @@ public class TabHistoryFragment extends Fragment {
         view_train_ticket.setTypeface(iconfont);
         icon_train_ticket.setTypeface(iconfont);
 
+        initView();
         return view;
+    }
+
+    private void initView(){
+
+        RxView.clicks(layout_image)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        Intent intent = new Intent(context, DisplayHistoryActivity.class);
+                        intent.putExtra("type_image", TYPE_IMAGE);
+                        startActivityForResult(intent, 1);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(layout_text)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        Intent intent = new Intent(context, DisplayHistoryActivity.class);
+                        intent.putExtra("type_text", TYPE_TEXT);
+                        startActivityForResult(intent, 2);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(layout_driving_license)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        Intent intent = new Intent(context, DisplayHistoryActivity.class);
+                        intent.putExtra("type_driving_license", TYPE_DRIVING_LICENSE);
+                        startActivityForResult(intent, 3);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
     }
 
 

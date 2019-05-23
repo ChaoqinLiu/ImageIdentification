@@ -28,20 +28,20 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
             + "score real not null, "
             + "root text not null, "
             + "keyword text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_TEXT = "create table if not exists " + text_table + " ("
             + "id integer primary key autoincrement not null, "
             + "words text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_TRANSLATION = "create table if not exists " + translation_table + " ("
             + "id integer primary key autoincrement not null, "
             + "original text not null, "
             + "translation text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_FRONT_IDCARD = "create table if not exists " + front_id_card_table + " ("
@@ -52,7 +52,7 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
             + "number text not null, "
             + "gender text not null, "
             + "nationality text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_BUSINESS_LICENSE = "create table if not exists " + business_license_table + " ("
@@ -68,7 +68,7 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
             + "businessScope text not null, "
             + "typeOfCompany text not null, "
             + "ValidityPeriod text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_BACK_IDCARD = "create table if not exists " + back_id_card_table + " ("
@@ -76,14 +76,14 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
             + "dateOfIssue text not null, "
             + "issuingAuthority text not null, "
             + "expirationDate text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_LICENSE_PLATE = "create table if not exists " + license_plate_table + " ("
             + "id integer primary key autoincrement not null, "
             + "color text not null, "
             + "number text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_BANK_CARD = "create table if not exists " + bank_card_table + " ("
@@ -92,7 +92,7 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
             + "validDate text not null, "
             + "bankName text not null, "
             + "bankCardType integer not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_DRIVER_LICENSE = "create table if not exists " + driver_license_table + " ("
@@ -107,7 +107,7 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
             + "initialLicenseDate text not null, "
             + "validityPeriod text not null, "
             + "deadline text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_DRIVING_LICENSE = "create table if not exists " + driving_license_table + " ("
@@ -122,7 +122,7 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
             + "vehicleIdentificationNumber text not null, "
             + "registrationDate text not null, "
             + "issuingCertificateOfDate text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_PASSPORT = "create table if not exists " + passport_table + " ("
@@ -137,7 +137,7 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
             + "pinyinOfName text not null, "
             + "birthday text not null, "
             + "sex text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private static final String CREATE_TRAIN_TICKET = "create table if not exists " + train_ticket_table + " ("
@@ -150,7 +150,7 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
             + "trainNum text not null, "
             + "name text not null, "
             + "date text not null, "
-            + "path text not null"
+            + "pic blob not null"
             + ");";
 
     private IdentificationDatabaseHelper(Context context) {
@@ -214,23 +214,24 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         /*switch (oldVersion) {
-            case 10:
-                db.execSQL(CREATE_FRONT_IDCARD);
-                db.execSQL(CREATE_BACK_IDCARD);
+            case 15:
+                *//*db.execSQL("drop table if exists image");
+                db.execSQL("drop table if exists text");
+                db.execSQL("drop table if exists train_ticket");
+                db.execSQL("drop table if exists translation");
+                db.execSQL("drop table if exists front_id_card");
+                db.execSQL("drop table if exists back_id_card");
+                db.execSQL("drop table if exists business_license");
+
+                db.execSQL("drop table if exists driver_license");
+                db.execSQL("drop table if exists driving_license");
+                db.execSQL("drop table if exists bank_card");
+                db.execSQL("drop table if exists license_plate");
+                db.execSQL("drop table if exists passport");*//*
+                //onCreate(db);
+                //db.execSQL(CREATE_FRONT_IDCARD);
+                //db.execSQL(CREATE_BACK_IDCARD);
             default:
         }*/
-        /*db.execSQL("drop table if exists image");
-        db.execSQL("drop table if exists text");
-        db.execSQL("drop table if exists translation");
-        db.execSQL("drop table if exists front_id_card");
-        db.execSQL("drop table if exists back_id_card");
-        db.execSQL("drop table if exists business_license");
-        db.execSQL("drop table if exists driver_license");
-        db.execSQL("drop table if exists driving_license");
-        db.execSQL("drop table if exists bank_card");
-        db.execSQL("drop table if exists license_plate");
-        db.execSQL("drop table if exists passport");
-        db.execSQL("drop table if exists train_ticket");*/
-        //onCreate(db);
     }
 }

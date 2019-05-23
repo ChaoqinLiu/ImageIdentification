@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.example.sqlbrite.app.BaseActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.model.Language;
 import com.example.sqlbrite.model.TranslateResult;
+import com.example.sqlbrite.util.BitmapUtil;
 import com.example.sqlbrite.util.MD5Utils;
 import com.google.gson.Gson;
 import com.safframework.injectview.annotations.InjectView;
@@ -30,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -55,8 +58,6 @@ public class TextTranslationActivity extends BaseActivity {
 
     boolean stopThread = false;
     private IdentificationDatabaseHelper dbHelper;
-    private SQLiteDatabase sqLiteDatabase;
-
     private BriteDatabase briteDatabase;
     private SqlBrite sqlBrite;
 
@@ -106,8 +107,7 @@ public class TextTranslationActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        dbHelper = IdentificationDatabaseHelper.getInstance(this,11);
-        sqLiteDatabase = dbHelper.getWritableDatabase();
+        dbHelper = IdentificationDatabaseHelper.getInstance(this,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper, Schedulers.io());
     }
@@ -169,7 +169,10 @@ public class TextTranslationActivity extends BaseActivity {
             ContentValues values = new ContentValues();
             values.put("original", queryStr);
             values.put("translation",dst);
-            values.put("path",path);
+            Bitmap bitmap = BitmapUtil.openBitmap(path);
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+            values.put("pic", os.toByteArray());
             briteDatabase.insert("translation", values);
         } catch (Exception e) {
             e.printStackTrace();

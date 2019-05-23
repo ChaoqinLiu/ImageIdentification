@@ -43,6 +43,7 @@ import com.example.sqlbrite.model.LicensePlateResult;
 import com.example.sqlbrite.model.PassportResult;
 import com.example.sqlbrite.model.TextResult;
 import com.example.sqlbrite.model.TrainTicketResult;
+import com.example.sqlbrite.util.BitmapUtil;
 import com.example.sqlbrite.util.FileUtil;
 import com.example.sqlbrite.util.GsonUtil;
 import com.google.gson.Gson;
@@ -123,8 +124,6 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private String textStr = "";
 
     private IdentificationDatabaseHelper dbHelper;
-    private SQLiteDatabase sqLiteDatabase;
-
     private BriteDatabase briteDatabase;
     private SqlBrite sqlBrite;
 
@@ -166,8 +165,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        dbHelper = IdentificationDatabaseHelper.getInstance(this,11);
-        sqLiteDatabase = dbHelper.getWritableDatabase();
+        dbHelper = IdentificationDatabaseHelper.getInstance(this,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper, Schedulers.io());
     }
@@ -425,7 +423,13 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     adapter = new ResultImageAdapter(IntelligentDetectionActivity.this,resultBeanList);
                                     listView.setAdapter(adapter);
                                     progressDialog.dismiss();
-                                    saveImageData();
+                                    //开启一条线程执行插入数据操作，防止发生堵塞
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            saveImageData();
+                                        }
+                                    }).start();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -491,7 +495,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                             }
                         });
                         wordsArray = jsonArray.toString();
-                        saveTextData();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                saveTextData();
+                            }
+                        }).start();
                         initFragment(); //向TranslationFragment传递数据
                     }
                 } catch (Exception e) {
@@ -585,7 +594,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     bankCardAdapter = new ResultBankCardAdapter(IntelligentDetectionActivity.this,bankResultBeanList);
                                     listView.setAdapter(bankCardAdapter);
                                     progressDialog.dismiss();
-                                    saveBankCardData();
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            saveBankCardData();
+                                        }
+                                    }).start();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -639,7 +653,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     licensePlateAdapter = new ResultLicensePlateAdapter(IntelligentDetectionActivity.this,licensePlateResultList);
                                     listView.setAdapter(licensePlateAdapter);
                                     progressDialog.dismiss();
-                                    saveLicensePlateData();
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            saveLicensePlateData();
+                                        }
+                                    }).start();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -692,7 +711,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     driverLicenseAdapter = new ResultDriverLicenseAdapter(IntelligentDetectionActivity.this, driverLicenseResultList);
                                     listView.setAdapter(driverLicenseAdapter);
                                     progressDialog.dismiss();
-                                    saveDriverLicenseData();
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            saveDriverLicenseData();
+                                        }
+                                    }).start();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -746,7 +770,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     trainTicketAdapter = new ResultTrainTicketAdapter(IntelligentDetectionActivity.this,trainTicketResultList);
                                     listView.setAdapter(trainTicketAdapter);
                                     progressDialog.dismiss();
-                                    saveTrainTicketData();
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            saveTrainTicketData();
+                                        }
+                                    }).start();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -800,7 +829,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     passportAdapter = new ResultPassportAdapter(IntelligentDetectionActivity.this,passportResultList);
                                     listView.setAdapter(passportAdapter);
                                     progressDialog.dismiss();
-                                    savePassportData();
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            savePassportData();
+                                        }
+                                    }).start();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -854,7 +888,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     drivingLicenseAdapter = new ResultDrivingLicenseAdapter(IntelligentDetectionActivity.this,drivingLicenseResultList);
                                     listView.setAdapter(drivingLicenseAdapter);
                                     progressDialog.dismiss();
-                                    saveDrivingLicenseData();
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            saveDrivingLicenseData();
+                                        }
+                                    }).start();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -909,7 +948,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                                     businessLicenseAdapter = new ResultBusinessLicenseAdapter(IntelligentDetectionActivity.this,businessLicenseResultList);
                                     listView.setAdapter(businessLicenseAdapter);
                                     progressDialog.dismiss();
-                                    saveBusinessLicenseData();
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            saveBusinessLicenseData();
+                                        }
+                                    }).start();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -935,7 +979,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     idCardAdapter = new ResultIDCardForFrontAdapter(IntelligentDetectionActivity.this, idCardList);
                     listView.setAdapter(idCardAdapter);
                     progressDialog.dismiss();
-                    saveIDCardDataForFront();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            saveIDCardDataForFront();
+                        }
+                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -955,7 +1004,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     idCardForBackAdapter = new ResultIDCardForBackAdapter(IntelligentDetectionActivity.this, idCardForBackList);
                     listView.setAdapter(idCardForBackAdapter);
                     progressDialog.dismiss();
-                    saveIDCardDataForBack();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            saveIDCardDataForBack();
+                        }
+                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -979,7 +1033,10 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 values.put("number",number);
                 values.put("gender",gender);
                 values.put("nationality",nationality);
-                values.put("path",path);
+                Bitmap bitmap = BitmapUtil.openBitmap(path);
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                values.put("pic", os.toByteArray());
                 briteDatabase.insert("front_id_card",values);
             }
         } catch (Exception e) {
@@ -997,7 +1054,10 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 values.put("dateOfIssue",dateOfIssue);
                 values.put("issuingAuthority",issuingAuthority);
                 values.put("expirationDate",expirationDate);
-                values.put("path",path);
+                Bitmap bitmap = BitmapUtil.openBitmap(path);
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                values.put("pic", os.toByteArray());
                 briteDatabase.insert("back_id_card",values);
             }
         } catch (Exception e) {
@@ -1015,7 +1075,10 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 values.put("score", score);
                 values.put("root", root);
                 values.put("keyword", keyword);
-                values.put("path", path);
+                Bitmap bitmap = BitmapUtil.openBitmap(path);
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                values.put("pic", os.toByteArray());
                 briteDatabase.insert("image", values);
             }
         } catch (Exception e) {
@@ -1047,7 +1110,10 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 values.put("vehicleIdentificationNumber",vehicleIdentificationNumber);
                 values.put("registrationDate",registrationDate);
                 values.put("issuingCertificateOfDate",issuingCertificateOfDate);
-                values.put("path",path);
+                Bitmap bitmap = BitmapUtil.openBitmap(path);
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                values.put("pic", os.toByteArray());
                 briteDatabase.insert("driving_license",values);
             }
         } catch (Exception e) {
@@ -1079,7 +1145,10 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 values.put("initialLicenseDate",initialLicenseDate);
                 values.put("validityPeriod",validityPeriod);
                 values.put("deadline",deadline);
-                values.put("path",path);
+                Bitmap bitmap = BitmapUtil.openBitmap(path);
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                values.put("pic", os.toByteArray());
                 briteDatabase.insert("driver_license",values);
             }
         } catch (Exception e) {
@@ -1095,7 +1164,10 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 String number = licensePlateResultList.get(i).words_result.getNumber();
                 values.put("color",color);
                 values.put("number",number);
-                values.put("path",path);
+                Bitmap bitmap = BitmapUtil.openBitmap(path);
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                values.put("pic", os.toByteArray());
                 briteDatabase.insert("license_plate",values);
             }
         } catch (Exception e) {
@@ -1115,7 +1187,10 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 values.put("validDate",validDate);
                 values.put("bankName",bankName);
                 values.put("bankCardType",bankCardType);
-                values.put("path",path);
+                Bitmap bitmap = BitmapUtil.openBitmap(path);
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                values.put("pic", os.toByteArray());
                 briteDatabase.insert("bank_card",values);
             }
         } catch (Exception e) {
@@ -1130,15 +1205,14 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String words = jsonObject.getString("words");
                 textStr += words;
-                try {
-                    ContentValues values = new ContentValues();
-                    values.put("words", textStr);
-                    values.put("path", path);
-                    briteDatabase.insert("text", values);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
+            ContentValues values = new ContentValues();
+            values.put("words", textStr);
+            Bitmap bitmap = BitmapUtil.openBitmap(path);
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+            values.put("pic", os.toByteArray());
+                briteDatabase.insert("text", values);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1170,7 +1244,10 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 values.put("businessScope",businessScope);
                 values.put("typeOfCompany",typeOfCompany);
                 values.put("ValidityPeriod",ValidityPeriod);
-                values.put("path",path);
+                Bitmap bitmap = BitmapUtil.openBitmap(path);
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                values.put("pic", os.toByteArray());
                 briteDatabase.insert("business_license",values);
             }
         } catch (Exception e) {
@@ -1198,7 +1275,10 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 values.put("trainNum",trainNum);
                 values.put("name",name);
                 values.put("date",date);
-                values.put("path",path);
+                Bitmap bitmap = BitmapUtil.openBitmap(path);
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                values.put("pic", os.toByteArray());
                 briteDatabase.insert("train_ticket",values);
             }
         } catch (Exception e) {
@@ -1230,7 +1310,10 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 values.put("pinyinOfName",pinyinOfName);
                 values.put("birthday",birthday);
                 values.put("sex",sex);
-                values.put("path",path);
+                Bitmap bitmap = BitmapUtil.openBitmap(path);
+                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                values.put("pic", os.toByteArray());
                 briteDatabase.insert("passport",values);
             }
         } catch (Exception e) {
