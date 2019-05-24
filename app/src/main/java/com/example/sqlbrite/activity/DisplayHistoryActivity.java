@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
@@ -206,12 +207,20 @@ public class DisplayHistoryActivity extends BaseActivity {
                 Intent();
                 break;
             case "TextDetailsFragment":
+                prompt.setVisibility(View.GONE);
+                text_record.setText("识别记录");
+                FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
+                linearParams.setMarginStart(300);
+                text_record.setLayoutParams(linearParams);
+                text_record.setClickable(true);
+                translation_record.setVisibility(View.VISIBLE);
                 getDisplayTextHistoryFragment();
                 break;
             case "TextHistoryFragment":
                 Intent();
                 break;
             case "TranslationDetailsFragment":
+
                 getTranslationHistoryFragment();
                 break;
             case "TranslationHistoryFragment":

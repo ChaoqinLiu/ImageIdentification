@@ -46,6 +46,7 @@ public class TranslationDetailsFragment extends Fragment {
     private TextView translation_record;
     private TextView back;
     private TextView prompt;
+    private TextView details;
 
     private int id;
     private String original;
@@ -73,14 +74,12 @@ public class TranslationDetailsFragment extends Fragment {
         textViewTranslation = view.findViewById(R.id.text_details_translation);
         text_record = getActivity().findViewById(R.id.text_record);
         translation_record = getActivity().findViewById(R.id.translation_record);
+        details = getActivity().findViewById(R.id.details);
         back = getActivity().findViewById(R.id.text_back);
         prompt = getActivity().findViewById(R.id.prompt);
-        text_record.setText("详情");
-        FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
-        linearParams.setMarginStart(450);
-        text_record.setLayoutParams(linearParams);
-        text_record.setClickable(false);
         translation_record.setVisibility(View.GONE);
+        text_record.setVisibility(View.GONE);
+        details.setText("详情");
         getDetailData();
     }
 
@@ -117,12 +116,11 @@ public class TranslationDetailsFragment extends Fragment {
                         TranslationHistoryFragment fragment = new TranslationHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
                         prompt.setVisibility(View.GONE);
-                        text_record.setText("识别记录");
-                        FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
-                        linearParams.setMarginStart(300);
-                        text_record.setLayoutParams(linearParams);
-                        text_record.setClickable(true);
                         translation_record.setVisibility(View.VISIBLE);
+                        text_record.setVisibility(View.VISIBLE);
+                        details.setVisibility(View.GONE);
+                        text_record.setText("识别记录");
+                        translation_record.setText("翻译记录");
                     }
                 }, new Consumer<Throwable>() {
                     @Override

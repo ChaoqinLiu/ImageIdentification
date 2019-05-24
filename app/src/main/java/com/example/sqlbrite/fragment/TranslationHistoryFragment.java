@@ -53,6 +53,8 @@ public class TranslationHistoryFragment extends Fragment {
     private ListView listView;
     private TextView back;
     private TextView prompt;
+    private TextView text_record;
+    private TextView translation_record;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,6 +73,10 @@ public class TranslationHistoryFragment extends Fragment {
         listView = view.findViewById(R.id.text_view_list);
         back = getActivity().findViewById(R.id.text_back);
         prompt = getActivity().findViewById(R.id.prompt);
+        text_record = getActivity().findViewById(R.id.text_record);
+        translation_record = getActivity().findViewById(R.id.translation_record);
+        text_record.setText("识别记录");
+        translation_record.setText("翻译记录");
         getTranslationHistoryData();
     }
 

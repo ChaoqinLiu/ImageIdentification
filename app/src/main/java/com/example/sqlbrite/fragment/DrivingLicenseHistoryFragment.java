@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +54,7 @@ public class DrivingLicenseHistoryFragment extends Fragment {
     private ListView listView;
     private TextView back;
     private TextView prompt;
+    private TextView text_record;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,6 +72,12 @@ public class DrivingLicenseHistoryFragment extends Fragment {
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
         listView = view.findViewById(R.id.text_view_list);
         back = getActivity().findViewById(R.id.text_back);
+        text_record = getActivity().findViewById(R.id.text_record);
+        text_record.setText("识别记录");
+        FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
+        linearParams.setMarginStart(400);
+        text_record.setLayoutParams(linearParams);
+        text_record.setClickable(false);
         prompt = getActivity().findViewById(R.id.prompt);
         getDrivingLicenseHistoryData();
     }

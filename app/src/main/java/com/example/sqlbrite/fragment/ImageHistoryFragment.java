@@ -78,9 +78,9 @@ public class ImageHistoryFragment extends Fragment {
         listView = view.findViewById(R.id.text_view_list);
         back = getActivity().findViewById(R.id.text_back);
         text_record = getActivity().findViewById(R.id.text_record);
-        text_record.setText("图片识别记录");
+        text_record.setText("识别记录");
         FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
-        linearParams.setMarginStart(380);
+        linearParams.setMarginStart(400);
         text_record.setLayoutParams(linearParams);
         text_record.setClickable(false);
         prompt = getActivity().findViewById(R.id.prompt);

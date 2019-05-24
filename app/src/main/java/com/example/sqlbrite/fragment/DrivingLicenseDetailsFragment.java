@@ -158,6 +158,11 @@ public class DrivingLicenseDetailsFragment extends Fragment {
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
                         prompt.setVisibility(View.GONE);
                         translation_record.setVisibility(View.GONE);
+                        text_record.setText("识别记录");
+                        FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
+                        linearParams.setMarginStart(400);
+                        text_record.setLayoutParams(linearParams);
+                        text_record.setClickable(false);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
