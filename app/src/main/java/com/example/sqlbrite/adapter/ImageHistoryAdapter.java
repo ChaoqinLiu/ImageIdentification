@@ -24,7 +24,6 @@ public class ImageHistoryAdapter extends BaseAdapter {
 
     private Context mContext;
     private List<ImageHistoryArray> arrayList = new ArrayList<ImageHistoryArray>();
-    private Bitmap mBitmap;
 
     public ImageHistoryAdapter(Context context, List<ImageHistoryArray> result_list){
         mContext = context;

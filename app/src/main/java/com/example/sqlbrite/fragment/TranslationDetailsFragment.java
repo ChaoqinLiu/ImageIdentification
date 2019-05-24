@@ -2,7 +2,6 @@ package com.example.sqlbrite.fragment;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -34,8 +33,6 @@ import rx.functions.Action1;
 public class TranslationDetailsFragment extends Fragment {
 
     private IdentificationDatabaseHelper dbHelper;
-    private SQLiteDatabase sqLiteDatabase;
-
     private BriteDatabase briteDatabase;
     private SqlBrite sqlBrite;
 
@@ -69,7 +66,6 @@ public class TranslationDetailsFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
-        sqLiteDatabase = dbHelper.getReadableDatabase(); //读操作
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
         imageView = view.findViewById(R.id.image_details);

@@ -23,7 +23,6 @@ public class TextHistoryAdapter extends BaseAdapter {
 
     private Context mContext;
     private List<TextHistoryArray> arrayList = new ArrayList<TextHistoryArray>();
-    private Bitmap mBitmap;
 
     public TextHistoryAdapter(Context context, List<TextHistoryArray> result_list){
         mContext = context;

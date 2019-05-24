@@ -19,7 +19,6 @@ import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.activity.MainActivity;
 import com.example.sqlbrite.adapter.DrivingLicenseHistoryAdapter;
-import com.example.sqlbrite.adapter.TranslationHistoryAdapter;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.model.DrivingLicenseHistory;
 import com.example.sqlbrite.model.DrivingLicenseHistory.DrivingLicenseHistoryArray;

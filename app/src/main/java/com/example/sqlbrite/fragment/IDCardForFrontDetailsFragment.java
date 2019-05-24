@@ -22,7 +22,6 @@ import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
-
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.annotations.NonNull;
@@ -31,7 +30,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-public class TextDetailsFragment extends Fragment {
+public class IDCardForFrontDetailsFragment extends Fragment {
 
     private IdentificationDatabaseHelper dbHelper;
     private BriteDatabase briteDatabase;
@@ -41,21 +40,31 @@ public class TextDetailsFragment extends Fragment {
     protected Context context;
 
     private ImageView imageView;
-    private TextView textView;
-    private TextView text_record;
-    private TextView translation_record;
+    private TextView textViewAddress;
+    private TextView textViewBirthday;
+    private TextView textViewName;
+    private TextView textViewIDNumber;
+    private TextView textViewGender;
+    private TextView textViewNationality;
     private TextView back;
     private TextView prompt;
+    private TextView text_record;
+    private TextView translation_record;
 
     private int id;
-    private String words;
+    private String address;
+    private String birthday;
+    private String name;
+    private String idNumber;
+    private String gender;
+    private String nationality;
     private byte[] bytes;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = (DisplayHistoryActivity) getActivity();
-        view = inflater.inflate(R.layout.fragment_text_details,container,false);
+        view = inflater.inflate(R.layout.item_result_id_card_for_front,container,false);
         Bundle bundle = getArguments();
         id = bundle.getInt("id");
         return view;
@@ -67,34 +76,49 @@ public class TextDetailsFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        imageView = view.findViewById(R.id.image_details);
-        textView = view.findViewById(R.id.text_details);
+        imageView = view.findViewById(R.id.image_id_card);
+        textViewAddress = view.findViewById(R.id.text_address);
+        textViewName = view.findViewById(R.id.text_name);
+        textViewBirthday = view.findViewById(R.id.text_birthday);
+        textViewIDNumber = view.findViewById(R.id.text_idNumber);
+        textViewGender = view.findViewById(R.id.text_gender);
+        textViewNationality = view.findViewById(R.id.text_nationality);
         text_record = getActivity().findViewById(R.id.text_record);
         translation_record = getActivity().findViewById(R.id.translation_record);
-        back = getActivity().findViewById(R.id.text_back);
-        prompt = getActivity().findViewById(R.id.prompt);
+        translation_record.setVisibility(View.GONE);
         text_record.setText("详情");
         FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
         linearParams.setMarginStart(450);
         text_record.setLayoutParams(linearParams);
         text_record.setClickable(false);
-        translation_record.setVisibility(View.GONE);
+        back = getActivity().findViewById(R.id.text_back);
+        prompt = getActivity().findViewById(R.id.prompt);
         getDetailData();
     }
 
     private void getDetailData() {
-        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("text","SELECT * FROM text WHERE id=" + id);
+        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("front_id_card","SELECT * FROM front_id_card WHERE id=" + id);
         observable.subscribe(new Action1<SqlBrite.Query>() {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
                 if (cursor != null) {
                     while (cursor.moveToNext()) {
-                        words = cursor.getString(cursor.getColumnIndex("words"));
+                        address = cursor.getString(cursor.getColumnIndex("address"));
+                        name = cursor.getString(cursor.getColumnIndex("name"));
+                        birthday = cursor.getString(cursor.getColumnIndex("birthday"));
+                        idNumber = cursor.getString(cursor.getColumnIndex("number"));
+                        gender = cursor.getString(cursor.getColumnIndex("gender"));
+                        nationality = cursor.getString(cursor.getColumnIndex("nationality"));
                         bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,290,150));
-                        textView.setText(words);
+                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,300,200));
+                        textViewAddress.setText(address);
+                        textViewName.setText(name);
+                        textViewBirthday.setText(birthday);
+                        textViewGender.setText(gender);
+                        textViewNationality.setText(nationality);
+                        textViewIDNumber.setText(idNumber);
                         initBack();
                     }
                 }
@@ -110,15 +134,10 @@ public class TextDetailsFragment extends Fragment {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
-                        TextHistoryFragment fragment = new TextHistoryFragment();
+                        IDCardForFrontHistoryFragment fragment = new IDCardForFrontHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
                         prompt.setVisibility(View.GONE);
-                        text_record.setText("识别记录");
-                        FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
-                        linearParams.setMarginStart(300);
-                        text_record.setLayoutParams(linearParams);
-                        text_record.setClickable(true);
-                        translation_record.setVisibility(View.VISIBLE);
+                        translation_record.setVisibility(View.GONE);
                     }
                 }, new Consumer<Throwable>() {
                     @Override

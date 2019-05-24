@@ -11,19 +11,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
-import com.example.sqlbrite.model.DrivingLicenseHistory.DrivingLicenseHistoryArray;
+import com.example.sqlbrite.model.IDCardForFrontHistory.IDCardForFrontHistoryArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
 
-public class DrivingLicenseHistoryAdapter extends BaseAdapter {
+public class IDCardForFrontHistoryAdapter extends BaseAdapter {
 
     private Context mContext;
-    private List<DrivingLicenseHistoryArray> arrayList = new ArrayList<DrivingLicenseHistoryArray>();
+    private List<IDCardForFrontHistoryArray> arrayList = new ArrayList<IDCardForFrontHistoryArray>();
 
-    public DrivingLicenseHistoryAdapter(Context context, List<DrivingLicenseHistoryArray> result_list){
+    public IDCardForFrontHistoryAdapter(Context context, List<IDCardForFrontHistoryArray> result_list){
         mContext = context;
         arrayList = result_list;
     }
@@ -48,30 +48,30 @@ public class DrivingLicenseHistoryAdapter extends BaseAdapter {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_result_driving_license_history, null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_result_id_card_for_front_history, null);
             holder.id = convertView.findViewById(R.id.text_id);
-            holder.owner = convertView.findViewById(R.id.text_owner);
-            holder.address = convertView.findViewById(R.id.text_address);
-            holder.imageView = convertView.findViewById(R.id.image_view_driving_license);
+            holder.name = convertView.findViewById(R.id.text_name);
+            holder.number = convertView.findViewById(R.id.text_number);
+            holder.imageView = convertView.findViewById(R.id.image_view_id_card_front);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        DrivingLicenseHistoryArray result = arrayList.get(position);
+        IDCardForFrontHistoryArray result = arrayList.get(position);
         byte[] bytes = result.bytes;
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
         holder.imageView.setImageBitmap(changeBitmapSize(bitmap,70,70));
         holder.id.setText(String.valueOf(result.id));
-        holder.owner.setText(result.owner);
-        holder.address.setText(result.address);
+        holder.name.setText(result.name);
+        holder.number.setText(result.number);
         return convertView;
     }
 
     public final class ViewHolder {
         private TextView id;
-        private TextView address;
-        private TextView owner;
+        private TextView name;
+        private TextView number;
         private ImageView imageView;
     }
 }

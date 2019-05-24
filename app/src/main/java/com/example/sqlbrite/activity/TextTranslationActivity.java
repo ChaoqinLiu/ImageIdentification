@@ -3,7 +3,6 @@ package com.example.sqlbrite.activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -25,6 +24,7 @@ import com.example.sqlbrite.util.BitmapUtil;
 import com.example.sqlbrite.util.MD5Utils;
 import com.google.gson.Gson;
 import com.safframework.injectview.annotations.InjectView;
+import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
@@ -39,6 +39,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import rx.schedulers.Schedulers;
 
@@ -56,12 +60,15 @@ public class TextTranslationActivity extends BaseActivity {
     private String dst;
     private static String lan = "en";  //翻译目标语言,默认为英文
 
-    boolean stopThread = false;
     private IdentificationDatabaseHelper dbHelper;
     private BriteDatabase briteDatabase;
     private SqlBrite sqlBrite;
 
     private ProgressDialog progressDialog = null;
+
+    private ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+    private ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
+
 
     @InjectView(R.id.text_original)
     EditText original;
@@ -81,22 +88,18 @@ public class TextTranslationActivity extends BaseActivity {
         Intent intent = getIntent();
         wordsKeyArr = intent.getStringExtra("translationArr");
         path = intent.getStringExtra("path");
-        //L.i("wordsKeyArr" + wordsKeyArr);
         try {
             JSONArray jsonArray = new JSONArray(wordsKeyArr);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String words = jsonObject.getString("words");
                 queryStr += words;
-                //L.i("queryStr= " + queryStr);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         signStr = appid + queryStr + salt + key;
-        //L.i("signStr =" + signStr);
         sign = MD5Utils.MD5Encode(signStr,"UTF-8");
-        //L.i(sign);
 
         progressDialog = ProgressDialog.show(TextTranslationActivity.this,"请稍后", "正在翻译中...",true);
 
@@ -119,49 +122,42 @@ public class TextTranslationActivity extends BaseActivity {
     }
 
     private void getTranslationResult(){
-        new Thread(new Runnable() {
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                if (!stopThread) {
-                    try {
-                        String result = Translation();
-                        if (result.contains("error_code")) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        Thread.sleep(3000);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(TextTranslationActivity.this,"获取数据失败",Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                try {
+                    String result = Translation();
+                    if (result == null || result.contains("")) {
+                        scheduledThreadPool.schedule(new Runnable() {
+                            @Override
+                            public void run() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(TextTranslationActivity.this,"获取数据失败",Toast.LENGTH_SHORT).show();
                                     }
-                                }
-                            }).start();
-                        } else {
-                            TranslateResult translateResult = new Gson().fromJson(result,TranslateResult.class);
-                            dst = translateResult.getTrans_result().get(0).getDst();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    original.setText(queryStr);
-                                    translation.setText(dst);
-                                    progressDialog.dismiss();
-                                    saveTranslationData();
-                                }
-                            });
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                                });
+                            }
+                        },2,TimeUnit.SECONDS);
+                    } else {
+                        TranslateResult translateResult = new Gson().fromJson(result,TranslateResult.class);
+                        dst = translateResult.getTrans_result().get(0).getDst();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                original.setText(queryStr);
+                                translation.setText(dst);
+                                progressDialog.dismiss();
+                                saveTranslationData();
+                            }
+                        });
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     private void saveTranslationData() {
@@ -184,7 +180,6 @@ public class TextTranslationActivity extends BaseActivity {
         StringBuffer buffer = new StringBuffer();
 
         String requestUrl = "https://fanyi-api.baidu.com/api/trans/vip/translate?q=" + queryStr + "&from=auto&to=" + lan + "&appid=" + appid + "&salt=" + salt + "&sign=" + sign;
-        //L.i("requestUrl =" + requestUrl);
 
         try {
             URL url = new URL(requestUrl);
@@ -268,8 +263,9 @@ public class TextTranslationActivity extends BaseActivity {
 
     @Override
     protected void onDestroy(){
-        stopThread = true;
         super.onDestroy();
+        scheduledThreadPool.shutdown();
+        singleThreadExecutor.shutdown();
     }
 
 }

@@ -22,7 +22,6 @@ public class TranslationHistoryAdapter extends BaseAdapter {
 
     private Context mContext;
     private List<TranslationHistoryArray> arrayList = new ArrayList<TranslationHistoryArray>();
-    private Bitmap mBitmap;
 
     public TranslationHistoryAdapter(Context context, List<TranslationHistoryArray> result_list){
         mContext = context;

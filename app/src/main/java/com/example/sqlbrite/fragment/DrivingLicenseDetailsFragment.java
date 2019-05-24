@@ -2,7 +2,6 @@ package com.example.sqlbrite.fragment;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -34,8 +33,6 @@ import rx.functions.Action1;
 public class DrivingLicenseDetailsFragment extends Fragment {
 
     private IdentificationDatabaseHelper dbHelper;
-    private SQLiteDatabase sqLiteDatabase;
-
     private BriteDatabase briteDatabase;
     private SqlBrite sqlBrite;
 
@@ -56,6 +53,7 @@ public class DrivingLicenseDetailsFragment extends Fragment {
     private TextView back;
     private TextView prompt;
     private TextView text_record;
+    private TextView translation_record;
 
     private int id;
     private String address;
@@ -84,7 +82,6 @@ public class DrivingLicenseDetailsFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
-        sqLiteDatabase = dbHelper.getReadableDatabase(); //读操作
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
         imageView = view.findViewById(R.id.image_driving_license);
@@ -99,6 +96,8 @@ public class DrivingLicenseDetailsFragment extends Fragment {
         textViewRegistrationDate = view.findViewById(R.id.text_registration_date);
         textViewvIssuingCertificateOfDate = view.findViewById(R.id.text_issuing_certificate_of_date);
         text_record = getActivity().findViewById(R.id.text_record);
+        translation_record = getActivity().findViewById(R.id.translation_record);
+        translation_record.setVisibility(View.GONE);
         text_record.setText("详情");
         FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
         linearParams.setMarginStart(450);
@@ -158,6 +157,7 @@ public class DrivingLicenseDetailsFragment extends Fragment {
                         DrivingLicenseHistoryFragment fragment = new DrivingLicenseHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
                         prompt.setVisibility(View.GONE);
+                        translation_record.setVisibility(View.GONE);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -166,5 +166,6 @@ public class DrivingLicenseDetailsFragment extends Fragment {
                     }
                 });
     }
+
 
 }

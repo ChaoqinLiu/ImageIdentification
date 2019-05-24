@@ -181,6 +181,22 @@ public class TabHistoryFragment extends Fragment {
                         L.i(throwable.getMessage());
                     }
                 });
+
+        RxView.clicks(layout_id_card)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        Intent intent = new Intent(context, DisplayHistoryActivity.class);
+                        intent.putExtra("type_id_card", TYPE_ID_CARD);
+                        startActivityForResult(intent, 4);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
     }
 
 

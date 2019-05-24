@@ -4,9 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -70,6 +67,10 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import rx.schedulers.Schedulers;
 import sun.misc.BASE64Encoder;
@@ -128,6 +129,9 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private SqlBrite sqlBrite;
 
     private ProgressDialog progressDialog = null;
+
+    private ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+    private ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
 
     @InjectView(R.id.view_list)
     ListView listView;
@@ -378,7 +382,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     //图像识别
     private void getImageInformation(){
-        new Thread(new Runnable() {  //开启一个新的线程，防止在主线程中网络请求发生异常
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -386,24 +390,19 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     SECRET_KEY = "FFNDh7p3AGagLHSuNdEPYazn6zbUUeun";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general";
                     imageStr = initUploadImage(path);
-                    if (imageStr == null || imageStr.equals(" ")) {
-                        new Thread(new Runnable() {
+                    if (imageStr == null || imageStr.equals("")) {
+                        scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        }).start();
+                        },2,TimeUnit.SECONDS);
                     } else {
                         JsonObject jsonObject = new JsonParser().parse(imageStr).getAsJsonObject();
                         //再转JsonArray 加上数据头
@@ -419,20 +418,16 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    adapter = new ResultImageAdapter(IntelligentDetectionActivity.this,resultBeanList);
-                                    listView.setAdapter(adapter);
-                                    progressDialog.dismiss();
-                                    //开启一条线程执行插入数据操作，防止发生堵塞
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            saveImageData();
-                                        }
-                                    }).start();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                adapter = new ResultImageAdapter(IntelligentDetectionActivity.this,resultBeanList);
+                                listView.setAdapter(adapter);
+                                progressDialog.dismiss();
+                                //开启一条线程执行插入数据操作，防止发生堵塞
+                                singleThreadExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        saveImageData();
+                                    }
+                                });
                             }
                         });
                     }
@@ -440,12 +435,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     //图文识别
     private void getTextImageInformation() {
-        new Thread(new Runnable() {
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -453,24 +448,19 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
                     String resultTextStr = initUploadImage(path);
-                    if (resultTextStr == null || resultTextStr.equals(" ")) {
-                        new Thread(new Runnable() {
+                    if (resultTextStr == null || resultTextStr.equals("")) {
+                        scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        }).start();
+                        },2,TimeUnit.SECONDS);
                     } else {
                         JsonObject jsonObject = new JsonParser().parse(resultTextStr).getAsJsonObject();
                         JsonArray jsonArray = jsonObject.getAsJsonArray("words_result");
@@ -485,36 +475,32 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
-                                    listView.setAdapter(tAdapter);
-                                    progressDialog.dismiss();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                tAdapter = new ResultTextAdapter(IntelligentDetectionActivity.this,resultTextList);
+                                listView.setAdapter(tAdapter);
+                                progressDialog.dismiss();
                             }
                         });
                         wordsArray = jsonArray.toString();
-                        new Thread(new Runnable() {
+                        singleThreadExecutor.execute(new Runnable() {
                             @Override
                             public void run() {
                                 saveTextData();
                             }
-                        }).start();
+                        });
                         initFragment(); //向TranslationFragment传递数据
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     //身份证识别
     private void getIDCardImageInformation(){
         String Back = "back";
         String Front = "front";
-        new Thread(new Runnable() {
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -522,24 +508,19 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard";
                     String IDCardStr = initUploadIDCardImage(path);
-                    if (IDCardStr == null || IDCardStr.equals(" ")) {
-                        new Thread(new Runnable() {
+                    if (IDCardStr == null || IDCardStr.equals("")) {
+                        scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        }).start();
+                        },2,TimeUnit.SECONDS);
                     } else {
                         if (id_card_side.equals(Front)) {
                             getIDCardInfoForFront(IDCardStr);
@@ -551,12 +532,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     //银行卡识别
     private void getBankCardImageInformation(){
-        new Thread(new Runnable() {
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -564,24 +545,19 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/bankcard";
                     String bankCardStr = initUploadImage(path);
-                    if (bankCardStr == null || bankCardStr.equals(" ")) {
-                        new Thread(new Runnable() {
+                    if (bankCardStr == null || bankCardStr.equals("")) {
+                        scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        }).start();
+                        },2,TimeUnit.SECONDS);
                     } else {
                         //往实体类 BankCardResult 中添加对象 bankCardResult
                         BankCardResult bankCardResult = GsonUtil.parseJsonWithGson(bankCardStr,BankCardResult.class);
@@ -590,19 +566,15 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    bankCardAdapter = new ResultBankCardAdapter(IntelligentDetectionActivity.this,bankResultBeanList);
-                                    listView.setAdapter(bankCardAdapter);
-                                    progressDialog.dismiss();
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            saveBankCardData();
-                                        }
-                                    }).start();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                bankCardAdapter = new ResultBankCardAdapter(IntelligentDetectionActivity.this,bankResultBeanList);
+                                listView.setAdapter(bankCardAdapter);
+                                progressDialog.dismiss();
+                                singleThreadExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        saveBankCardData();
+                                    }
+                                });
                             }
                         });
                     }
@@ -611,12 +583,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     //车牌识别
     private void getLicensePlateImageInformation(){
-        new Thread(new Runnable() {
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -624,24 +596,19 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/license_plate";
                     String LicensePlateStr = initUploadImage(path);
-                    if (LicensePlateStr == null || LicensePlateStr.equals(" ")) {
-                        new Thread(new Runnable() {
+                    if (LicensePlateStr == null || LicensePlateStr.equals("")) {
+                        scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        }).start();
+                        },2,TimeUnit.SECONDS);
                     } else {
                         LicensePlateResult licensePlateResult = GsonUtil.parseJsonWithGson(LicensePlateStr,LicensePlateResult.class);
                         licensePlateResultList.add(licensePlateResult);
@@ -649,19 +616,15 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    licensePlateAdapter = new ResultLicensePlateAdapter(IntelligentDetectionActivity.this,licensePlateResultList);
-                                    listView.setAdapter(licensePlateAdapter);
-                                    progressDialog.dismiss();
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            saveLicensePlateData();
-                                        }
-                                    }).start();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                licensePlateAdapter = new ResultLicensePlateAdapter(IntelligentDetectionActivity.this,licensePlateResultList);
+                                listView.setAdapter(licensePlateAdapter);
+                                progressDialog.dismiss();
+                                singleThreadExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        saveLicensePlateData();
+                                    }
+                                });
                             }
                         });
                     }
@@ -669,12 +632,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     //驾驶证识别
     private void getDriverLicenseImageInformation() {
-        new Thread(new Runnable() {
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -682,24 +645,19 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/driving_license";
                     String DriverLicenseStr = initUploadImage(path);
-                    if (DriverLicenseStr == null || DriverLicenseStr.equals(" ")) {
-                        new Thread(new Runnable() {
+                    if (DriverLicenseStr == null || DriverLicenseStr.equals("")) {
+                        scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        }).start();
+                        },2,TimeUnit.SECONDS);
                     } else {
                         DriverLicenseResult driverLicenseResult = GsonUtil.parseJsonWithGson(DriverLicenseStr,DriverLicenseResult.class);
                         driverLicenseResultList.add(driverLicenseResult);
@@ -707,19 +665,15 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    driverLicenseAdapter = new ResultDriverLicenseAdapter(IntelligentDetectionActivity.this, driverLicenseResultList);
-                                    listView.setAdapter(driverLicenseAdapter);
-                                    progressDialog.dismiss();
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            saveDriverLicenseData();
-                                        }
-                                    }).start();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                driverLicenseAdapter = new ResultDriverLicenseAdapter(IntelligentDetectionActivity.this, driverLicenseResultList);
+                                listView.setAdapter(driverLicenseAdapter);
+                                progressDialog.dismiss();
+                                singleThreadExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        saveDriverLicenseData();
+                                    }
+                                });
                             }
                         });
                     }
@@ -727,12 +681,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     //火车票识别
     private void getTrainTicketImageInformation(){
-        new Thread(new Runnable() {
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -741,23 +695,18 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/train_ticket";
                     String TrainTicketStr = initUploadImage(path);
                     if (TrainTicketStr == null || TrainTicketStr.equals(" ")) {
-                        new Thread(new Runnable() {
+                        scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        }).start();
+                        },2,TimeUnit.SECONDS);
                     } else {
 
                         TrainTicketResult trainTicketResult = GsonUtil.parseJsonWithGson(TrainTicketStr,TrainTicketResult.class);
@@ -766,19 +715,15 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    trainTicketAdapter = new ResultTrainTicketAdapter(IntelligentDetectionActivity.this,trainTicketResultList);
-                                    listView.setAdapter(trainTicketAdapter);
-                                    progressDialog.dismiss();
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            saveTrainTicketData();
-                                        }
-                                    }).start();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                trainTicketAdapter = new ResultTrainTicketAdapter(IntelligentDetectionActivity.this,trainTicketResultList);
+                                listView.setAdapter(trainTicketAdapter);
+                                progressDialog.dismiss();
+                                singleThreadExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        saveTrainTicketData();
+                                    }
+                                });
                             }
                         });
                     }
@@ -786,12 +731,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     //护照识别
     private void getPassportImageInformation(){
-        new Thread(new Runnable() {
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -799,24 +744,19 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/passport";
                     String PassportStr = initUploadImage(path);
-                    if (PassportStr == null || PassportStr.equals(" ")) {
-                        new Thread(new Runnable() {
+                    if (PassportStr == null || PassportStr.equals("")) {
+                        scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        }).start();
+                        },2,TimeUnit.SECONDS);
                     } else {
 
                         PassportResult passportResult = GsonUtil.parseJsonWithGson(PassportStr,PassportResult.class);
@@ -825,19 +765,15 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    passportAdapter = new ResultPassportAdapter(IntelligentDetectionActivity.this,passportResultList);
-                                    listView.setAdapter(passportAdapter);
-                                    progressDialog.dismiss();
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            savePassportData();
-                                        }
-                                    }).start();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                passportAdapter = new ResultPassportAdapter(IntelligentDetectionActivity.this,passportResultList);
+                                listView.setAdapter(passportAdapter);
+                                progressDialog.dismiss();
+                                singleThreadExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        savePassportData();
+                                    }
+                                });
                             }
                         });
                     }
@@ -845,12 +781,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     //行驶证识别
     private void getDrivingLicenseImageInformation(){
-        new Thread(new Runnable() {
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -858,24 +794,19 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_license";
                     String DrivingLicenseStr = initUploadImage(path);
-                    if (DrivingLicenseStr == null || DrivingLicenseStr.equals(" ")) {
-                        new Thread(new Runnable() {
+                    if (DrivingLicenseStr == null || DrivingLicenseStr.equals("")) {
+                        scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        }).start();
+                        },2,TimeUnit.SECONDS);
                     } else {
 
                         DrivingLicenseResult drivingLicenseResult = GsonUtil.parseJsonWithGson(DrivingLicenseStr,DrivingLicenseResult.class);
@@ -884,19 +815,15 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    drivingLicenseAdapter = new ResultDrivingLicenseAdapter(IntelligentDetectionActivity.this,drivingLicenseResultList);
-                                    listView.setAdapter(drivingLicenseAdapter);
-                                    progressDialog.dismiss();
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            saveDrivingLicenseData();
-                                        }
-                                    }).start();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                drivingLicenseAdapter = new ResultDrivingLicenseAdapter(IntelligentDetectionActivity.this,drivingLicenseResultList);
+                                listView.setAdapter(drivingLicenseAdapter);
+                                progressDialog.dismiss();
+                                singleThreadExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        saveDrivingLicenseData();
+                                    }
+                                });
                             }
                         });
                     }
@@ -905,12 +832,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 }
 
             }
-        }).start();
+        });
     }
 
     //营业执照识别
     private void getBusinessLicenseImageInformation() {
-        new Thread(new Runnable() {
+        singleThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -918,24 +845,19 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     SECRET_KEY = "E2p9DFGo4qHVpWp5yEzy7VAVE7xNdvGp";
                     requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/business_license";
                     String BusinessLicenseStr = initUploadImage(path);
-                    if (BusinessLicenseStr == null || BusinessLicenseStr.equals(" ")) {
-                        new Thread(new Runnable() {
+                    if (BusinessLicenseStr == null || BusinessLicenseStr.equals("")) {
+                        scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    Thread.sleep(3000);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(IntelligentDetectionActivity.this,"连接服务器失败，请检查您的网络设置",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        }).start();
+                        },2,TimeUnit.SECONDS);
                     } else {
 
                         BusinessLicenseResult businessLicenseResult = GsonUtil.parseJsonWithGson(BusinessLicenseStr,BusinessLicenseResult.class);
@@ -944,19 +866,15 @@ public class IntelligentDetectionActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    businessLicenseAdapter = new ResultBusinessLicenseAdapter(IntelligentDetectionActivity.this,businessLicenseResultList);
-                                    listView.setAdapter(businessLicenseAdapter);
-                                    progressDialog.dismiss();
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            saveBusinessLicenseData();
-                                        }
-                                    }).start();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                businessLicenseAdapter = new ResultBusinessLicenseAdapter(IntelligentDetectionActivity.this,businessLicenseResultList);
+                                listView.setAdapter(businessLicenseAdapter);
+                                progressDialog.dismiss();
+                                singleThreadExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        saveBusinessLicenseData();
+                                    }
+                                });
                             }
                         });
                     }
@@ -964,7 +882,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     private void getIDCardInfoForFront(String idCardStr){
@@ -979,12 +897,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     idCardAdapter = new ResultIDCardForFrontAdapter(IntelligentDetectionActivity.this, idCardList);
                     listView.setAdapter(idCardAdapter);
                     progressDialog.dismiss();
-                    new Thread(new Runnable() {
+                    singleThreadExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
                             saveIDCardDataForFront();
                         }
-                    }).start();
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1004,12 +922,12 @@ public class IntelligentDetectionActivity extends BaseActivity {
                     idCardForBackAdapter = new ResultIDCardForBackAdapter(IntelligentDetectionActivity.this, idCardForBackList);
                     listView.setAdapter(idCardForBackAdapter);
                     progressDialog.dismiss();
-                    new Thread(new Runnable() {
+                    singleThreadExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
                             saveIDCardDataForBack();
                         }
-                    }).start();
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1336,6 +1254,8 @@ public class IntelligentDetectionActivity extends BaseActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        singleThreadExecutor.shutdown();
+        scheduledThreadPool.shutdown();
     }
 
 }

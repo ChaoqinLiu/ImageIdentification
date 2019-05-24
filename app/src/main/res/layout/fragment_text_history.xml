@@ -8,7 +8,7 @@
         android:id="@+id/text_view_list"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:background="@drawable/text_border"
+        android:background="@color/white"
         android:layout_margin="8dp"
         android:textAlignment="center" />
 

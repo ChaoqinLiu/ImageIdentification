@@ -223,6 +223,7 @@ public class TakePictureActivity extends BaseActivity {
             Intent intent = new Intent();
             intent.setClass(TakePictureActivity.this, MainActivity.class);
             startActivity(intent);
+            finish();
             return true;
         }
         return super.onKeyDown(keyCode, event);

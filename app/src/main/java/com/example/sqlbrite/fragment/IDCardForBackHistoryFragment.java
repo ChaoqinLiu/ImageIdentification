@@ -18,10 +18,10 @@ import android.widget.Toast;
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.activity.MainActivity;
-import com.example.sqlbrite.adapter.TextHistoryAdapter;
+import com.example.sqlbrite.adapter.IDCardForBackHistoryAdapter;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
-import com.example.sqlbrite.model.TextHistory;
-import com.example.sqlbrite.model.TextHistory.TextHistoryArray;
+import com.example.sqlbrite.model.IDCardForBackHistory;
+import com.example.sqlbrite.model.IDCardForBackHistory.IDCardForBackHistoryArray;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
@@ -37,7 +37,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-public class TextHistoryFragment extends Fragment {
+public class IDCardForBackHistoryFragment extends Fragment {
 
     private IdentificationDatabaseHelper dbHelper;
     private BriteDatabase briteDatabase;
@@ -46,9 +46,9 @@ public class TextHistoryFragment extends Fragment {
     protected View view;
     protected Context context;
 
-    private List<TextHistoryArray> textList = new ArrayList<TextHistoryArray>();
+    private List<IDCardForBackHistoryArray> textList = new ArrayList<IDCardForBackHistoryArray>();
 
-    private TextHistoryAdapter adapter;
+    private IDCardForBackHistoryAdapter adapter;
 
     private ListView listView;
     private TextView back;
@@ -71,11 +71,11 @@ public class TextHistoryFragment extends Fragment {
         listView = view.findViewById(R.id.text_view_list);
         back = getActivity().findViewById(R.id.text_back);
         prompt = getActivity().findViewById(R.id.prompt);
-        getTextHistoryData();
+        getIDCardForFrontHistoryData();
     }
 
-    private void getTextHistoryData() {
-        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("text","SELECT * FROM text ORDER BY id");
+    private void getIDCardForFrontHistoryData() {
+        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("back_id_card","SELECT * FROM back_id_card ORDER BY id");
         observable.subscribe(new Action1<SqlBrite.Query>() {
             @Override
             public void call(SqlBrite.Query query) {
@@ -83,14 +83,16 @@ public class TextHistoryFragment extends Fragment {
                 if (cursor != null) {
                     while (cursor.moveToNext()) {
                         int id = cursor.getInt(cursor.getColumnIndex("id"));
-                        String words = cursor.getString(cursor.getColumnIndex("words"));
+                        String issuingAuthority = cursor.getString(cursor.getColumnIndex("issuingAuthority"));
+                        String dateOfIssue = cursor.getString(cursor.getColumnIndex("dateOfIssue"));
+                        String expirationDate = cursor.getString(cursor.getColumnIndex("expirationDate"));
                         byte[] bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
-                        TextHistory history = new TextHistory();
-                        TextHistory.TextHistoryArray textHistoryArray = history.new TextHistoryArray(id,words,bytes);
+                        IDCardForBackHistory history = new IDCardForBackHistory();
+                        IDCardForBackHistoryArray textHistoryArray = history.new IDCardForBackHistoryArray(id,issuingAuthority,dateOfIssue,expirationDate,bytes);
                         textList.add(textHistoryArray);
-                        adapter = new TextHistoryAdapter(context,textList);
+                        adapter = new IDCardForBackHistoryAdapter(context,textList);
                         listView.setAdapter(adapter);
-                        initRemoveTextItemView();
+                        initRemoveIDCardForBackItemView();
                         getDetails();
                         initBack();
                     }
@@ -101,7 +103,7 @@ public class TextHistoryFragment extends Fragment {
         });
     }
 
-    private void initRemoveTextItemView() {
+    private void initRemoveIDCardForBackItemView() {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -116,7 +118,7 @@ public class TextHistoryFragment extends Fragment {
                             try {
                                 TextView textView = parent.getChildAt(position).findViewById(R.id.text_id);
                                 int id = Integer.parseInt(textView.getText().toString());
-                                deleteTextItemDataFromDatabase(id);
+                                deleteDrivingLicenseItemDataFromDatabase(id);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -142,8 +144,8 @@ public class TextHistoryFragment extends Fragment {
         });
     }
 
-    private void deleteTextItemDataFromDatabase(int id){
-        briteDatabase.delete("text", "id=" + id);
+    private void deleteDrivingLicenseItemDataFromDatabase(int id){
+        briteDatabase.delete("back_id_card", "id=" + id);
         briteDatabase.close();
     }
 
@@ -153,7 +155,7 @@ public class TextHistoryFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 TextView textView = parent.getChildAt(position).findViewById(R.id.text_id);
                 int text_id = Integer.parseInt(textView.getText().toString());
-                TextDetailsFragment fragment = new TextDetailsFragment();
+                IDCardForBackDetailsFragment fragment = new IDCardForBackDetailsFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt("id",text_id);
                 fragment.setArguments(bundle);
@@ -172,6 +174,7 @@ public class TextHistoryFragment extends Fragment {
                         Intent intent = new Intent(getActivity(), MainActivity.class);
                         intent.putExtra("flag", "flag");
                         getActivity().startActivity(intent);
+                        getActivity().finish();
                     }
                 }, new Consumer<Throwable>() {
                     @Override

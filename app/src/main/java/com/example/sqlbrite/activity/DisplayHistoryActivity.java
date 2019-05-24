@@ -1,49 +1,28 @@
 package com.example.sqlbrite.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.sqlbrite.R;
-import com.example.sqlbrite.adapter.ImageHistoryAdapter;
 import com.example.sqlbrite.app.BaseActivity;
-import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.fragment.DrivingLicenseHistoryFragment;
+import com.example.sqlbrite.fragment.IDCardForBackHistoryFragment;
+import com.example.sqlbrite.fragment.IDCardForFrontHistoryFragment;
 import com.example.sqlbrite.fragment.ImageHistoryFragment;
-import com.example.sqlbrite.fragment.TabHistoryFragment;
 import com.example.sqlbrite.fragment.TextHistoryFragment;
 import com.example.sqlbrite.fragment.TranslationHistoryFragment;
-import com.example.sqlbrite.model.ImageHistory;
-import com.example.sqlbrite.model.ImageHistory.ImageHistoryArray;
-import com.example.sqlbrite.util.BitmapUtil;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.injectview.annotations.InjectView;
 import com.safframework.log.L;
-import com.squareup.sqlbrite.BriteDatabase;
-import com.squareup.sqlbrite.SqlBrite;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 public class DisplayHistoryActivity extends BaseActivity {
 
@@ -83,6 +62,7 @@ public class DisplayHistoryActivity extends BaseActivity {
         type_image = intent.getStringExtra("type_image");
         type_text = intent.getStringExtra("type_text");
         type_driving_license = intent.getStringExtra("type_driving_license");
+        type_id_card = intent.getStringExtra("type_id_card");
         displayHistoryByType();
         initBack();
     }
@@ -93,9 +73,13 @@ public class DisplayHistoryActivity extends BaseActivity {
         } else if (type_text != null) {
             text_record.setText("识别记录");
             translation_record.setText("翻译记录");
-            getDisplayTextHistoryFragment();
+            getTextHistoryFragment();
         } else if (type_driving_license != null){
             getDisplayDrivingLicenseHistoryFragment();
+        } else if (type_id_card != null) {
+            text_record.setText("反面记录");
+            translation_record.setText("正面记录");
+            getDisplayIDCardFragment();
         }
     }
 
@@ -109,18 +93,36 @@ public class DisplayHistoryActivity extends BaseActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
     }
 
-    private void getDisplayTextHistoryFragment() {
+    private void getDisplayIDCardFrontHistoryFragment() {
+        IDCardForFrontHistoryFragment fragment = new IDCardForFrontHistoryFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
+    }
 
+    private void getDisplayIDCardBackHistoryFragment() {
+        IDCardForBackHistoryFragment fragment = new IDCardForBackHistoryFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
+    }
+
+    private void getTranslationHistoryFragment(){
+        TranslationHistoryFragment fragment = new TranslationHistoryFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
+    }
+
+    private void getDisplayTextHistoryFragment() {
         TextHistoryFragment fragment = new TextHistoryFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
 
+    }
+
+    private void getTextHistoryFragment(){
+        getDisplayTextHistoryFragment();  //刚打开Activity默认显示的Fragment
         RxView.clicks(text_record)
                 .throttleFirst(600,TimeUnit.MILLISECONDS)
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
-                        TextHistoryFragment fragment = new TextHistoryFragment();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
+                        prompt.setVisibility(View.GONE);
+                        getDisplayTextHistoryFragment();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -134,8 +136,39 @@ public class DisplayHistoryActivity extends BaseActivity {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
-                        TranslationHistoryFragment fragment = new TranslationHistoryFragment();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
+                        prompt.setVisibility(View.GONE);
+                        getTranslationHistoryFragment();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+    }
+
+    private void getDisplayIDCardFragment(){
+        getDisplayIDCardFrontHistoryFragment();
+        RxView.clicks(text_record).throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        prompt.setVisibility(View.GONE);
+                        getDisplayIDCardFrontHistoryFragment();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(translation_record).throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        prompt.setVisibility(View.GONE);
+                        getDisplayIDCardBackHistoryFragment();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -151,11 +184,7 @@ public class DisplayHistoryActivity extends BaseActivity {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
-                        Intent intent = new Intent(DisplayHistoryActivity.this, MainActivity.class);
-                        //intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                        intent.putExtra("flag","flag");
-                        startActivity(intent);
-                        finish();
+                        Intent();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -163,6 +192,51 @@ public class DisplayHistoryActivity extends BaseActivity {
                         L.i(throwable.getMessage());
                     }
                 });
+    }
+
+    @Override
+    public void onBackPressed(){
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_text);
+        String current = currentFragment.toString().substring(0,currentFragment.toString().indexOf("{"));
+        switch (current) {
+            case "IDCardForFrontDetailsFragment":
+                getDisplayIDCardFrontHistoryFragment();
+                break;
+            case "IDCardForFrontHistoryFragment":
+                Intent();
+                break;
+            case "TextDetailsFragment":
+                getDisplayTextHistoryFragment();
+                break;
+            case "TextHistoryFragment":
+                Intent();
+                break;
+            case "TranslationDetailsFragment":
+                getTranslationHistoryFragment();
+                break;
+            case "TranslationHistoryFragment":
+                Intent();
+                break;
+            case "DrivingLicenseDetailsFragment":
+                getDisplayDrivingLicenseHistoryFragment();
+                break;
+            case "DrivingLicenseHistoryFragment":
+                Intent();
+                break;
+            case "IDCardForBackDetailsFragment":
+                getDisplayIDCardBackHistoryFragment();
+                break;
+            case "IDCardForBackHistoryFragment":
+                Intent();
+                break;
+        }
+    }
+
+    private void Intent(){
+        Intent intent = new Intent(DisplayHistoryActivity.this, MainActivity.class);
+        intent.putExtra("flag", "flag");
+        startActivity(intent);
+        finish();
     }
 
 }
