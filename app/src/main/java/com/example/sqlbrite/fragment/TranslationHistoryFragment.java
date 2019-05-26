@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,14 +54,23 @@ public class TranslationHistoryFragment extends Fragment {
     private ListView listView;
     private TextView back;
     private TextView prompt;
-    private TextView text_record;
-    private TextView translation_record;
+    private TextView text_title_left;
+    private TextView text_title_right;
+
+    private int id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = (DisplayHistoryActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
+        listView = view.findViewById(R.id.text_view_list);
+        prompt = view.findViewById(R.id.prompt);
+        back = view.findViewById(R.id.text_back);
+        text_title_left = view.findViewById(R.id.text_title_left);
+        text_title_right = view.findViewById(R.id.text_title_right);
+        text_title_left.setText("识别记录");
+        text_title_right.setText("翻译记录");
         return view;
     }
 
@@ -70,13 +80,6 @@ public class TranslationHistoryFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        listView = view.findViewById(R.id.text_view_list);
-        back = getActivity().findViewById(R.id.text_back);
-        prompt = getActivity().findViewById(R.id.prompt);
-        text_record = getActivity().findViewById(R.id.text_record);
-        translation_record = getActivity().findViewById(R.id.translation_record);
-        text_record.setText("识别记录");
-        translation_record.setText("翻译记录");
         getTranslationHistoryData();
     }
 
@@ -88,7 +91,7 @@ public class TranslationHistoryFragment extends Fragment {
                 Cursor cursor = query.run();
                 if (cursor != null) {
                     while (cursor.moveToNext()) {
-                        int id = cursor.getInt(cursor.getColumnIndex("id"));
+                        id = cursor.getInt(cursor.getColumnIndex("id"));
                         String original = cursor.getString(cursor.getColumnIndex("original"));
                         String translation = cursor.getString(cursor.getColumnIndex("translation"));
                         byte[] bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
@@ -100,6 +103,11 @@ public class TranslationHistoryFragment extends Fragment {
                         initRemoveTranslationItemView();
                         getDetails();
                         initBack();
+                    }
+                    if (!TextUtils.isEmpty(String.valueOf(id))) {
+                        prompt.setVisibility(View.VISIBLE);
+                    } else {
+                        prompt.setVisibility(View.GONE);
                     }
                 }
                 cursor.close();

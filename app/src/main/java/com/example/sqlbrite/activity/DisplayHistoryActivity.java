@@ -1,7 +1,6 @@
 package com.example.sqlbrite.activity;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
@@ -17,35 +16,22 @@ import com.example.sqlbrite.fragment.IDCardForFrontHistoryFragment;
 import com.example.sqlbrite.fragment.ImageHistoryFragment;
 import com.example.sqlbrite.fragment.TextHistoryFragment;
 import com.example.sqlbrite.fragment.TranslationHistoryFragment;
-import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.injectview.annotations.InjectView;
-import com.safframework.log.L;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 public class DisplayHistoryActivity extends BaseActivity {
 
-    private String type_image;
-    private String type_text;
-    private String type_id_card;
-    private String type_bank_card;
-    private String type_license_plate;
-    private String type_driver_license;
-    private String type_train_ticket;
-    private String type_passport;
-    private String type_driving_license;
-    private String type_business_license;
+    private final String type_image = "type_image";
+    private final String type_text = "type_text";
+    private final String type_id_card = "type_id_card";
+    private final String type_bank_card = "type_bank_card";
+    private final String type_license_plate = "type_license_plate";
+    private final String type_driver_license = "type_driver_license";
+    private final String type_train_ticket = "type_train_ticket";
+    private final String type_passport = "type_passport";
+    private final String type_driving_license = "type_driving_license";
+    private final String type_business_license = "type_business_license";
 
-    @InjectView(R.id.text_back)
-    TextView back;
-
-    @InjectView(R.id.text_record)
-    TextView text_record;
-
-    @InjectView(R.id.translation_record)
-    TextView translation_record;
+    private String type;
 
     @InjectView(R.id.prompt)
     TextView prompt;
@@ -56,31 +42,27 @@ public class DisplayHistoryActivity extends BaseActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_display_history);
 
-        Typeface iconfont = Typeface.createFromAsset(getAssets(), "iconfont/iconfont.ttf");
-        back.setTypeface(iconfont);
-
-        Intent intent = getIntent();
-        type_image = intent.getStringExtra("type_image");
-        type_text = intent.getStringExtra("type_text");
-        type_driving_license = intent.getStringExtra("type_driving_license");
-        type_id_card = intent.getStringExtra("type_id_card");
+        type = getIntent().getStringExtra("type");
         displayHistoryByType();
-        initBack();
     }
 
     private void displayHistoryByType(){
-        if (type_image != null) {
-            getDisplayImageHistoryFragment();
-        } else if (type_text != null) {
-            text_record.setText("识别记录");
-            translation_record.setText("翻译记录");
-            getTextHistoryFragment();
-        } else if (type_driving_license != null){
-            getDisplayDrivingLicenseHistoryFragment();
-        } else if (type_id_card != null) {
-            text_record.setText("反面记录");
-            translation_record.setText("正面记录");
-            getDisplayIDCardFragment();
+
+        switch (type) {
+            case type_image:
+                getDisplayImageHistoryFragment();
+                break;
+            case type_text:
+                getDisplayTextHistoryFragment();
+                break;
+            case type_driving_license:
+                getDisplayDrivingLicenseHistoryFragment();
+                break;
+            case type_id_card:
+                getDisplayIDCardFrontHistoryFragment();
+                break;
+            default:
+                break;
         }
     }
 
@@ -115,86 +97,6 @@ public class DisplayHistoryActivity extends BaseActivity {
 
     }
 
-    private void getTextHistoryFragment(){
-        getDisplayTextHistoryFragment();  //刚打开Activity默认显示的Fragment
-        RxView.clicks(text_record)
-                .throttleFirst(600,TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        prompt.setVisibility(View.GONE);
-                        getDisplayTextHistoryFragment();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        System.out.println("onError: " + throwable.getMessage());
-                    }
-                });
-
-        RxView.clicks(translation_record)
-                .throttleFirst(600,TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        prompt.setVisibility(View.GONE);
-                        getTranslationHistoryFragment();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        L.i(throwable.getMessage());
-                    }
-                });
-    }
-
-    private void getDisplayIDCardFragment(){
-        getDisplayIDCardFrontHistoryFragment();
-        RxView.clicks(text_record).throttleFirst(600,TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        prompt.setVisibility(View.GONE);
-                        getDisplayIDCardFrontHistoryFragment();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        L.i(throwable.getMessage());
-                    }
-                });
-
-        RxView.clicks(translation_record).throttleFirst(600,TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        prompt.setVisibility(View.GONE);
-                        getDisplayIDCardBackHistoryFragment();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        L.i(throwable.getMessage());
-                    }
-                });
-    }
-
-    private void initBack(){
-        RxView.clicks(back)
-                .throttleFirst(600,TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        Intent();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        L.i(throwable.getMessage());
-                    }
-                });
-    }
-
     @Override
     public void onBackPressed(){
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_text);
@@ -208,12 +110,6 @@ public class DisplayHistoryActivity extends BaseActivity {
                 break;
             case "TextDetailsFragment":
                 prompt.setVisibility(View.GONE);
-                text_record.setText("识别记录");
-                FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
-                linearParams.setMarginStart(300);
-                text_record.setLayoutParams(linearParams);
-                text_record.setClickable(true);
-                translation_record.setVisibility(View.VISIBLE);
                 getDisplayTextHistoryFragment();
                 break;
             case "TextHistoryFragment":

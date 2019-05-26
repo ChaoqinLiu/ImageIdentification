@@ -42,11 +42,8 @@ public class TranslationDetailsFragment extends Fragment {
     private ImageView imageView;
     private TextView textViewOriginal;
     private TextView textViewTranslation;
-    private TextView text_record;
-    private TextView translation_record;
     private TextView back;
     private TextView prompt;
-    private TextView details;
 
     private int id;
     private String original;
@@ -58,8 +55,13 @@ public class TranslationDetailsFragment extends Fragment {
 
         context = (DisplayHistoryActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_translation_details,container,false);
+        imageView = view.findViewById(R.id.image_details);
+        textViewOriginal = view.findViewById(R.id.text_details_original);
+        textViewTranslation = view.findViewById(R.id.text_details_translation);
+        back = view.findViewById(R.id.text_back);
         Bundle bundle = getArguments();
         id = bundle.getInt("id");
+        initBack();
         return view;
     }
 
@@ -69,17 +71,7 @@ public class TranslationDetailsFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        imageView = view.findViewById(R.id.image_details);
-        textViewOriginal = view.findViewById(R.id.text_details_original);
-        textViewTranslation = view.findViewById(R.id.text_details_translation);
-        text_record = getActivity().findViewById(R.id.text_record);
-        translation_record = getActivity().findViewById(R.id.translation_record);
-        details = getActivity().findViewById(R.id.details);
-        back = getActivity().findViewById(R.id.text_back);
         prompt = getActivity().findViewById(R.id.prompt);
-        translation_record.setVisibility(View.GONE);
-        text_record.setVisibility(View.GONE);
-        details.setText("详情");
         getDetailData();
     }
 
@@ -98,7 +90,6 @@ public class TranslationDetailsFragment extends Fragment {
                         imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,290,150));
                         textViewOriginal.setText(original);
                         textViewTranslation.setText(translation);
-                        initBack();
                     }
                 }
                 cursor.close();
@@ -116,11 +107,6 @@ public class TranslationDetailsFragment extends Fragment {
                         TranslationHistoryFragment fragment = new TranslationHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
                         prompt.setVisibility(View.GONE);
-                        translation_record.setVisibility(View.VISIBLE);
-                        text_record.setVisibility(View.VISIBLE);
-                        details.setVisibility(View.GONE);
-                        text_record.setText("识别记录");
-                        translation_record.setText("翻译记录");
                     }
                 }, new Consumer<Throwable>() {
                     @Override

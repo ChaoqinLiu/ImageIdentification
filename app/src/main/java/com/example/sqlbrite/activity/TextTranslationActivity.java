@@ -68,6 +68,7 @@ public class TextTranslationActivity extends BaseActivity {
 
     private ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
     private ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
+    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
 
 
     @InjectView(R.id.text_original)
@@ -122,12 +123,13 @@ public class TextTranslationActivity extends BaseActivity {
     }
 
     private void getTranslationResult(){
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     String result = Translation();
-                    if (result == null || result.contains("")) {
+                    L.i(result);
+                    if (result == null || result.equals("")) {
                         scheduledThreadPool.schedule(new Runnable() {
                             @Override
                             public void run() {
@@ -135,7 +137,7 @@ public class TextTranslationActivity extends BaseActivity {
                                     @Override
                                     public void run() {
                                         progressDialog.dismiss();
-                                        Toast.makeText(TextTranslationActivity.this,"获取数据失败",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(TextTranslationActivity.this,"获取数据失败,请重新识别或检查网络设置",Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
@@ -149,7 +151,12 @@ public class TextTranslationActivity extends BaseActivity {
                                 original.setText(queryStr);
                                 translation.setText(dst);
                                 progressDialog.dismiss();
-                                saveTranslationData();
+                                singleThreadExecutor.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        saveTranslationData();
+                                    }
+                                });
                             }
                         });
                     }
@@ -266,6 +273,7 @@ public class TextTranslationActivity extends BaseActivity {
         super.onDestroy();
         scheduledThreadPool.shutdown();
         singleThreadExecutor.shutdown();
+        fixedThreadPool.shutdown();
     }
 
 }

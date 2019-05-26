@@ -80,19 +80,20 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private static String API_KEY;
     private static String SECRET_KEY;
     private String requestUrl;
-    private String path;
-    private String type_image;
-    private String type_text;
-    private String type_id_card;
-    private String type_bank_card;
-    private String type_license_plate;
-    private String type_driver_license;
-    private String type_train_ticket;
-    private String type_passport;
-    private String type_driving_license;
-    private String type_business_license;
 
+    private String type;
     private String id_card_side;
+    private String path;
+    private final String type_image = "type_image";
+    private final String type_text = "type_text";
+    private final String type_id_card = "type_id_card";
+    private final String type_bank_card = "type_bank_card";
+    private final String type_license_plate = "type_license_plate";
+    private final String type_driver_license = "type_driver_license";
+    private final String type_train_ticket = "type_train_ticket";
+    private final String type_passport = "type_passport";
+    private final String type_driving_license = "type_driving_license";
+    private final String type_business_license = "type_business_license";
 
     private ResultImageAdapter adapter;
     private ResultTextAdapter tAdapter;
@@ -132,6 +133,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     private ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
     private ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
+    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
 
     @InjectView(R.id.view_list)
     ListView listView;
@@ -146,16 +148,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
         Intent intent = getIntent();
         path =  intent.getStringExtra("image_path");
-        type_image = intent.getStringExtra("type_image");
-        type_text = intent.getStringExtra("type_text");
-        type_id_card = intent.getStringExtra("type_id_card");
-        type_bank_card = intent.getStringExtra("type_bank_card");
-        type_license_plate = intent.getStringExtra("type_license_plate");
-        type_driver_license = intent.getStringExtra("type_driver_license");
-        type_train_ticket = intent.getStringExtra("type_train_ticket");
-        type_passport = intent.getStringExtra("type_passport");
-        type_driving_license = intent.getStringExtra("type_driving_license");
-        type_business_license = intent.getStringExtra("type_business_license");
+        type = intent.getStringExtra("type");
         id_card_side = intent.getStringExtra("id_card_side");
 
         bitmap = BitmapFactory.decodeFile(path, null);
@@ -357,32 +350,45 @@ public class IntelligentDetectionActivity extends BaseActivity {
     }
 
     private void getImageInformationByType(){
-        if (type_image != null) {
-            getImageInformation();
-        } else if (type_text != null) {
-            getTextImageInformation();
-        } else if (type_id_card != null) {
-            getIDCardImageInformation();
-        } else if (type_bank_card != null) {
-            getBankCardImageInformation();
-        } else if (type_license_plate != null) {
-            getLicensePlateImageInformation();
-        } else if (type_driver_license != null) {
-            getDriverLicenseImageInformation();
-        } else if (type_train_ticket != null) {
-            getTrainTicketImageInformation();
-        } else if (type_passport != null) {
-            getPassportImageInformation();
-        } else if (type_driving_license != null) {
-            getDrivingLicenseImageInformation();
-        } else if (type_business_license != null) {
-            getBusinessLicenseImageInformation();
+        switch (type) {
+            case type_image:
+                getImageInformation();
+                break;
+            case type_text:
+                getTextImageInformation();
+                break;
+            case type_id_card:
+                getIDCardImageInformation();
+                break;
+            case type_bank_card:
+                getBankCardImageInformation();
+                break;
+            case type_license_plate:
+                getLicensePlateImageInformation();
+                break;
+            case type_driver_license:
+                getDriverLicenseImageInformation();
+                break;
+            case type_train_ticket:
+                getTrainTicketImageInformation();
+                break;
+            case type_passport:
+                getPassportImageInformation();
+                break;
+            case type_driving_license:
+                getDrivingLicenseImageInformation();
+                break;
+            case type_business_license:
+                getBusinessLicenseImageInformation();
+                break;
+             default:
+                 break;
         }
     }
 
     //图像识别
     private void getImageInformation(){
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -440,7 +446,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     //图文识别
     private void getTextImageInformation() {
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -500,7 +506,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
     private void getIDCardImageInformation(){
         String Back = "back";
         String Front = "front";
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -537,7 +543,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     //银行卡识别
     private void getBankCardImageInformation(){
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -588,7 +594,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     //车牌识别
     private void getLicensePlateImageInformation(){
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -637,7 +643,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     //驾驶证识别
     private void getDriverLicenseImageInformation() {
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -686,7 +692,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     //火车票识别
     private void getTrainTicketImageInformation(){
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -736,7 +742,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     //护照识别
     private void getPassportImageInformation(){
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -786,7 +792,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     //行驶证识别
     private void getDrivingLicenseImageInformation(){
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -837,7 +843,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
 
     //营业执照识别
     private void getBusinessLicenseImageInformation() {
-        singleThreadExecutor.execute(new Runnable() {
+        fixedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -1256,6 +1262,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         super.onDestroy();
         singleThreadExecutor.shutdown();
         scheduledThreadPool.shutdown();
+        fixedThreadPool.shutdown();
     }
 
 }

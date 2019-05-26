@@ -5,61 +5,9 @@
     android:orientation="vertical">
 
     <FrameLayout
-        android:layout_height="65dp"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:background="@color/blue">
-
-        <TextView
-            android:id="@+id/text_back"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center_vertical|left"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:textSize="22sp"
-            android:textColor="@color/white"
-            android:text="@string/str_back"/>
-
-        <TextView
-            android:id="@+id/text_record"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center_vertical|left"
-            android:textColor="@color/white"
-            android:layout_marginLeft="100dp"
-            android:textSize="16sp"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/details"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:layout_gravity="center_vertical|center"/>
-
-        <TextView
-            android:id="@+id/translation_record"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:layout_gravity="center_vertical|right"
-            android:layout_marginRight="100dp"/>
-    </FrameLayout>
-
-    <FrameLayout
         android:id="@+id/fragment_text"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_width="match_parent">
-
-        <TextView
-            android:id="@+id/prompt"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="20dp"
-            android:text="暂无记录"/>
     </FrameLayout>
 
 

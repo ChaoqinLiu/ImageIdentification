@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,14 +55,25 @@ public class TextHistoryFragment extends Fragment {
     private ListView listView;
     private TextView back;
     private TextView prompt;
-    private TextView text_record;
-    private TextView translation_record;
+    private TextView text_title_left;
+    private TextView text_title_right;
+
+    private int id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = (DisplayHistoryActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
+        listView = view.findViewById(R.id.text_view_list);
+        back = view.findViewById(R.id.text_back);
+        text_title_left = view.findViewById(R.id.text_title_left);
+        text_title_right = view.findViewById(R.id.text_title_right);
+        text_title_left.setText("识别记录");
+        text_title_right.setText("翻译记录");
+        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
+        back.setTypeface(iconfont);
+        prompt = view.findViewById(R.id.prompt);
         return view;
     }
 
@@ -70,13 +83,6 @@ public class TextHistoryFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        listView = view.findViewById(R.id.text_view_list);
-        back = getActivity().findViewById(R.id.text_back);
-        text_record = getActivity().findViewById(R.id.text_record);
-        translation_record = getActivity().findViewById(R.id.translation_record);
-        text_record.setText("识别记录");
-        translation_record.setText("翻译记录");
-        prompt = getActivity().findViewById(R.id.prompt);
         getTextHistoryData();
     }
 
@@ -88,7 +94,7 @@ public class TextHistoryFragment extends Fragment {
                 Cursor cursor = query.run();
                 if (cursor != null) {
                     while (cursor.moveToNext()) {
-                        int id = cursor.getInt(cursor.getColumnIndex("id"));
+                        id = cursor.getInt(cursor.getColumnIndex("id"));
                         String words = cursor.getString(cursor.getColumnIndex("words"));
                         byte[] bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
                         TextHistory history = new TextHistory();
@@ -99,6 +105,11 @@ public class TextHistoryFragment extends Fragment {
                         initRemoveTextItemView();
                         getDetails();
                         initBack();
+                    }
+                    if (!TextUtils.isEmpty(String.valueOf(id))) {
+                        prompt.setVisibility(View.VISIBLE);
+                    } else {
+                        prompt.setVisibility(View.GONE);
                     }
                 }
                 cursor.close();

@@ -42,11 +42,7 @@ public class TextDetailsFragment extends Fragment {
 
     private ImageView imageView;
     private TextView textView;
-    private TextView text_record;
-    private TextView translation_record;
-    private TextView details;
     private TextView back;
-    private TextView prompt;
 
     private int id;
     private String words;
@@ -57,8 +53,12 @@ public class TextDetailsFragment extends Fragment {
 
         context = (DisplayHistoryActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_text_details,container,false);
+        imageView = view.findViewById(R.id.image_details);
+        textView = view.findViewById(R.id.text_details);
+        back = view.findViewById(R.id.text_back);
         Bundle bundle = getArguments();
         id = bundle.getInt("id");
+        initBack();
         return view;
     }
 
@@ -68,16 +68,6 @@ public class TextDetailsFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        imageView = view.findViewById(R.id.image_details);
-        textView = view.findViewById(R.id.text_details);
-        text_record = getActivity().findViewById(R.id.text_record);
-        translation_record = getActivity().findViewById(R.id.translation_record);
-        details = getActivity().findViewById(R.id.details);
-        translation_record.setVisibility(View.GONE);
-        text_record.setVisibility(View.GONE);
-        back = getActivity().findViewById(R.id.text_back);
-        prompt = getActivity().findViewById(R.id.prompt);
-        details.setText("详情");
         getDetailData();
     }
 
@@ -94,7 +84,6 @@ public class TextDetailsFragment extends Fragment {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
                         imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,290,150));
                         textView.setText(words);
-                        initBack();
                     }
                 }
                 cursor.close();
@@ -111,12 +100,6 @@ public class TextDetailsFragment extends Fragment {
                     public void accept(@NonNull Object o) throws Exception {
                         TextHistoryFragment fragment = new TextHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
-                        prompt.setVisibility(View.GONE);
-                        translation_record.setVisibility(View.VISIBLE);
-                        text_record.setVisibility(View.VISIBLE);
-                        details.setVisibility(View.GONE);
-                        text_record.setText("识别记录");
-                        translation_record.setText("翻译记录");
                     }
                 }, new Consumer<Throwable>() {
                     @Override

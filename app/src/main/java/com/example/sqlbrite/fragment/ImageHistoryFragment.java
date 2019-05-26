@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,7 +54,8 @@ public class ImageHistoryFragment extends Fragment {
     private ListView listView;
     private TextView back;
     private TextView prompt;
-    private TextView text_record;
+    private TextView title;
+    private LinearLayout title_common_other;
 
     private int id;
     private float score;
@@ -66,6 +68,13 @@ public class ImageHistoryFragment extends Fragment {
 
         context = (DisplayHistoryActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
+        listView = view.findViewById(R.id.text_view_list);
+        back = view.findViewById(R.id.back);
+        prompt = view.findViewById(R.id.prompt);
+        title = view.findViewById(R.id.text_title_common);
+        title.setText("识别记录");
+        title_common_other = view.findViewById(R.id.title_common_other);
+        title_common_other.setVisibility(View.GONE);
         return view;
     }
 
@@ -75,15 +84,6 @@ public class ImageHistoryFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        listView = view.findViewById(R.id.text_view_list);
-        back = getActivity().findViewById(R.id.text_back);
-        text_record = getActivity().findViewById(R.id.text_record);
-        text_record.setText("识别记录");
-        FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
-        linearParams.setMarginStart(400);
-        text_record.setLayoutParams(linearParams);
-        text_record.setClickable(false);
-        prompt = getActivity().findViewById(R.id.prompt);
         getDisplayImageHistoryData();
     }
 

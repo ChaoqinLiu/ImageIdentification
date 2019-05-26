@@ -33,28 +33,28 @@ public class TabHomeFragment extends Fragment {
     protected View view;
     protected Context context;
 
-    private static final int TYPE_IMAGE_RESULT_CODE = 10;
-    private static final int TYPE_TEXT_RESULT_CODE = 20;
-    private static final int ID_CARD_BACK_RESULT_CODE = 40;
-    private static final int ID_CARD_FRONT_RESULT_CODE = 50;
-    private static final int BANK_CARD_FRONT_RESULT_CODE = 60;
-    private static final int LICENSE_PLATE_RESULT_CODE = 70;
-    private static final int DRIVER_LICENSE_RESULT_CODE = 80;
-    private static final int TRAIN_TICKET_RESULT_CODE = 90;
-    private static final int PASSPORT_RESULT_CODE = 100;
-    private static final int DRIVING_LICENSE_RESULT_CODE = 110;
-    private static final int BUSINESS_LICENSE_RESULT_CODE = 120;
+    private final int TYPE_IMAGE_RESULT_CODE = 10;
+    private final int TYPE_TEXT_RESULT_CODE = 20;
+    private final int ID_CARD_BACK_RESULT_CODE = 40;
+    private final int ID_CARD_FRONT_RESULT_CODE = 50;
+    private final int BANK_CARD_FRONT_RESULT_CODE = 60;
+    private final int LICENSE_PLATE_RESULT_CODE = 70;
+    private final int DRIVER_LICENSE_RESULT_CODE = 80;
+    private final int TRAIN_TICKET_RESULT_CODE = 90;
+    private final int PASSPORT_RESULT_CODE = 100;
+    private final int DRIVING_LICENSE_RESULT_CODE = 110;
+    private final int BUSINESS_LICENSE_RESULT_CODE = 120;
 
-    private static final String TYPE_IMAGE = "type_image";
-    private static final String TYPE_TEXT = "type_text";
-    private static final String TYPE_ID_CARD = "type_id_card";
-    private static final String TYPE_BANK_CARD = "type_bank_card";
-    private static final String TYPE_LICENSE_PLATE = "type_license_plate";
-    private static final String TYPE_DRIVER_LICENSE = "type_driver_license";
-    private static final String TYPE_TRAIN_TICKET = "type_train_ticket";
-    private static final String TYPE_PASSPORT = "type_passport";
-    private static final String TYPE_DRIVING_LICENSE = "type_driving_license";
-    private static final String TYPE_BUSINESS_LICENSE = "type_business_license";
+    private final String TYPE_IMAGE = "type_image";
+    private final String TYPE_TEXT = "type_text";
+    private final String TYPE_ID_CARD = "type_id_card";
+    private final String TYPE_BANK_CARD = "type_bank_card";
+    private final String TYPE_LICENSE_PLATE = "type_license_plate";
+    private final String TYPE_DRIVER_LICENSE = "type_driver_license";
+    private final String TYPE_TRAIN_TICKET = "type_train_ticket";
+    private final String TYPE_PASSPORT = "type_passport";
+    private final String TYPE_DRIVING_LICENSE = "type_driving_license";
+    private final String TYPE_BUSINESS_LICENSE = "type_business_license";
 
     private boolean ClickTypeForIDCard;  //身份证识别点击类型的标识,true为点击，false为长击
     private Class activity;    //目标 Activity
@@ -132,7 +132,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
-                            intent.putExtra("type_image", TYPE_IMAGE);
+                            intent.putExtra("type", TYPE_IMAGE);
                             startActivityForResult(intent, TYPE_IMAGE_RESULT_CODE);
                         }
                     }
@@ -155,7 +155,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
-                            intent.putExtra("type_image", TYPE_IMAGE);
+                            intent.putExtra("type", TYPE_IMAGE);
                             startActivityForResult(intent, TYPE_IMAGE_RESULT_CODE);
                         }
                     }
@@ -177,7 +177,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
-                            intent.putExtra("type_text", TYPE_TEXT);
+                            intent.putExtra("type", TYPE_TEXT);
                             startActivityForResult(intent, TYPE_IMAGE_RESULT_CODE);
                         }
                     }
@@ -199,7 +199,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
-                            intent.putExtra("type_text", TYPE_TEXT);
+                            intent.putExtra("type", TYPE_TEXT);
                             startActivityForResult(intent, TYPE_TEXT_RESULT_CODE);
                         }
                     }
@@ -252,7 +252,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
-                            intent.putExtra("type_bank_card", TYPE_BANK_CARD);
+                            intent.putExtra("type", TYPE_BANK_CARD);
                             startActivityForResult(intent, BANK_CARD_FRONT_RESULT_CODE);
                         }
                     }
@@ -274,7 +274,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
-                            intent.putExtra("type_bank_card", TYPE_BANK_CARD);
+                            intent.putExtra("type", TYPE_BANK_CARD);
                             startActivityForResult(intent, BANK_CARD_FRONT_RESULT_CODE);
                         }
                     }
@@ -296,7 +296,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
-                            intent.putExtra("type_license_plate", TYPE_LICENSE_PLATE);
+                            intent.putExtra("type", TYPE_LICENSE_PLATE);
                             startActivityForResult(intent, LICENSE_PLATE_RESULT_CODE);
                         }
                     }
@@ -318,7 +318,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
-                            intent.putExtra("type_license_plate", TYPE_LICENSE_PLATE);
+                            intent.putExtra("type", TYPE_LICENSE_PLATE);
                             startActivityForResult(intent, LICENSE_PLATE_RESULT_CODE);
                         }
                     }
@@ -340,7 +340,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
-                            intent.putExtra("type_driver_license", TYPE_DRIVER_LICENSE);
+                            intent.putExtra("type", TYPE_DRIVER_LICENSE);
                             startActivityForResult(intent, DRIVER_LICENSE_RESULT_CODE);
                         }
                     }
@@ -362,7 +362,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
-                            intent.putExtra("type_driver_license", TYPE_DRIVER_LICENSE);
+                            intent.putExtra("type", TYPE_DRIVER_LICENSE);
                             startActivityForResult(intent, DRIVER_LICENSE_RESULT_CODE);
                         }
                     }
@@ -384,7 +384,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
-                            intent.putExtra("type_train_ticket", TYPE_TRAIN_TICKET);
+                            intent.putExtra("type", TYPE_TRAIN_TICKET);
                             startActivityForResult(intent, TRAIN_TICKET_RESULT_CODE);
                         }
                     }
@@ -406,7 +406,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
-                            intent.putExtra("type_train_ticket", TYPE_TRAIN_TICKET);
+                            intent.putExtra("type", TYPE_TRAIN_TICKET);
                             startActivityForResult(intent, TRAIN_TICKET_RESULT_CODE);
                         }
                     }
@@ -428,7 +428,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
-                            intent.putExtra("type_passport", TYPE_PASSPORT);
+                            intent.putExtra("type", TYPE_PASSPORT);
                             startActivityForResult(intent, PASSPORT_RESULT_CODE);
                         }
                     }
@@ -450,7 +450,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
-                            intent.putExtra("type_hong_kong_and_macau_pass", TYPE_PASSPORT);
+                            intent.putExtra("type", TYPE_PASSPORT);
                             startActivityForResult(intent, PASSPORT_RESULT_CODE);
                         }
                     }
@@ -472,7 +472,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
-                            intent.putExtra("type_driving_license", TYPE_DRIVING_LICENSE);
+                            intent.putExtra("type", TYPE_DRIVING_LICENSE);
                             startActivityForResult(intent, DRIVING_LICENSE_RESULT_CODE);
                         }
                     }
@@ -494,7 +494,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
-                            intent.putExtra("type_driving_license", TYPE_DRIVING_LICENSE);
+                            intent.putExtra("type", TYPE_DRIVING_LICENSE);
                             startActivityForResult(intent, DRIVING_LICENSE_RESULT_CODE);
                         }
                     }
@@ -516,7 +516,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
-                            intent.putExtra("type_business_license", TYPE_BUSINESS_LICENSE);
+                            intent.putExtra("type", TYPE_BUSINESS_LICENSE);
                             startActivityForResult(intent, BUSINESS_LICENSE_RESULT_CODE);
                         }
                     }
@@ -538,7 +538,7 @@ public class TabHomeFragment extends Fragment {
 
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
-                            intent.putExtra("type_business_license", TYPE_BUSINESS_LICENSE);
+                            intent.putExtra("type", TYPE_BUSINESS_LICENSE);
                             startActivityForResult(intent, BUSINESS_LICENSE_RESULT_CODE);
                         }
                     }
@@ -591,7 +591,7 @@ public class TabHomeFragment extends Fragment {
                         if (aBoolean) {
                             Intent intent = new Intent(context, activity);
                             intent.putExtra("id_card_side", ID_CARD_BACK);
-                            intent.putExtra("type_id_card", TYPE_ID_CARD);
+                            intent.putExtra("type", TYPE_ID_CARD);
                             startActivityForResult(intent, ID_CARD_BACK_RESULT_CODE);
                             dialog.dismiss();
                         }
@@ -613,7 +613,7 @@ public class TabHomeFragment extends Fragment {
                         if (aBoolean) {
                             Intent intent = new Intent(context, activity);
                             intent.putExtra("id_card_side", ID_CARD_FRONT);
-                            intent.putExtra("type_id_card", TYPE_ID_CARD);
+                            intent.putExtra("type", TYPE_ID_CARD);
                             startActivityForResult(intent, ID_CARD_FRONT_RESULT_CODE);
                             dialog.dismiss();
                         }

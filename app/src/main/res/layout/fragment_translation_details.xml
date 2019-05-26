@@ -4,6 +4,33 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:layout_height="65dp"
+        android:layout_width="match_parent"
+        android:background="@color/blue">
+
+        <TextView
+            android:id="@+id/text_back"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center_vertical|left"
+            android:gravity="center"
+            android:layout_marginLeft="8dp"
+            android:textSize="22sp"
+            android:textColor="@color/white"
+            android:text="@string/str_back"/>
+
+        <TextView
+            android:id="@+id/title_details"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center_vertical|center"
+            android:textColor="@color/white"
+            android:text="详情"
+            android:textSize="16sp"/>
+    </FrameLayout>
+
     <ImageView
         android:id="@+id/image_details"
         android:layout_height="150dp"

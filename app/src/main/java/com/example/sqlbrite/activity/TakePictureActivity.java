@@ -34,17 +34,7 @@ public class TakePictureActivity extends BaseActivity {
     private static final int CROP_PHOTO_RESULT_CODE = 200;  //裁剪
     private static final int RESULT_CODE = 300;  //提交识别
 
-    private String type_image;
-    private String type_text;
-    private String type_id_card;
-    private String type_bank_card;
-    private String type_license_plate;
-    private String type_driver_license;
-    private String type_train_ticket;
-    private String type_passport;
-    private String type_driving_license;
-    private String type_business_license;
-
+    private String type;
     private String id_card_side;
 
 
@@ -54,16 +44,7 @@ public class TakePictureActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        type_image = getIntent().getStringExtra("type_image");
-        type_text = getIntent().getStringExtra("type_text");
-        type_id_card = getIntent().getStringExtra("type_id_card");
-        type_bank_card = getIntent().getStringExtra("type_bank_card");
-        type_license_plate = getIntent().getStringExtra("type_license_plate");
-        type_driver_license = getIntent().getStringExtra("type_driver_license");
-        type_train_ticket = getIntent().getStringExtra("type_train_ticket");
-        type_passport = getIntent().getStringExtra("type_passport");
-        type_driving_license = getIntent().getStringExtra("type_driving_license");
-        type_business_license = getIntent().getStringExtra("type_business_license");
+        type = getIntent().getStringExtra("type");
         id_card_side = getIntent().getStringExtra("id_card_side");
 
         startCamera();
@@ -161,16 +142,7 @@ public class TakePictureActivity extends BaseActivity {
                         updateSystemGallery();
                         //将图片地址传递到下一个Activity处理
                         Intent intent = new Intent(TakePictureActivity.this, IntelligentDetectionActivity.class);
-                        intent.putExtra("type_image", type_image);
-                        intent.putExtra("type_text", type_text);
-                        intent.putExtra("type_id_card", type_id_card);
-                        intent.putExtra("type_bank_card",type_bank_card);
-                        intent.putExtra("type_license_plate",type_license_plate);
-                        intent.putExtra("type_driver_license",type_driver_license);
-                        intent.putExtra("type_train_ticket",type_train_ticket);
-                        intent.putExtra("type_passport",type_passport);
-                        intent.putExtra("type_driving_license",type_driving_license);
-                        intent.putExtra("type_business_license",type_business_license);
+                        intent.putExtra("type", type);
                         intent.putExtra("image_path", mImagePath);
                         intent.putExtra("id_card_side",id_card_side);
                         startActivityForResult(intent, RESULT_CODE);

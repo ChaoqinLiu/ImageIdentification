@@ -58,16 +58,16 @@ public class TabHistoryFragment extends Fragment {
     private TextView view_train_ticket;
     private TextView icon_train_ticket;
 
-    private static final String TYPE_IMAGE = "type_image";
-    private static final String TYPE_TEXT = "type_text";
-    private static final String TYPE_ID_CARD = "type_id_card";
-    private static final String TYPE_BANK_CARD = "type_bank_card";
-    private static final String TYPE_LICENSE_PLATE = "type_license_plate";
-    private static final String TYPE_DRIVER_LICENSE = "type_driver_license";
-    private static final String TYPE_TRAIN_TICKET = "type_train_ticket";
-    private static final String TYPE_PASSPORT = "type_passport";
-    private static final String TYPE_DRIVING_LICENSE = "type_driving_license";
-    private static final String TYPE_BUSINESS_LICENSE = "type_business_license";
+    private final String TYPE_IMAGE = "type_image";
+    private final String TYPE_TEXT = "type_text";
+    private final String TYPE_ID_CARD = "type_id_card";
+    private final String TYPE_BANK_CARD = "type_bank_card";
+    private final String TYPE_LICENSE_PLATE = "type_license_plate";
+    private final String TYPE_DRIVER_LICENSE = "type_driver_license";
+    private final String TYPE_TRAIN_TICKET = "type_train_ticket";
+    private final String TYPE_PASSPORT = "type_passport";
+    private final String TYPE_DRIVING_LICENSE = "type_driving_license";
+    private final String TYPE_BUSINESS_LICENSE = "type_business_license";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -140,7 +140,7 @@ public class TabHistoryFragment extends Fragment {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
                         Intent intent = new Intent(context, DisplayHistoryActivity.class);
-                        intent.putExtra("type_image", TYPE_IMAGE);
+                        intent.putExtra("type", TYPE_IMAGE);
                         startActivityForResult(intent, 1);
                     }
                 }, new Consumer<Throwable>() {
@@ -156,7 +156,7 @@ public class TabHistoryFragment extends Fragment {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
                         Intent intent = new Intent(context, DisplayHistoryActivity.class);
-                        intent.putExtra("type_text", TYPE_TEXT);
+                        intent.putExtra("type", TYPE_TEXT);
                         startActivityForResult(intent, 2);
                     }
                 }, new Consumer<Throwable>() {
@@ -172,7 +172,7 @@ public class TabHistoryFragment extends Fragment {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
                         Intent intent = new Intent(context, DisplayHistoryActivity.class);
-                        intent.putExtra("type_driving_license", TYPE_DRIVING_LICENSE);
+                        intent.putExtra("type", TYPE_DRIVING_LICENSE);
                         startActivityForResult(intent, 3);
                     }
                 }, new Consumer<Throwable>() {
@@ -188,7 +188,7 @@ public class TabHistoryFragment extends Fragment {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
                         Intent intent = new Intent(context, DisplayHistoryActivity.class);
-                        intent.putExtra("type_id_card", TYPE_ID_CARD);
+                        intent.putExtra("type", TYPE_ID_CARD);
                         startActivityForResult(intent, 4);
                     }
                 }, new Consumer<Throwable>() {

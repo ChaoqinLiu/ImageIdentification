@@ -4,12 +4,93 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ListView
-        android:id="@+id/text_view_list"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:background="@color/white"
-        android:layout_margin="8dp"
-        android:textAlignment="center" />
+    <FrameLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <LinearLayout
+            android:id="@+id/title_common"
+            android:layout_height="65dp"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:background="@color/blue">
+
+            <TextView
+                android:id="@+id/back"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:text="@string/str_back"/>
+
+            <TextView
+                android:id="@+id/text_title_common"
+                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/title_common_other"
+            android:layout_height="65dp"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:background="@color/blue">
+
+            <TextView
+                android:id="@+id/text_back"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:textSize="22sp"
+                android:textColor="@color/white"
+                android:text="@string/str_back"/>
+
+            <TextView
+                android:id="@+id/text_title_left"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/text_title_right"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:gravity="center"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content">
+
+        <ListView
+            android:id="@+id/text_view_list"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:layout_margin="8dp"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/prompt"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="20dp"
+            android:text="暂无记录"/>
+    </FrameLayout>
 
 </LinearLayout>
