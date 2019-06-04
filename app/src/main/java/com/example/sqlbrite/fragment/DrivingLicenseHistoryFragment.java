@@ -4,14 +4,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,14 +56,20 @@ public class DrivingLicenseHistoryFragment extends Fragment {
 
     private ListView listView;
     private TextView back;
-    private TextView prompt;
-    private TextView text_record;
+    private LinearLayout layout_title;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = (DisplayHistoryActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
+        listView = view.findViewById(R.id.text_view_list);
+        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
+        back = view.findViewById(R.id.back);
+        back.setTypeface(iconfont);
+        layout_title = view.findViewById(R.id.title_common_other);
+        layout_title.setVisibility(View.GONE);
+        initBack();
         return view;
     }
 
@@ -70,15 +79,6 @@ public class DrivingLicenseHistoryFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        listView = view.findViewById(R.id.text_view_list);
-        back = getActivity().findViewById(R.id.text_back);
-        text_record = getActivity().findViewById(R.id.text_record);
-        text_record.setText("识别记录");
-        FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
-        linearParams.setMarginStart(400);
-        text_record.setLayoutParams(linearParams);
-        text_record.setClickable(false);
-        prompt = getActivity().findViewById(R.id.prompt);
         getDrivingLicenseHistoryData();
     }
 
@@ -88,7 +88,7 @@ public class DrivingLicenseHistoryFragment extends Fragment {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
-                if (cursor != null) {
+                if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
                         int id = cursor.getInt(cursor.getColumnIndex("id"));
                         String owner = cursor.getString(cursor.getColumnIndex("owner"));
@@ -101,8 +101,10 @@ public class DrivingLicenseHistoryFragment extends Fragment {
                         listView.setAdapter(adapter);
                         initRemoveDrivingLicenseItemView();
                         getDetails();
-                        initBack();
                     }
+                } else {
+                    PromptFragment fragment = new PromptFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt,fragment).commit();
                 }
                 cursor.close();
                 briteDatabase.close();
@@ -114,7 +116,6 @@ public class DrivingLicenseHistoryFragment extends Fragment {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                prompt.setVisibility(View.GONE);
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage("确定删除?");
                 builder.setTitle("提示");
@@ -167,7 +168,6 @@ public class DrivingLicenseHistoryFragment extends Fragment {
                 bundle.putInt("id",text_id);
                 fragment.setArguments(bundle);
                 getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
-                prompt.setVisibility(View.GONE);
             }
         });
     }

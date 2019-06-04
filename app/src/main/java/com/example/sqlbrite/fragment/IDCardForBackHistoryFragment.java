@@ -4,13 +4,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,13 +55,28 @@ public class IDCardForBackHistoryFragment extends Fragment {
 
     private ListView listView;
     private TextView back;
-    private TextView prompt;
+    private FrameLayout layout_title;
+    private TextView text_title_left;
+    private TextView text_title_right;
+
+    private int id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = (DisplayHistoryActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
+        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
+        listView = view.findViewById(R.id.text_view_list);
+        back = view.findViewById(R.id.text_back);
+        back.setTypeface(iconfont);
+        layout_title = view.findViewById(R.id.title_common);
+        text_title_left = view.findViewById(R.id.text_title_left);
+        text_title_right = view.findViewById(R.id.text_title_right);
+        text_title_left.setText("反面记录");
+        text_title_right.setText("正面记录");
+        layout_title.setVisibility(View.GONE);
+        initBack();
         return view;
     }
 
@@ -68,10 +86,8 @@ public class IDCardForBackHistoryFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        listView = view.findViewById(R.id.text_view_list);
-        back = getActivity().findViewById(R.id.text_back);
-        prompt = getActivity().findViewById(R.id.prompt);
         getIDCardForFrontHistoryData();
+        initSwitchFragment();
     }
 
     private void getIDCardForFrontHistoryData() {
@@ -80,9 +96,9 @@ public class IDCardForBackHistoryFragment extends Fragment {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
-                if (cursor != null) {
+                if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
-                        int id = cursor.getInt(cursor.getColumnIndex("id"));
+                        id = cursor.getInt(cursor.getColumnIndex("id"));
                         String issuingAuthority = cursor.getString(cursor.getColumnIndex("issuingAuthority"));
                         String dateOfIssue = cursor.getString(cursor.getColumnIndex("dateOfIssue"));
                         String expirationDate = cursor.getString(cursor.getColumnIndex("expirationDate"));
@@ -94,8 +110,10 @@ public class IDCardForBackHistoryFragment extends Fragment {
                         listView.setAdapter(adapter);
                         initRemoveIDCardForBackItemView();
                         getDetails();
-                        initBack();
                     }
+                } else {
+                    PromptFragment fragment = new PromptFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt,fragment).commit();
                 }
                 cursor.close();
                 briteDatabase.close();
@@ -107,7 +125,6 @@ public class IDCardForBackHistoryFragment extends Fragment {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                prompt.setVisibility(View.GONE);
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage("确定删除?");
                 builder.setTitle("提示");
@@ -160,7 +177,6 @@ public class IDCardForBackHistoryFragment extends Fragment {
                 bundle.putInt("id",text_id);
                 fragment.setArguments(bundle);
                 getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
-                prompt.setVisibility(View.GONE);
             }
         });
     }
@@ -175,6 +191,38 @@ public class IDCardForBackHistoryFragment extends Fragment {
                         intent.putExtra("flag", "flag");
                         getActivity().startActivity(intent);
                         getActivity().finish();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+    }
+
+    private void initSwitchFragment(){
+        RxView.clicks(text_title_left)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        IDCardForFrontHistoryFragment fragment = new IDCardForFrontHistoryFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(text_title_right)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        IDCardForBackHistoryFragment fragment = new IDCardForBackHistoryFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
                     }
                 }, new Consumer<Throwable>() {
                     @Override

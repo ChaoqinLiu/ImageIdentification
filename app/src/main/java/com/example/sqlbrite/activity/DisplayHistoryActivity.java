@@ -3,20 +3,19 @@ package com.example.sqlbrite.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.View;
 import android.view.Window;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.app.BaseActivity;
+import com.example.sqlbrite.fragment.BankCardHistoryFragment;
+import com.example.sqlbrite.fragment.BusinessLicenseHistoryFragment;
 import com.example.sqlbrite.fragment.DrivingLicenseHistoryFragment;
 import com.example.sqlbrite.fragment.IDCardForBackHistoryFragment;
 import com.example.sqlbrite.fragment.IDCardForFrontHistoryFragment;
 import com.example.sqlbrite.fragment.ImageHistoryFragment;
 import com.example.sqlbrite.fragment.TextHistoryFragment;
 import com.example.sqlbrite.fragment.TranslationHistoryFragment;
-import com.safframework.injectview.annotations.InjectView;
+import com.safframework.log.L;
 
 public class DisplayHistoryActivity extends BaseActivity {
 
@@ -33,9 +32,6 @@ public class DisplayHistoryActivity extends BaseActivity {
 
     private String type;
 
-    @InjectView(R.id.prompt)
-    TextView prompt;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +43,6 @@ public class DisplayHistoryActivity extends BaseActivity {
     }
 
     private void displayHistoryByType(){
-
         switch (type) {
             case type_image:
                 getDisplayImageHistoryFragment();
@@ -61,6 +56,10 @@ public class DisplayHistoryActivity extends BaseActivity {
             case type_id_card:
                 getDisplayIDCardFrontHistoryFragment();
                 break;
+            case type_business_license:
+                getBusinessLicenseHistoryFragment();
+            case type_bank_card:
+                getBankCardHistoryFragment();
             default:
                 break;
         }
@@ -97,6 +96,16 @@ public class DisplayHistoryActivity extends BaseActivity {
 
     }
 
+    private void getBusinessLicenseHistoryFragment() {
+        BusinessLicenseHistoryFragment fragment = new BusinessLicenseHistoryFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
+    }
+
+    private void getBankCardHistoryFragment() {
+        BankCardHistoryFragment fragment = new BankCardHistoryFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
+    }
+
     @Override
     public void onBackPressed(){
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_text);
@@ -109,7 +118,6 @@ public class DisplayHistoryActivity extends BaseActivity {
                 Intent();
                 break;
             case "TextDetailsFragment":
-                prompt.setVisibility(View.GONE);
                 getDisplayTextHistoryFragment();
                 break;
             case "TextHistoryFragment":

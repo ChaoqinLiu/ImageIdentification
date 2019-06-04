@@ -16,7 +16,7 @@ import com.example.sqlbrite.model.DrivingLicenseHistory.DrivingLicenseHistoryArr
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
+import static com.example.sqlbrite.utils.BitmapUtil.changeBitmapSize;
 
 public class DrivingLicenseHistoryAdapter extends BaseAdapter {
 
@@ -65,6 +65,7 @@ public class DrivingLicenseHistoryAdapter extends BaseAdapter {
         holder.id.setText(String.valueOf(result.id));
         holder.owner.setText(result.owner);
         holder.address.setText(result.address);
+        bitmap.recycle();
         return convertView;
     }
 

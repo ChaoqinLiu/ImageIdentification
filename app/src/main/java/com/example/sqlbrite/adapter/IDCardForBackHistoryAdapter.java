@@ -16,7 +16,7 @@ import com.example.sqlbrite.model.IDCardForBackHistory.IDCardForBackHistoryArray
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
+import static com.example.sqlbrite.utils.BitmapUtil.changeBitmapSize;
 
 public class IDCardForBackHistoryAdapter extends BaseAdapter {
 
@@ -67,6 +67,7 @@ public class IDCardForBackHistoryAdapter extends BaseAdapter {
         holder.issuingAuthority.setText(result.issuingAuthority);
         holder.dateOfIssue.setText(result.dateOfIssue);
         holder.expirationDate.setText(result.expirationDate);
+        bitmap.recycle();
         return convertView;
     }
 

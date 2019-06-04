@@ -1,0 +1,87 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/image_id_card_back"
+        android:layout_height="189dp"
+        android:layout_width="300dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"/>
+
+    <FrameLayout
+        android:layout_height="30dp"
+        android:layout_width="300dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_gravity="center">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="签发机关"
+            android:textSize="18sp"
+            android:layout_gravity="left"
+            android:textIsSelectable="true"/>
+
+        <TextView
+            android:id="@+id/text_issuingAuthority"
+            android:layout_width="200dp"
+            android:layout_height="30dp"
+            android:textSize="18sp"
+            android:layout_gravity="right"
+            android:textIsSelectable="true"
+            android:gravity="left"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_height="30dp"
+        android:layout_width="300dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_gravity="center">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="签发日期"
+            android:textSize="18sp"
+            android:layout_gravity="left"
+            android:textIsSelectable="true"/>
+
+        <TextView
+            android:id="@+id/text_dateOfIssue"
+            android:layout_width="200dp"
+            android:layout_height="30dp"
+            android:textSize="18sp"
+            android:layout_gravity="right"
+            android:gravity="left"
+            android:textIsSelectable="true"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_height="30dp"
+        android:layout_width="300dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_gravity="center">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="失效日期"
+            android:textSize="18sp"
+            android:layout_gravity="left"
+            android:textIsSelectable="true"/>
+
+        <TextView
+            android:id="@+id/text_expirationDate"
+            android:layout_width="200dp"
+            android:layout_height="30dp"
+            android:textSize="18sp"
+            android:layout_gravity="right"
+            android:gravity="left"
+            android:textIsSelectable="true"/>
+    </FrameLayout>
+
+</merge>

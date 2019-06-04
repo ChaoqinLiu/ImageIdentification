@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,26 +55,27 @@ public class TextHistoryFragment extends Fragment {
 
     private ListView listView;
     private TextView back;
-    private TextView prompt;
     private TextView text_title_left;
     private TextView text_title_right;
-
-    private int id;
+    private FrameLayout layout_title;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = (DisplayHistoryActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
+        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
         listView = view.findViewById(R.id.text_view_list);
         back = view.findViewById(R.id.text_back);
         text_title_left = view.findViewById(R.id.text_title_left);
         text_title_right = view.findViewById(R.id.text_title_right);
         text_title_left.setText("识别记录");
         text_title_right.setText("翻译记录");
-        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
         back.setTypeface(iconfont);
-        prompt = view.findViewById(R.id.prompt);
+        layout_title = view.findViewById(R.id.title_common);
+        layout_title.setVisibility(View.GONE);
+        initSwitchFragment();
+        initBack();
         return view;
     }
 
@@ -92,9 +94,9 @@ public class TextHistoryFragment extends Fragment {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
-                if (cursor != null) {
+                if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
-                        id = cursor.getInt(cursor.getColumnIndex("id"));
+                        int id = cursor.getInt(cursor.getColumnIndex("id"));
                         String words = cursor.getString(cursor.getColumnIndex("words"));
                         byte[] bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
                         TextHistory history = new TextHistory();
@@ -104,13 +106,10 @@ public class TextHistoryFragment extends Fragment {
                         listView.setAdapter(adapter);
                         initRemoveTextItemView();
                         getDetails();
-                        initBack();
                     }
-                    if (!TextUtils.isEmpty(String.valueOf(id))) {
-                        prompt.setVisibility(View.VISIBLE);
-                    } else {
-                        prompt.setVisibility(View.GONE);
-                    }
+                } else {
+                    PromptFragment fragment = new PromptFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt,fragment).commit();
                 }
                 cursor.close();
                 briteDatabase.close();
@@ -122,7 +121,6 @@ public class TextHistoryFragment extends Fragment {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                prompt.setVisibility(View.GONE);
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage("确定删除?");
                 builder.setTitle("提示");
@@ -175,7 +173,6 @@ public class TextHistoryFragment extends Fragment {
                 bundle.putInt("id",text_id);
                 fragment.setArguments(bundle);
                 getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
-                prompt.setVisibility(View.GONE);
             }
         });
     }
@@ -198,5 +195,36 @@ public class TextHistoryFragment extends Fragment {
                 });
     }
 
+    private void initSwitchFragment(){
+        RxView.clicks(text_title_left)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        TextHistoryFragment fragment = new TextHistoryFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(text_title_right)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        TranslationHistoryFragment fragment = new TranslationHistoryFragment();
+                        getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+    }
 
 }

@@ -1,0 +1,301 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/image_business_license"
+        android:layout_height="213dp"
+        android:layout_width="300dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars = "vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:text="单位名称"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_company_name"
+                    android:layout_width="210dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:textIsSelectable="true"
+                    android:gravity="left"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:text="类型"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_type_of_company"
+                    android:layout_width="250dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:textIsSelectable="true"
+                    android:gravity="left"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:text="法人"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_legal_person"
+                    android:layout_width="250dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:textIsSelectable="true"
+                    android:gravity="left"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="地址"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_company_address"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="注册资本"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_registered_capital"
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="证件编号"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_document_number"
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="130dp"
+                    android:layout_height="30dp"
+                    android:text="社会信用代码"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_social_credit_code"
+                    android:layout_width="170dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="组成形式"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_formation"
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="成立日期"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_date_of_establishment"
+                    android:layout_width="200dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="30dp"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="30dp"
+                    android:text="有效期"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_business_license_validity_period"
+                    android:layout_width="230dp"
+                    android:layout_height="30dp"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="经营范围"
+                    android:textSize="18sp"
+                    android:layout_gravity="left"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/text_business_scope"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:layout_gravity="right"
+                    android:gravity="left"
+                    android:textIsSelectable="true"/>
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</merge>

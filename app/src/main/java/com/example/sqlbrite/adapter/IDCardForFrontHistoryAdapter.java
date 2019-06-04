@@ -16,7 +16,7 @@ import com.example.sqlbrite.model.IDCardForFrontHistory.IDCardForFrontHistoryArr
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
+import static com.example.sqlbrite.utils.BitmapUtil.changeBitmapSize;
 
 public class IDCardForFrontHistoryAdapter extends BaseAdapter {
 
@@ -65,6 +65,7 @@ public class IDCardForFrontHistoryAdapter extends BaseAdapter {
         holder.id.setText(String.valueOf(result.id));
         holder.name.setText(result.name);
         holder.number.setText(result.number);
+        bitmap.recycle();
         return convertView;
     }
 

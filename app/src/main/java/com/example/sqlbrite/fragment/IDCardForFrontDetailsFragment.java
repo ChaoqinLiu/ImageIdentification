@@ -4,19 +4,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
-import com.example.sqlbrite.util.BitmapUtil;
+import com.example.sqlbrite.utils.BitmapUtil;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
@@ -47,9 +47,6 @@ public class IDCardForFrontDetailsFragment extends Fragment {
     private TextView textViewGender;
     private TextView textViewNationality;
     private TextView back;
-    private TextView prompt;
-    private TextView text_record;
-    private TextView translation_record;
 
     private int id;
     private String address;
@@ -64,9 +61,20 @@ public class IDCardForFrontDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = (DisplayHistoryActivity) getActivity();
-        view = inflater.inflate(R.layout.item_result_id_card_for_front,container,false);
+        view = inflater.inflate(R.layout.fragment_id_card_for_front_details,container,false);
+        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
+        imageView = view.findViewById(R.id.image_id_card);
+        textViewAddress = view.findViewById(R.id.text_address);
+        textViewName = view.findViewById(R.id.text_name);
+        textViewBirthday = view.findViewById(R.id.text_birthday);
+        textViewIDNumber = view.findViewById(R.id.text_idNumber);
+        textViewGender = view.findViewById(R.id.text_gender);
+        textViewNationality = view.findViewById(R.id.text_nationality);
+        back = view.findViewById(R.id.back);
+        back.setTypeface(iconfont);
         Bundle bundle = getArguments();
         id = bundle.getInt("id");
+        initBack();
         return view;
     }
 
@@ -76,23 +84,6 @@ public class IDCardForFrontDetailsFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        imageView = view.findViewById(R.id.image_id_card);
-        textViewAddress = view.findViewById(R.id.text_address);
-        textViewName = view.findViewById(R.id.text_name);
-        textViewBirthday = view.findViewById(R.id.text_birthday);
-        textViewIDNumber = view.findViewById(R.id.text_idNumber);
-        textViewGender = view.findViewById(R.id.text_gender);
-        textViewNationality = view.findViewById(R.id.text_nationality);
-        text_record = getActivity().findViewById(R.id.text_record);
-        translation_record = getActivity().findViewById(R.id.translation_record);
-        translation_record.setVisibility(View.GONE);
-        text_record.setText("详情");
-        FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
-        linearParams.setMarginStart(450);
-        text_record.setLayoutParams(linearParams);
-        text_record.setClickable(false);
-        back = getActivity().findViewById(R.id.text_back);
-        prompt = getActivity().findViewById(R.id.prompt);
         getDetailData();
     }
 
@@ -119,7 +110,7 @@ public class IDCardForFrontDetailsFragment extends Fragment {
                         textViewGender.setText(gender);
                         textViewNationality.setText(nationality);
                         textViewIDNumber.setText(idNumber);
-                        initBack();
+                        bitmap.recycle();
                     }
                 }
                 cursor.close();
@@ -136,8 +127,6 @@ public class IDCardForFrontDetailsFragment extends Fragment {
                     public void accept(@NonNull Object o) throws Exception {
                         IDCardForFrontHistoryFragment fragment = new IDCardForFrontHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
-                        prompt.setVisibility(View.GONE);
-                        translation_record.setVisibility(View.GONE);
                     }
                 }, new Consumer<Throwable>() {
                     @Override

@@ -16,7 +16,7 @@ import com.example.sqlbrite.model.TranslationHistory.TranslationHistoryArray;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
+import static com.example.sqlbrite.utils.BitmapUtil.changeBitmapSize;
 
 public class TranslationHistoryAdapter extends BaseAdapter {
 
@@ -65,6 +65,7 @@ public class TranslationHistoryAdapter extends BaseAdapter {
         holder.id.setText(String.valueOf(result.id));
         holder.original.setText(result.original);
         holder.translation.setText(result.translation);
+        bitmap.recycle();
         return convertView;
     }
 

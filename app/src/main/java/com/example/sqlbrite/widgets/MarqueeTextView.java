@@ -1,4 +1,4 @@
-package com.example.sqlbrite.ui;
+package com.example.sqlbrite.widgets;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;

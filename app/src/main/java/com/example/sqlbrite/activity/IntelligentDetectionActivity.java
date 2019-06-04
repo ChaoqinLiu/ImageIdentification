@@ -40,9 +40,9 @@ import com.example.sqlbrite.model.LicensePlateResult;
 import com.example.sqlbrite.model.PassportResult;
 import com.example.sqlbrite.model.TextResult;
 import com.example.sqlbrite.model.TrainTicketResult;
-import com.example.sqlbrite.util.BitmapUtil;
-import com.example.sqlbrite.util.FileUtil;
-import com.example.sqlbrite.util.GsonUtil;
+import com.example.sqlbrite.utils.BitmapUtil;
+import com.example.sqlbrite.utils.FileUtil;
+import com.example.sqlbrite.utils.GsonUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -50,7 +50,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.safframework.injectview.annotations.InjectView;
-import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
@@ -962,6 +961,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 values.put("pic", os.toByteArray());
                 briteDatabase.insert("front_id_card",values);
+                bitmap.recycle();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -983,6 +983,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 values.put("pic", os.toByteArray());
                 briteDatabase.insert("back_id_card",values);
+                bitmap.recycle();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1004,6 +1005,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 values.put("pic", os.toByteArray());
                 briteDatabase.insert("image", values);
+                bitmap.recycle();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1039,6 +1041,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 values.put("pic", os.toByteArray());
                 briteDatabase.insert("driving_license",values);
+                bitmap.recycle();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1074,6 +1077,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 values.put("pic", os.toByteArray());
                 briteDatabase.insert("driver_license",values);
+                bitmap.recycle();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1093,6 +1097,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 values.put("pic", os.toByteArray());
                 briteDatabase.insert("license_plate",values);
+                bitmap.recycle();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1116,6 +1121,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 values.put("pic", os.toByteArray());
                 briteDatabase.insert("bank_card",values);
+                bitmap.recycle();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1173,6 +1179,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 values.put("pic", os.toByteArray());
                 briteDatabase.insert("business_license",values);
+                bitmap.recycle();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1204,6 +1211,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 values.put("pic", os.toByteArray());
                 briteDatabase.insert("train_ticket",values);
+                bitmap.recycle();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1239,6 +1247,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                 values.put("pic", os.toByteArray());
                 briteDatabase.insert("passport",values);
+                bitmap.recycle();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1263,6 +1272,7 @@ public class IntelligentDetectionActivity extends BaseActivity {
         singleThreadExecutor.shutdown();
         scheduledThreadPool.shutdown();
         fixedThreadPool.shutdown();
+        bitmap.recycle();
     }
 
 }

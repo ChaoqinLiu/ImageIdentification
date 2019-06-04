@@ -141,7 +141,7 @@ public class TabHistoryFragment extends Fragment {
                     public void accept(@NonNull Object o) throws Exception {
                         Intent intent = new Intent(context, DisplayHistoryActivity.class);
                         intent.putExtra("type", TYPE_IMAGE);
-                        startActivityForResult(intent, 1);
+                        startActivity(intent);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -157,7 +157,7 @@ public class TabHistoryFragment extends Fragment {
                     public void accept(@NonNull Object o) throws Exception {
                         Intent intent = new Intent(context, DisplayHistoryActivity.class);
                         intent.putExtra("type", TYPE_TEXT);
-                        startActivityForResult(intent, 2);
+                        startActivity(intent);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -173,7 +173,7 @@ public class TabHistoryFragment extends Fragment {
                     public void accept(@NonNull Object o) throws Exception {
                         Intent intent = new Intent(context, DisplayHistoryActivity.class);
                         intent.putExtra("type", TYPE_DRIVING_LICENSE);
-                        startActivityForResult(intent, 3);
+                        startActivity(intent);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -189,7 +189,39 @@ public class TabHistoryFragment extends Fragment {
                     public void accept(@NonNull Object o) throws Exception {
                         Intent intent = new Intent(context, DisplayHistoryActivity.class);
                         intent.putExtra("type", TYPE_ID_CARD);
-                        startActivityForResult(intent, 4);
+                        startActivity(intent);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(layout_business_license)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        Intent intent = new Intent(context, DisplayHistoryActivity.class);
+                        intent.putExtra("type", TYPE_BUSINESS_LICENSE);
+                        startActivity(intent);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(layout_bank_card)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        Intent intent = new Intent(context, DisplayHistoryActivity.class);
+                        intent.putExtra("type", TYPE_BANK_CARD);
+                        startActivity(intent);
                     }
                 }, new Consumer<Throwable>() {
                     @Override

@@ -11,14 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
-import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.model.ImageHistory.ImageHistoryArray;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
+import static com.example.sqlbrite.utils.BitmapUtil.changeBitmapSize;
 
 public class ImageHistoryAdapter extends BaseAdapter {
 
@@ -51,7 +50,7 @@ public class ImageHistoryAdapter extends BaseAdapter {
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = LayoutInflater.from(mContext).inflate(R.layout.item_result_image_history, null);
-            holder.id = convertView.findViewById(R.id.text_image);
+            holder.id = convertView.findViewById(R.id.text_image_id);
             holder.score = convertView.findViewById(R.id.text_score);
             holder.root = convertView.findViewById(R.id.text_root);
             holder.keyword = convertView.findViewById(R.id.text_keyword);
@@ -80,6 +79,7 @@ public class ImageHistoryAdapter extends BaseAdapter {
         }
         holder.score.setText(score + "%");
         holder.root.setText(result.root);
+        bitmap.recycle();
         return convertView;
     }
 

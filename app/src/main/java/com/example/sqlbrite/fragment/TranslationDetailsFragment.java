@@ -4,19 +4,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
-import com.example.sqlbrite.util.BitmapUtil;
+import com.example.sqlbrite.utils.BitmapUtil;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
@@ -43,7 +43,6 @@ public class TranslationDetailsFragment extends Fragment {
     private TextView textViewOriginal;
     private TextView textViewTranslation;
     private TextView back;
-    private TextView prompt;
 
     private int id;
     private String original;
@@ -55,10 +54,12 @@ public class TranslationDetailsFragment extends Fragment {
 
         context = (DisplayHistoryActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_translation_details,container,false);
+        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
         imageView = view.findViewById(R.id.image_details);
         textViewOriginal = view.findViewById(R.id.text_details_original);
         textViewTranslation = view.findViewById(R.id.text_details_translation);
-        back = view.findViewById(R.id.text_back);
+        back = view.findViewById(R.id.back);
+        back.setTypeface(iconfont);
         Bundle bundle = getArguments();
         id = bundle.getInt("id");
         initBack();
@@ -71,7 +72,6 @@ public class TranslationDetailsFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        prompt = getActivity().findViewById(R.id.prompt);
         getDetailData();
     }
 
@@ -90,6 +90,7 @@ public class TranslationDetailsFragment extends Fragment {
                         imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,290,150));
                         textViewOriginal.setText(original);
                         textViewTranslation.setText(translation);
+                        bitmap.recycle();
                     }
                 }
                 cursor.close();
@@ -106,7 +107,6 @@ public class TranslationDetailsFragment extends Fragment {
                     public void accept(@NonNull Object o) throws Exception {
                         TranslationHistoryFragment fragment = new TranslationHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
-                        prompt.setVisibility(View.GONE);
                     }
                 }, new Consumer<Throwable>() {
                     @Override

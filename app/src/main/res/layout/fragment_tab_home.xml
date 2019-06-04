@@ -5,7 +5,7 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <com.example.sqlbrite.ui.MarqueeTextView
+    <com.example.sqlbrite.widgets.MarqueeTextView
         android:id="@+id/tvMarqueeOne"
         android:layout_width="match_parent"
         android:layout_height="90dp"

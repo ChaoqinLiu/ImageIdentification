@@ -15,7 +15,7 @@ import com.example.sqlbrite.model.BusinessLicenseResult;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
+import static com.example.sqlbrite.utils.BitmapUtil.changeBitmapSize;
 
 public class ResultBusinessLicenseAdapter extends BaseAdapter {
 

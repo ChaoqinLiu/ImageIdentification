@@ -33,18 +33,6 @@ public class TabHomeFragment extends Fragment {
     protected View view;
     protected Context context;
 
-    private final int TYPE_IMAGE_RESULT_CODE = 10;
-    private final int TYPE_TEXT_RESULT_CODE = 20;
-    private final int ID_CARD_BACK_RESULT_CODE = 40;
-    private final int ID_CARD_FRONT_RESULT_CODE = 50;
-    private final int BANK_CARD_FRONT_RESULT_CODE = 60;
-    private final int LICENSE_PLATE_RESULT_CODE = 70;
-    private final int DRIVER_LICENSE_RESULT_CODE = 80;
-    private final int TRAIN_TICKET_RESULT_CODE = 90;
-    private final int PASSPORT_RESULT_CODE = 100;
-    private final int DRIVING_LICENSE_RESULT_CODE = 110;
-    private final int BUSINESS_LICENSE_RESULT_CODE = 120;
-
     private final String TYPE_IMAGE = "type_image";
     private final String TYPE_TEXT = "type_text";
     private final String TYPE_ID_CARD = "type_id_card";
@@ -133,7 +121,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
                             intent.putExtra("type", TYPE_IMAGE);
-                            startActivityForResult(intent, TYPE_IMAGE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -156,7 +144,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
                             intent.putExtra("type", TYPE_IMAGE);
-                            startActivityForResult(intent, TYPE_IMAGE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -178,7 +166,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
                             intent.putExtra("type", TYPE_TEXT);
-                            startActivityForResult(intent, TYPE_IMAGE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -200,7 +188,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
                             intent.putExtra("type", TYPE_TEXT);
-                            startActivityForResult(intent, TYPE_TEXT_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -253,7 +241,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
                             intent.putExtra("type", TYPE_BANK_CARD);
-                            startActivityForResult(intent, BANK_CARD_FRONT_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -275,7 +263,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
                             intent.putExtra("type", TYPE_BANK_CARD);
-                            startActivityForResult(intent, BANK_CARD_FRONT_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -297,7 +285,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
                             intent.putExtra("type", TYPE_LICENSE_PLATE);
-                            startActivityForResult(intent, LICENSE_PLATE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -319,7 +307,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
                             intent.putExtra("type", TYPE_LICENSE_PLATE);
-                            startActivityForResult(intent, LICENSE_PLATE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -341,7 +329,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
                             intent.putExtra("type", TYPE_DRIVER_LICENSE);
-                            startActivityForResult(intent, DRIVER_LICENSE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -363,7 +351,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
                             intent.putExtra("type", TYPE_DRIVER_LICENSE);
-                            startActivityForResult(intent, DRIVER_LICENSE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -385,7 +373,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
                             intent.putExtra("type", TYPE_TRAIN_TICKET);
-                            startActivityForResult(intent, TRAIN_TICKET_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -407,7 +395,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
                             intent.putExtra("type", TYPE_TRAIN_TICKET);
-                            startActivityForResult(intent, TRAIN_TICKET_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -429,7 +417,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
                             intent.putExtra("type", TYPE_PASSPORT);
-                            startActivityForResult(intent, PASSPORT_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -451,7 +439,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
                             intent.putExtra("type", TYPE_PASSPORT);
-                            startActivityForResult(intent, PASSPORT_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -473,7 +461,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
                             intent.putExtra("type", TYPE_DRIVING_LICENSE);
-                            startActivityForResult(intent, DRIVING_LICENSE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -495,7 +483,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
                             intent.putExtra("type", TYPE_DRIVING_LICENSE);
-                            startActivityForResult(intent, DRIVING_LICENSE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -517,7 +505,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, TakePictureActivity.class);
                             intent.putExtra("type", TYPE_BUSINESS_LICENSE);
-                            startActivityForResult(intent, BUSINESS_LICENSE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -539,7 +527,7 @@ public class TabHomeFragment extends Fragment {
                         if (granted) {
                             Intent intent = new Intent(context, AlbumSelectionActivity.class);
                             intent.putExtra("type", TYPE_BUSINESS_LICENSE);
-                            startActivityForResult(intent, BUSINESS_LICENSE_RESULT_CODE);
+                            startActivity(intent);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -592,7 +580,7 @@ public class TabHomeFragment extends Fragment {
                             Intent intent = new Intent(context, activity);
                             intent.putExtra("id_card_side", ID_CARD_BACK);
                             intent.putExtra("type", TYPE_ID_CARD);
-                            startActivityForResult(intent, ID_CARD_BACK_RESULT_CODE);
+                            startActivity(intent);
                             dialog.dismiss();
                         }
                     }
@@ -614,7 +602,7 @@ public class TabHomeFragment extends Fragment {
                             Intent intent = new Intent(context, activity);
                             intent.putExtra("id_card_side", ID_CARD_FRONT);
                             intent.putExtra("type", TYPE_ID_CARD);
-                            startActivityForResult(intent, ID_CARD_FRONT_RESULT_CODE);
+                            startActivity(intent);
                             dialog.dismiss();
                         }
                     }

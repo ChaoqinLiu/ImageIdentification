@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -53,8 +54,6 @@ public class ImageHistoryFragment extends Fragment {
 
     private ListView listView;
     private TextView back;
-    private TextView prompt;
-    private TextView title;
     private LinearLayout title_common_other;
 
     private int id;
@@ -68,13 +67,13 @@ public class ImageHistoryFragment extends Fragment {
 
         context = (DisplayHistoryActivity) getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
+        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
         listView = view.findViewById(R.id.text_view_list);
         back = view.findViewById(R.id.back);
-        prompt = view.findViewById(R.id.prompt);
-        title = view.findViewById(R.id.text_title_common);
-        title.setText("识别记录");
+        back.setTypeface(iconfont);
         title_common_other = view.findViewById(R.id.title_common_other);
         title_common_other.setVisibility(View.GONE);
+        initBack();
         return view;
     }
 
@@ -93,7 +92,7 @@ public class ImageHistoryFragment extends Fragment {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
-                if (cursor != null) {
+                if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
                         id = cursor.getInt(cursor.getColumnIndex("id"));
                         score = cursor.getFloat(cursor.getColumnIndex("score"));
@@ -106,13 +105,10 @@ public class ImageHistoryFragment extends Fragment {
                         imageHistoryAdapter = new ImageHistoryAdapter(context,imageList);
                         listView.setAdapter(imageHistoryAdapter);
                         initRemoveImageItemView();
-                        initBack();
                     }
-                    if (!TextUtils.isEmpty(String.valueOf(id))) {
-                        prompt.setVisibility(View.VISIBLE);
-                    } else {
-                        prompt.setVisibility(View.GONE);
-                    }
+                } else {
+                    PromptFragment fragment = new PromptFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt,fragment).commit();
                 }
                 cursor.close();
                 briteDatabase.close();
@@ -130,7 +126,6 @@ public class ImageHistoryFragment extends Fragment {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                prompt.setVisibility(View.GONE);
                 //定义AlertDialog.Builder对象，当长按列表项的时候弹出确认删除对话框
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage("确定删除?");
@@ -142,8 +137,9 @@ public class ImageHistoryFragment extends Fragment {
                         if(imageList.remove(position) != null ){
                             try {
                                 //获取item控件内容:id作为删除数据库数据的条件
-                                TextView textView = parent.getChildAt(position).findViewById(R.id.text_image);
+                                TextView textView = parent.getChildAt(position).findViewById(R.id.text_image_id);
                                 int id = Integer.parseInt(textView.getText().toString());
+                                L.i(String.valueOf(id));
                                 deleteImageItemDataFromDatabase(id);
                             } catch (Exception e) {
                                 e.printStackTrace();

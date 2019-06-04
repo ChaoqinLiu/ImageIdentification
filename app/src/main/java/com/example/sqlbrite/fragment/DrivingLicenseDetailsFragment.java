@@ -4,19 +4,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
-import com.example.sqlbrite.util.BitmapUtil;
+import com.example.sqlbrite.utils.BitmapUtil;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
@@ -49,11 +49,8 @@ public class DrivingLicenseDetailsFragment extends Fragment {
     private TextView textViewEngineNumber;
     private TextView textViewVehicleIdentificationNumber;
     private TextView textViewRegistrationDate;
-    private TextView textViewvIssuingCertificateOfDate;
+    private TextView textViewIssuingCertificateOfDate;
     private TextView back;
-    private TextView prompt;
-    private TextView text_record;
-    private TextView translation_record;
 
     private int id;
     private String address;
@@ -72,7 +69,21 @@ public class DrivingLicenseDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = (DisplayHistoryActivity) getActivity();
-        view = inflater.inflate(R.layout.item_result_driving_license,container,false);
+        view = inflater.inflate(R.layout.fragment_driving_license_details,container,false);
+        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
+        back = view.findViewById(R.id.back);
+        back.setTypeface(iconfont);
+        imageView = view.findViewById(R.id.image_driving_license);
+        textViewAddress = view.findViewById(R.id.text_owner_address);
+        textViewNumberPlateNumber = view.findViewById(R.id.text_number_plate_number);
+        textViewVehicleType = view.findViewById(R.id.text_vehicle_type);
+        textViewOwner = view.findViewById(R.id.text_owner);
+        textViewNatureOfUse = view.findViewById(R.id.text_nature_of_use);
+        textViewBrandModelNumber = view.findViewById(R.id.text_brand_model_number);
+        textViewEngineNumber = view.findViewById(R.id.text_engine_number);
+        textViewVehicleIdentificationNumber = view.findViewById(R.id.text_vehicle_identification_number);
+        textViewRegistrationDate = view.findViewById(R.id.text_registration_date);
+        textViewIssuingCertificateOfDate = view.findViewById(R.id.text_issuing_certificate_of_date);
         Bundle bundle = getArguments();
         id = bundle.getInt("id");
         return view;
@@ -84,27 +95,6 @@ public class DrivingLicenseDetailsFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        imageView = view.findViewById(R.id.image_driving_license);
-        textViewAddress = view.findViewById(R.id.text_owner_address);
-        textViewNumberPlateNumber = view.findViewById(R.id.text_number_plate_number);
-        textViewVehicleType = view.findViewById(R.id.text_vehicle_type);
-        textViewOwner = view.findViewById(R.id.text_owner);
-        textViewNatureOfUse = view.findViewById(R.id.text_nature_of_use);
-        textViewBrandModelNumber = view.findViewById(R.id.text_brand_model_number);
-        textViewEngineNumber = view.findViewById(R.id.text_engine_number);
-        textViewVehicleIdentificationNumber = view.findViewById(R.id.text_vehicle_identification_number);
-        textViewRegistrationDate = view.findViewById(R.id.text_registration_date);
-        textViewvIssuingCertificateOfDate = view.findViewById(R.id.text_issuing_certificate_of_date);
-        text_record = getActivity().findViewById(R.id.text_record);
-        translation_record = getActivity().findViewById(R.id.translation_record);
-        translation_record.setVisibility(View.GONE);
-        text_record.setText("详情");
-        FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
-        linearParams.setMarginStart(450);
-        text_record.setLayoutParams(linearParams);
-        text_record.setClickable(false);
-        back = getActivity().findViewById(R.id.text_back);
-        prompt = getActivity().findViewById(R.id.prompt);
         getDetailData();
     }
 
@@ -138,7 +128,8 @@ public class DrivingLicenseDetailsFragment extends Fragment {
                         textViewEngineNumber.setText(engineNumber);
                         textViewVehicleIdentificationNumber.setText(vehicleIdentificationNumber);
                         textViewRegistrationDate.setText(registrationDate);
-                        textViewvIssuingCertificateOfDate.setText(issuingCertificateOfDate);
+                        textViewIssuingCertificateOfDate.setText(issuingCertificateOfDate);
+                        bitmap.recycle();
                         initBack();
                     }
                 }
@@ -156,13 +147,6 @@ public class DrivingLicenseDetailsFragment extends Fragment {
                     public void accept(@NonNull Object o) throws Exception {
                         DrivingLicenseHistoryFragment fragment = new DrivingLicenseHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
-                        prompt.setVisibility(View.GONE);
-                        translation_record.setVisibility(View.GONE);
-                        text_record.setText("识别记录");
-                        FrameLayout.LayoutParams linearParams = (FrameLayout.LayoutParams) text_record.getLayoutParams();
-                        linearParams.setMarginStart(400);
-                        text_record.setLayoutParams(linearParams);
-                        text_record.setClickable(false);
                     }
                 }, new Consumer<Throwable>() {
                     @Override

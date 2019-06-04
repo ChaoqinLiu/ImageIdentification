@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/title_common"
             android:layout_height="65dp"
             android:layout_width="match_parent"
@@ -17,23 +17,23 @@
 
             <TextView
                 android:id="@+id/back"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:textSize="22sp"
-                android:gravity="center"
+                android:layout_gravity="center_vertical|left"
+                android:layout_marginLeft="8dp"
                 android:textColor="@color/white"
                 android:text="@string/str_back"/>
 
             <TextView
                 android:id="@+id/text_title_common"
-                android:layout_height="match_parent"
-                android:layout_width="0dp"
-                android:layout_weight="4"
-                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_vertical|center"
                 android:textColor="@color/white"
+                android:text="识别记录"
                 android:textSize="16sp"/>
-        </LinearLayout>
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/title_common_other"
@@ -45,9 +45,10 @@
             <TextView
                 android:id="@+id/text_back"
                 android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical|left"
+                android:layout_marginLeft="8dp"
                 android:textSize="22sp"
                 android:textColor="@color/white"
                 android:text="@string/str_back"/>
@@ -55,7 +56,7 @@
             <TextView
                 android:id="@+id/text_title_left"
                 android:layout_width="0dp"
-                android:layout_weight="2"
+                android:layout_weight="3"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="16sp"
@@ -64,17 +65,19 @@
             <TextView
                 android:id="@+id/text_title_right"
                 android:layout_width="0dp"
-                android:layout_weight="2"
+                android:layout_weight="3"
                 android:layout_height="match_parent"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                android:gravity="center"/>
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical|left"/>
         </LinearLayout>
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/frameLayout_prompt"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content">
+        android:layout_width="match_parent">
 
         <ListView
             android:id="@+id/text_view_list"
@@ -84,13 +87,6 @@
             android:layout_margin="8dp"
             android:textAlignment="center" />
 
-        <TextView
-            android:id="@+id/prompt"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="20dp"
-            android:text="暂无记录"/>
     </FrameLayout>
 
 </LinearLayout>

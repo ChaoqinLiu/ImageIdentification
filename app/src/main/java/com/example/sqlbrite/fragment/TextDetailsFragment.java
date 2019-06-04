@@ -4,19 +4,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
-import com.example.sqlbrite.util.BitmapUtil;
+import com.example.sqlbrite.utils.BitmapUtil;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
@@ -55,7 +55,9 @@ public class TextDetailsFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_text_details,container,false);
         imageView = view.findViewById(R.id.image_details);
         textView = view.findViewById(R.id.text_details);
-        back = view.findViewById(R.id.text_back);
+        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
+        back = view.findViewById(R.id.back);
+        back.setTypeface(iconfont);
         Bundle bundle = getArguments();
         id = bundle.getInt("id");
         initBack();
@@ -84,6 +86,7 @@ public class TextDetailsFragment extends Fragment {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
                         imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,290,150));
                         textView.setText(words);
+                        bitmap.recycle();
                     }
                 }
                 cursor.close();

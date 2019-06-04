@@ -1,4 +1,4 @@
-package com.example.sqlbrite.util;
+package com.example.sqlbrite.utils;
 
 import android.content.Context;
 import android.net.Uri;

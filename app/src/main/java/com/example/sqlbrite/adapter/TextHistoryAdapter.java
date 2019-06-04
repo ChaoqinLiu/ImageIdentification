@@ -13,11 +13,10 @@ import android.widget.TextView;
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.model.TextHistory.TextHistoryArray;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.sqlbrite.util.BitmapUtil.changeBitmapSize;
+import static com.example.sqlbrite.utils.BitmapUtil.changeBitmapSize;
 
 public class TextHistoryAdapter extends BaseAdapter {
 
@@ -64,6 +63,7 @@ public class TextHistoryAdapter extends BaseAdapter {
         holder.imageView.setImageBitmap(changeBitmapSize(bitmap,70,70));
         holder.id.setText(String.valueOf(result.id));
         holder.words.setText(result.words);
+        bitmap.recycle();
         return convertView;
     }
 

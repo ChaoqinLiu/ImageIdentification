@@ -20,8 +20,8 @@ import com.example.sqlbrite.app.BaseActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.model.Language;
 import com.example.sqlbrite.model.TranslateResult;
-import com.example.sqlbrite.util.BitmapUtil;
-import com.example.sqlbrite.util.MD5Utils;
+import com.example.sqlbrite.utils.BitmapUtil;
+import com.example.sqlbrite.utils.MD5Utils;
 import com.google.gson.Gson;
 import com.safframework.injectview.annotations.InjectView;
 import com.safframework.log.L;
@@ -177,6 +177,7 @@ public class TextTranslationActivity extends BaseActivity {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
             values.put("pic", os.toByteArray());
             briteDatabase.insert("translation", values);
+            bitmap.recycle();
         } catch (Exception e) {
             e.printStackTrace();
         }
