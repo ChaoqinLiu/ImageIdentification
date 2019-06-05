@@ -79,18 +79,23 @@ public class TextDetailsFragment extends Fragment {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
-                if (cursor != null) {
+                if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
                         words = cursor.getString(cursor.getColumnIndex("words"));
                         bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,290,150));
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap, 290, 150));
                         textView.setText(words);
                         bitmap.recycle();
                     }
                 }
                 cursor.close();
                 briteDatabase.close();
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                L.i(throwable.getMessage());
             }
         });
     }

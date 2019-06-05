@@ -104,7 +104,7 @@ public class DrivingLicenseDetailsFragment extends Fragment {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
-                if (cursor != null) {
+                if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
                         address = cursor.getString(cursor.getColumnIndex("address"));
                         numberPlateNumber = cursor.getString(cursor.getColumnIndex("numberPlateNumber"));
@@ -117,8 +117,8 @@ public class DrivingLicenseDetailsFragment extends Fragment {
                         registrationDate = cursor.getString(cursor.getColumnIndex("registrationDate"));
                         issuingCertificateOfDate = cursor.getString(cursor.getColumnIndex("issuingCertificateOfDate"));
                         bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,300,200));
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap, 300, 200));
                         textViewAddress.setText(address);
                         textViewNumberPlateNumber.setText(numberPlateNumber);
                         textViewVehicleType.setText(vehicleType);
@@ -135,6 +135,11 @@ public class DrivingLicenseDetailsFragment extends Fragment {
                 }
                 cursor.close();
                 briteDatabase.close();
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                L.i(throwable.getMessage());
             }
         });
     }

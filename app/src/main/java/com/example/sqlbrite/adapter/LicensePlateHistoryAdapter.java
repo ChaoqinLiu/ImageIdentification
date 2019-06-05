@@ -1,6 +1,8 @@
 package com.example.sqlbrite.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,22 +11,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
-import com.example.sqlbrite.activity.IntelligentDetectionActivity;
-import com.example.sqlbrite.model.LicensePlateResult;
+import com.example.sqlbrite.model.LicensePlateHistory.LicensePlateHistoryArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.sqlbrite.utils.BitmapUtil.changeBitmapSize;
 
-public class ResultLicensePlateAdapter extends BaseAdapter {
+public class LicensePlateHistoryAdapter extends BaseAdapter {
 
     private Context mContext;
-    private List<LicensePlateResult> arrayList = new ArrayList<LicensePlateResult>();
+    private List<LicensePlateHistoryArray> arrayList = new ArrayList<LicensePlateHistoryArray>();
+    private String color;
 
-    private String licensePlateColor;
-
-    public ResultLicensePlateAdapter(Context context, List<LicensePlateResult> result_list){
+    public LicensePlateHistoryAdapter(Context context, List<LicensePlateHistoryArray> result_list){
         mContext = context;
         arrayList = result_list;
     }
@@ -49,35 +49,41 @@ public class ResultLicensePlateAdapter extends BaseAdapter {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_result_license_palte, null);
-            holder.color = convertView.findViewById(R.id.text_license_plate_color);
-            holder.number = convertView.findViewById(R.id.text_license_plate_number);
-            holder.imageView = convertView.findViewById(R.id.image_license_plate);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_result_license_plate_history, null);
+            holder.id = convertView.findViewById(R.id.text_id);
+            holder.color = convertView.findViewById(R.id.text_color);
+            holder.number = convertView.findViewById(R.id.text_number);
+            holder.imageView = convertView.findViewById(R.id.image_view_license_plate);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        LicensePlateResult licensePlateResult = arrayList.get(position);
-        holder.imageView.setImageBitmap(changeBitmapSize(IntelligentDetectionActivity.bitmap,300,189));
+        LicensePlateHistoryArray result = arrayList.get(position);
+        byte[] bytes = result.bytes;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+        holder.imageView.setImageBitmap(changeBitmapSize(bitmap,70,70));
+        holder.id.setText(String.valueOf(result.id));
         try {
-            String colorType = licensePlateResult.words_result.getColor();
+            String colorType = result.color;
             if (colorType.contains("yellow")) {
-                licensePlateColor = "黄色";
+                color = "黄色";
             } else if (colorType.contains("blue")) {
-                licensePlateColor = "蓝色";
+                color = "蓝色";
             } else if (colorType.contains("green")) {
-                licensePlateColor = "绿色";
+                color = "绿色";
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        holder.color.setText(licensePlateColor);
-        holder.number.setText(licensePlateResult.words_result.getNumber());
+        holder.color.setText(color);
+        holder.number.setText(result.number);
+        bitmap.recycle();
         return convertView;
     }
 
     public final class ViewHolder {
+        private TextView id;
         private TextView color;
         private TextView number;
         private ImageView imageView;

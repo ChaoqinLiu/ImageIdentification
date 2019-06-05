@@ -229,6 +229,70 @@ public class TabHistoryFragment extends Fragment {
                         L.i(throwable.getMessage());
                     }
                 });
+
+        RxView.clicks(layout_driver_license)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        Intent intent = new Intent(context, DisplayHistoryActivity.class);
+                        intent.putExtra("type", TYPE_DRIVER_LICENSE);
+                        startActivity(intent);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(layout_license_plate)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        Intent intent = new Intent(context, DisplayHistoryActivity.class);
+                        intent.putExtra("type", TYPE_LICENSE_PLATE);
+                        startActivity(intent);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(layout_passport)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        Intent intent = new Intent(context, DisplayHistoryActivity.class);
+                        intent.putExtra("type", TYPE_PASSPORT);
+                        startActivity(intent);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
+
+        RxView.clicks(layout_train_ticket)
+                .throttleFirst(600,TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        Intent intent = new Intent(context, DisplayHistoryActivity.class);
+                        intent.putExtra("type", TYPE_TRAIN_TICKET);
+                        startActivity(intent);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
+                    }
+                });
     }
 
 

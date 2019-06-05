@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
-import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.utils.BitmapUtil;
 import com.jakewharton.rxbinding2.view.RxView;
@@ -30,7 +29,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-public class IDCardForFrontDetailsFragment extends Fragment {
+public class TrainTicketDetailsFragment extends Fragment {
 
     private IdentificationDatabaseHelper dbHelper;
     private BriteDatabase briteDatabase;
@@ -40,41 +39,46 @@ public class IDCardForFrontDetailsFragment extends Fragment {
     protected Context context;
 
     private ImageView imageView;
-    private TextView textViewAddress;
-    private TextView textViewBirthday;
+    private TextView textViewStartingStation;
+    private TextView textViewDestinationStation;
+    private TextView textViewSeatCategory;
+    private TextView textViewTicketRates;
+    private TextView textViewTicketNum;
+    private TextView textViewTrainNum;
     private TextView textViewName;
-    private TextView textViewIDNumber;
-    private TextView textViewGender;
-    private TextView textViewNationality;
+    private TextView textViewDate;
     private TextView back;
 
     private int id;
-    private String address;
-    private String birthday;
+    private String startingStation;
+    private String destinationStation;
+    private String seatCategory;
+    private String ticketRates;
+    private String ticketNum;
+    private String trainNum;
     private String name;
-    private String idNumber;
-    private String gender;
-    private String nationality;
+    private String date;
     private byte[] bytes;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        context = (DisplayHistoryActivity) getActivity();
-        view = inflater.inflate(R.layout.fragment_id_card_for_front_details,container,false);
+        context = getActivity();
+        view = inflater.inflate(R.layout.fragment_train_ticket_details,container,false);
         Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
-        imageView = view.findViewById(R.id.image_id_card);
-        textViewAddress = view.findViewById(R.id.text_address);
-        textViewName = view.findViewById(R.id.text_name);
-        textViewBirthday = view.findViewById(R.id.text_birthday);
-        textViewIDNumber = view.findViewById(R.id.text_idNumber);
-        textViewGender = view.findViewById(R.id.text_gender);
-        textViewNationality = view.findViewById(R.id.text_nationality);
         back = view.findViewById(R.id.back);
         back.setTypeface(iconfont);
+        imageView = view.findViewById(R.id.image_train_ticket);
+        textViewStartingStation = view.findViewById(R.id.text_starting_station);
+        textViewDestinationStation = view.findViewById(R.id.text_destination_station);
+        textViewSeatCategory = view.findViewById(R.id.text_seat_category);
+        textViewTicketRates = view.findViewById(R.id.text_ticket_rates);
+        textViewTicketNum = view.findViewById(R.id.text_ticket_num);
+        textViewTrainNum = view.findViewById(R.id.text_train_num);
+        textViewName = view.findViewById(R.id.text_passenger_name);
+        textViewDate = view.findViewById(R.id.text_departure_date);
         Bundle bundle = getArguments();
         id = bundle.getInt("id");
-        initBack();
         return view;
     }
 
@@ -88,29 +92,34 @@ public class IDCardForFrontDetailsFragment extends Fragment {
     }
 
     private void getDetailData() {
-        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("front_id_card","SELECT * FROM front_id_card WHERE id=" + id);
+        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("train_ticket","SELECT * FROM train_ticket WHERE id=" + id);
         observable.subscribe(new Action1<SqlBrite.Query>() {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
                 if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
-                        address = cursor.getString(cursor.getColumnIndex("address"));
+                        startingStation = cursor.getString(cursor.getColumnIndex("startingStation"));
+                        destinationStation = cursor.getString(cursor.getColumnIndex("destinationStation"));
+                        seatCategory = cursor.getString(cursor.getColumnIndex("seatCategory"));
+                        ticketRates = cursor.getString(cursor.getColumnIndex("ticketRates"));
+                        ticketNum = cursor.getString(cursor.getColumnIndex("ticketNum"));
+                        trainNum = cursor.getString(cursor.getColumnIndex("trainNum"));
                         name = cursor.getString(cursor.getColumnIndex("name"));
-                        birthday = cursor.getString(cursor.getColumnIndex("birthday"));
-                        idNumber = cursor.getString(cursor.getColumnIndex("number"));
-                        gender = cursor.getString(cursor.getColumnIndex("gender"));
-                        nationality = cursor.getString(cursor.getColumnIndex("nationality"));
+                        date = cursor.getString(cursor.getColumnIndex("date"));
                         bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap, 300, 200));
-                        textViewAddress.setText(address);
+                        textViewStartingStation.setText(startingStation);
+                        textViewDestinationStation.setText(destinationStation);
+                        textViewSeatCategory.setText(seatCategory);
+                        textViewTicketRates.setText(ticketRates);
+                        textViewTicketNum.setText(ticketNum);
+                        textViewTrainNum.setText(trainNum);
                         textViewName.setText(name);
-                        textViewBirthday.setText(birthday);
-                        textViewGender.setText(gender);
-                        textViewNationality.setText(nationality);
-                        textViewIDNumber.setText(idNumber);
+                        textViewDate.setText(date);
                         bitmap.recycle();
+                        initBack();
                     }
                 }
                 cursor.close();
@@ -130,7 +139,7 @@ public class IDCardForFrontDetailsFragment extends Fragment {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
-                        IDCardForFrontHistoryFragment fragment = new IDCardForFrontHistoryFragment();
+                        TrainTicketHistoryFragment fragment = new TrainTicketHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
                     }
                 }, new Consumer<Throwable>() {

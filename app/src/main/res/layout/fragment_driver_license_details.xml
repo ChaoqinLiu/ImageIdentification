@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/common_license_plate"/>
+    <include layout="@layout/common_title"/>
+    <include layout="@layout/common_driver_license"/>
 
 </LinearLayout>

@@ -84,14 +84,14 @@ public class IDCardForBackDetailsFragment extends Fragment {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
-                if (cursor != null) {
+                if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
                         issuingAuthority = cursor.getString(cursor.getColumnIndex("issuingAuthority"));
                         dateOfIssue = cursor.getString(cursor.getColumnIndex("dateOfIssue"));
                         expirationDate = cursor.getString(cursor.getColumnIndex("expirationDate"));
                         bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,300,200));
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap, 300, 200));
                         textViewIssuingAuthority.setText(issuingAuthority);
                         textViewDateOfIssue.setText(dateOfIssue);
                         textViewExpirationDate.setText(expirationDate);
@@ -100,6 +100,11 @@ public class IDCardForBackDetailsFragment extends Fragment {
                 }
                 cursor.close();
                 briteDatabase.close();
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                L.i(throwable.getMessage());
             }
         });
     }

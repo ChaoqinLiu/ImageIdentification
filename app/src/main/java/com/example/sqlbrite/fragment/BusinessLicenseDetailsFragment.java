@@ -107,7 +107,7 @@ public class BusinessLicenseDetailsFragment extends Fragment {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
-                if (cursor != null) {
+                if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
                         registeredCapital = cursor.getString(cursor.getColumnIndex("registeredCapital"));
                         socialCreditCode = cursor.getString(cursor.getColumnIndex("socialCreditCode"));
@@ -121,8 +121,8 @@ public class BusinessLicenseDetailsFragment extends Fragment {
                         typeOfCompany = cursor.getString(cursor.getColumnIndex("typeOfCompany"));
                         businessLicenseValidityPeriod = cursor.getString(cursor.getColumnIndex("ValidityPeriod"));
                         bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,300,200));
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap, 300, 200));
                         textRegisteredCapital.setText(registeredCapital);
                         textSocialCreditCode.setText(socialCreditCode);
                         textCompanyName.setText(companyName);
@@ -140,6 +140,11 @@ public class BusinessLicenseDetailsFragment extends Fragment {
                 }
                 cursor.close();
                 briteDatabase.close();
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                L.i(throwable.getMessage());
             }
         });
     }

@@ -30,7 +30,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-public class IDCardForFrontDetailsFragment extends Fragment {
+public class LicensePlateDetailsFragment extends Fragment {
 
     private IdentificationDatabaseHelper dbHelper;
     private BriteDatabase briteDatabase;
@@ -40,41 +40,28 @@ public class IDCardForFrontDetailsFragment extends Fragment {
     protected Context context;
 
     private ImageView imageView;
-    private TextView textViewAddress;
-    private TextView textViewBirthday;
-    private TextView textViewName;
-    private TextView textViewIDNumber;
-    private TextView textViewGender;
-    private TextView textViewNationality;
+    private TextView textViewColor;
+    private TextView textViewNumber;
     private TextView back;
 
     private int id;
-    private String address;
-    private String birthday;
-    private String name;
-    private String idNumber;
-    private String gender;
-    private String nationality;
+    private String color;
+    private String number;
     private byte[] bytes;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = (DisplayHistoryActivity) getActivity();
-        view = inflater.inflate(R.layout.fragment_id_card_for_front_details,container,false);
+        view = inflater.inflate(R.layout.fragment_license_plate_details,container,false);
         Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
-        imageView = view.findViewById(R.id.image_id_card);
-        textViewAddress = view.findViewById(R.id.text_address);
-        textViewName = view.findViewById(R.id.text_name);
-        textViewBirthday = view.findViewById(R.id.text_birthday);
-        textViewIDNumber = view.findViewById(R.id.text_idNumber);
-        textViewGender = view.findViewById(R.id.text_gender);
-        textViewNationality = view.findViewById(R.id.text_nationality);
         back = view.findViewById(R.id.back);
         back.setTypeface(iconfont);
+        imageView = view.findViewById(R.id.image_license_plate);
+        textViewColor = view.findViewById(R.id.text_license_plate_color);
+        textViewNumber = view.findViewById(R.id.text_license_plate_number);
         Bundle bundle = getArguments();
         id = bundle.getInt("id");
-        initBack();
         return view;
     }
 
@@ -88,29 +75,29 @@ public class IDCardForFrontDetailsFragment extends Fragment {
     }
 
     private void getDetailData() {
-        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("front_id_card","SELECT * FROM front_id_card WHERE id=" + id);
+        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("license_plate","SELECT * FROM license_plate WHERE id=" + id);
         observable.subscribe(new Action1<SqlBrite.Query>() {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
                 if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
-                        address = cursor.getString(cursor.getColumnIndex("address"));
-                        name = cursor.getString(cursor.getColumnIndex("name"));
-                        birthday = cursor.getString(cursor.getColumnIndex("birthday"));
-                        idNumber = cursor.getString(cursor.getColumnIndex("number"));
-                        gender = cursor.getString(cursor.getColumnIndex("gender"));
-                        nationality = cursor.getString(cursor.getColumnIndex("nationality"));
+                        color = cursor.getString(cursor.getColumnIndex("color"));
+                        number = cursor.getString(cursor.getColumnIndex("number"));
                         bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap, 300, 200));
-                        textViewAddress.setText(address);
-                        textViewName.setText(name);
-                        textViewBirthday.setText(birthday);
-                        textViewGender.setText(gender);
-                        textViewNationality.setText(nationality);
-                        textViewIDNumber.setText(idNumber);
+                        if (color.contains("yellow")) {
+                            color = "黄色";
+                        } else if (color.contains("blue")) {
+                            color = "蓝色";
+                        } else if (color.contains("green")) {
+                            color = "绿色";
+                        }
+                        textViewColor.setText(color);
+                        textViewNumber.setText(number);
                         bitmap.recycle();
+                        initBack();
                     }
                 }
                 cursor.close();
@@ -130,7 +117,7 @@ public class IDCardForFrontDetailsFragment extends Fragment {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
-                        IDCardForFrontHistoryFragment fragment = new IDCardForFrontHistoryFragment();
+                        LicensePlateHistoryFragment fragment = new LicensePlateHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
                     }
                 }, new Consumer<Throwable>() {
@@ -140,5 +127,6 @@ public class IDCardForFrontDetailsFragment extends Fragment {
                     }
                 });
     }
+
 
 }

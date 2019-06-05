@@ -81,13 +81,13 @@ public class TranslationDetailsFragment extends Fragment {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
-                if (cursor != null) {
+                if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
                         original = cursor.getString(cursor.getColumnIndex("original"));
                         translation = cursor.getString(cursor.getColumnIndex("translation"));
                         bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,290,150));
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap, 290, 150));
                         textViewOriginal.setText(original);
                         textViewTranslation.setText(translation);
                         bitmap.recycle();
@@ -95,6 +95,11 @@ public class TranslationDetailsFragment extends Fragment {
                 }
                 cursor.close();
                 briteDatabase.close();
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                L.i(throwable.getMessage());
             }
         });
     }

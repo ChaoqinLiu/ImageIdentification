@@ -9,13 +9,16 @@ import com.example.sqlbrite.R;
 import com.example.sqlbrite.app.BaseActivity;
 import com.example.sqlbrite.fragment.BankCardHistoryFragment;
 import com.example.sqlbrite.fragment.BusinessLicenseHistoryFragment;
+import com.example.sqlbrite.fragment.DriverLicenseHistoryFragment;
 import com.example.sqlbrite.fragment.DrivingLicenseHistoryFragment;
 import com.example.sqlbrite.fragment.IDCardForBackHistoryFragment;
 import com.example.sqlbrite.fragment.IDCardForFrontHistoryFragment;
 import com.example.sqlbrite.fragment.ImageHistoryFragment;
+import com.example.sqlbrite.fragment.LicensePlateHistoryFragment;
+import com.example.sqlbrite.fragment.PassportHistoryFragment;
 import com.example.sqlbrite.fragment.TextHistoryFragment;
+import com.example.sqlbrite.fragment.TrainTicketHistoryFragment;
 import com.example.sqlbrite.fragment.TranslationHistoryFragment;
-import com.safframework.log.L;
 
 public class DisplayHistoryActivity extends BaseActivity {
 
@@ -45,42 +48,56 @@ public class DisplayHistoryActivity extends BaseActivity {
     private void displayHistoryByType(){
         switch (type) {
             case type_image:
-                getDisplayImageHistoryFragment();
+                getImageHistoryFragment();
                 break;
             case type_text:
-                getDisplayTextHistoryFragment();
+                getTextHistoryFragment();
                 break;
             case type_driving_license:
-                getDisplayDrivingLicenseHistoryFragment();
+                getDrivingLicenseHistoryFragment();
                 break;
             case type_id_card:
-                getDisplayIDCardFrontHistoryFragment();
+                getIDCardFrontHistoryFragment();
                 break;
             case type_business_license:
                 getBusinessLicenseHistoryFragment();
+                break;
             case type_bank_card:
                 getBankCardHistoryFragment();
+                break;
+            case type_driver_license:
+                getDriverLicenseHistoryFragment();
+                break;
+            case type_license_plate:
+                getLicensePlateHistoryFragment();
+                break;
+            case type_passport:
+                getPassportHistoryFragment();
+                break;
+            case type_train_ticket:
+                getTrainTicketHistoryFragment();
+                break;
             default:
                 break;
         }
     }
 
-    private void getDisplayImageHistoryFragment() {
+    private void getImageHistoryFragment() {
         ImageHistoryFragment fragment = new ImageHistoryFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
     }
 
-    private void getDisplayDrivingLicenseHistoryFragment() {
+    private void getDrivingLicenseHistoryFragment() {
         DrivingLicenseHistoryFragment fragment = new DrivingLicenseHistoryFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
     }
 
-    private void getDisplayIDCardFrontHistoryFragment() {
+    private void getIDCardFrontHistoryFragment() {
         IDCardForFrontHistoryFragment fragment = new IDCardForFrontHistoryFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
     }
 
-    private void getDisplayIDCardBackHistoryFragment() {
+    private void getIDCardBackHistoryFragment() {
         IDCardForBackHistoryFragment fragment = new IDCardForBackHistoryFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
     }
@@ -90,7 +107,7 @@ public class DisplayHistoryActivity extends BaseActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
     }
 
-    private void getDisplayTextHistoryFragment() {
+    private void getTextHistoryFragment() {
         TextHistoryFragment fragment = new TextHistoryFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
 
@@ -106,43 +123,24 @@ public class DisplayHistoryActivity extends BaseActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
     }
 
-    @Override
-    public void onBackPressed(){
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_text);
-        String current = currentFragment.toString().substring(0,currentFragment.toString().indexOf("{"));
-        switch (current) {
-            case "IDCardForFrontDetailsFragment":
-                getDisplayIDCardFrontHistoryFragment();
-                break;
-            case "IDCardForFrontHistoryFragment":
-                Intent();
-                break;
-            case "TextDetailsFragment":
-                getDisplayTextHistoryFragment();
-                break;
-            case "TextHistoryFragment":
-                Intent();
-                break;
-            case "TranslationDetailsFragment":
+    private void getDriverLicenseHistoryFragment() {
+        DriverLicenseHistoryFragment fragment = new DriverLicenseHistoryFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
+    }
 
-                getTranslationHistoryFragment();
-                break;
-            case "TranslationHistoryFragment":
-                Intent();
-                break;
-            case "DrivingLicenseDetailsFragment":
-                getDisplayDrivingLicenseHistoryFragment();
-                break;
-            case "DrivingLicenseHistoryFragment":
-                Intent();
-                break;
-            case "IDCardForBackDetailsFragment":
-                getDisplayIDCardBackHistoryFragment();
-                break;
-            case "IDCardForBackHistoryFragment":
-                Intent();
-                break;
-        }
+    private void getLicensePlateHistoryFragment() {
+        LicensePlateHistoryFragment fragment = new LicensePlateHistoryFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
+    }
+
+    private void getPassportHistoryFragment() {
+        PassportHistoryFragment fragment = new PassportHistoryFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
+    }
+
+    private void getTrainTicketHistoryFragment() {
+        TrainTicketHistoryFragment fragment = new TrainTicketHistoryFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_text,fragment).commit();
     }
 
     private void Intent(){
@@ -150,6 +148,50 @@ public class DisplayHistoryActivity extends BaseActivity {
         intent.putExtra("flag", "flag");
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onBackPressed(){
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_text);
+        String current = currentFragment.toString().substring(0,currentFragment.toString().indexOf("{"));
+        switch (current) {
+            case "IDCardForFrontDetailsFragment":
+                getIDCardFrontHistoryFragment();
+                break;
+            case "TextDetailsFragment":
+                getTextHistoryFragment();
+                break;
+            case "TranslationDetailsFragment":
+                getTranslationHistoryFragment();
+                break;
+            case "DrivingLicenseDetailsFragment":
+                getDrivingLicenseHistoryFragment();
+                break;
+            case "IDCardForBackDetailsFragment":
+                getIDCardBackHistoryFragment();
+                break;
+            case "BusinessLicenseDetailsFragment":
+                getBusinessLicenseHistoryFragment();
+                break;
+            case "BankCardDetailsFragment":
+                getBankCardHistoryFragment();
+                break;
+            case "DriverLicenseDetailsFragment":
+                getDriverLicenseHistoryFragment();
+                break;
+            case "LicensePlateDetailsFragment":
+                getLicensePlateHistoryFragment();
+                break;
+            case "PassportDetailsFragment":
+                getPassportHistoryFragment();
+                break;
+            case "TrainTicketDetailsFragment":
+                getTrainTicketHistoryFragment();
+                break;
+            default:
+                Intent();
+                break;
+        }
     }
 
 }

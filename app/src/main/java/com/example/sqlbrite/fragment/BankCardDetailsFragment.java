@@ -86,28 +86,24 @@ public class BankCardDetailsFragment extends Fragment {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
-                if (cursor != null) {
+                if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
                         bankCardNumber = cursor.getString(cursor.getColumnIndex("bankCardNumber"));
                         validDate = cursor.getString(cursor.getColumnIndex("validDate"));
                         bankName = cursor.getString(cursor.getColumnIndex("bankName"));
                         bankCardType = cursor.getString(cursor.getColumnIndex("bankCardType"));
                         bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap,300,200));
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap, 300, 200));
                         textBankCardNumber.setText(bankCardNumber);
                         textValidDate.setText(validDate);
                         textBankName.setText(bankName);
-                        try {
-                            if (Integer.parseInt(bankCardType) == 0) {
-                                bankCardType = "不能识别";
-                            } else if (Integer.parseInt(bankCardType) == 1) {
-                                bankCardType = "借记卡";
-                            } else if (Integer.parseInt(bankCardType) == 2) {
-                                bankCardType = "信用卡";
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        if (Integer.parseInt(bankCardType) == 0) {
+                            bankCardType = "不能识别";
+                        } else if (Integer.parseInt(bankCardType) == 1) {
+                            bankCardType = "借记卡";
+                        } else if (Integer.parseInt(bankCardType) == 2) {
+                            bankCardType = "信用卡";
                         }
                         textBankCardType.setText(bankCardType);
                         bitmap.recycle();
@@ -116,6 +112,11 @@ public class BankCardDetailsFragment extends Fragment {
                 }
                 cursor.close();
                 briteDatabase.close();
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                L.i(throwable.getMessage());
             }
         });
     }

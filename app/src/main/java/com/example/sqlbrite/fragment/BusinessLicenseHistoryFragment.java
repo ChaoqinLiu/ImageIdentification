@@ -2,7 +2,6 @@ package com.example.sqlbrite.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -18,26 +17,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sqlbrite.R;
-import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.activity.MainActivity;
 import com.example.sqlbrite.adapter.BusinessLicenseHistoryAdapter;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.model.BusinessLicenseHistory;
 import com.example.sqlbrite.model.BusinessLicenseHistory.BusinessLicenseHistoryArray;
-import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+
+import static com.example.sqlbrite.common.InitBack.initBackMain;
 
 public class BusinessLicenseHistoryFragment extends Fragment {
 
@@ -59,7 +54,7 @@ public class BusinessLicenseHistoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        context = (DisplayHistoryActivity) getActivity();
+        context = getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
         listView = view.findViewById(R.id.text_view_list);
         Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
@@ -67,7 +62,7 @@ public class BusinessLicenseHistoryFragment extends Fragment {
         back.setTypeface(iconfont);
         layout_title = view.findViewById(R.id.title_common_other);
         layout_title.setVisibility(View.GONE);
-        initBack();
+        initBackMain(back,context,MainActivity.class);
         return view;
     }
 
@@ -93,19 +88,24 @@ public class BusinessLicenseHistoryFragment extends Fragment {
                         String legalPerson = cursor.getString(cursor.getColumnIndex("legalPerson"));
                         byte[] bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
                         BusinessLicenseHistory history = new BusinessLicenseHistory();
-                        BusinessLicenseHistoryArray textHistoryArray = history.new BusinessLicenseHistoryArray(id,companyName,legalPerson,bytes);
+                        BusinessLicenseHistoryArray textHistoryArray = history.new BusinessLicenseHistoryArray(id, companyName, legalPerson, bytes);
                         textList.add(textHistoryArray);
-                        adapter = new BusinessLicenseHistoryAdapter(context,textList);
+                        adapter = new BusinessLicenseHistoryAdapter(context, textList);
                         listView.setAdapter(adapter);
                         initRemoveBusinessLicenseItemView();
                         getDetails();
                     }
                 } else {
                     PromptFragment fragment = new PromptFragment();
-                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt,fragment).commit();
+                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt, fragment).commit();
                 }
                 cursor.close();
                 briteDatabase.close();
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                L.i(throwable.getMessage());
             }
         });
     }
@@ -169,24 +169,5 @@ public class BusinessLicenseHistoryFragment extends Fragment {
             }
         });
     }
-
-    private void initBack(){
-        RxView.clicks(back)
-                .throttleFirst(600,TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
-                        intent.putExtra("flag", "flag");
-                        getActivity().startActivity(intent);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        L.i(throwable.getMessage());
-                    }
-                });
-    }
-
 
 }

@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sqlbrite.R;
-import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.utils.BitmapUtil;
 import com.jakewharton.rxbinding2.view.RxView;
@@ -30,7 +29,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-public class IDCardForFrontDetailsFragment extends Fragment {
+public class PassportDetailsFragment extends Fragment {
 
     private IdentificationDatabaseHelper dbHelper;
     private BriteDatabase briteDatabase;
@@ -40,41 +39,52 @@ public class IDCardForFrontDetailsFragment extends Fragment {
     protected Context context;
 
     private ImageView imageView;
-    private TextView textViewAddress;
-    private TextView textViewBirthday;
+    private TextView textViewCountryCode;
+    private TextView textViewPassportIssuanceLocation;
+    private TextView textViewValidUntil;
+    private TextView textViewPassportNumber;
+    private TextView textViewPassportDateOfIssue;
+    private TextView textViewBirthPlace;
     private TextView textViewName;
-    private TextView textViewIDNumber;
-    private TextView textViewGender;
-    private TextView textViewNationality;
+    private TextView textViewPinyinOfName;
+    private TextView textViewBirthday;
+    private TextView textViewSex;
     private TextView back;
 
     private int id;
-    private String address;
-    private String birthday;
+    private String countryCode;
+    private String passportIssuanceLocation;
+    private String validUntil;
+    private String passportNumber;
+    private String passportDateOfIssue;
+    private String birthPlace;
     private String name;
-    private String idNumber;
-    private String gender;
-    private String nationality;
+    private String pinyinOfName;
+    private String birthday;
+    private String sex;
     private byte[] bytes;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        context = (DisplayHistoryActivity) getActivity();
-        view = inflater.inflate(R.layout.fragment_id_card_for_front_details,container,false);
+        context = getActivity();
+        view = inflater.inflate(R.layout.fragment_passport_details,container,false);
         Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
-        imageView = view.findViewById(R.id.image_id_card);
-        textViewAddress = view.findViewById(R.id.text_address);
-        textViewName = view.findViewById(R.id.text_name);
-        textViewBirthday = view.findViewById(R.id.text_birthday);
-        textViewIDNumber = view.findViewById(R.id.text_idNumber);
-        textViewGender = view.findViewById(R.id.text_gender);
-        textViewNationality = view.findViewById(R.id.text_nationality);
         back = view.findViewById(R.id.back);
         back.setTypeface(iconfont);
+        imageView = view.findViewById(R.id.image_passport);
+        textViewCountryCode = view.findViewById(R.id.text_country_code);
+        textViewBirthday = view.findViewById(R.id.text_owner_birthday);
+        textViewPassportIssuanceLocation = view.findViewById(R.id.text_passport_issuance_location);
+        textViewValidUntil = view.findViewById(R.id.text_valid_until);
+        textViewPassportNumber = view.findViewById(R.id.text_vehicle_passport_number);
+        textViewPassportDateOfIssue = view.findViewById(R.id.text_passport_date_of_issue);
+        textViewBirthPlace = view.findViewById(R.id.text_birth_place);
+        textViewName = view.findViewById(R.id.text_owner_name);
+        textViewPinyinOfName = view.findViewById(R.id.text_pinyin_of_name);
+        textViewSex = view.findViewById(R.id.text_sex);
         Bundle bundle = getArguments();
         id = bundle.getInt("id");
-        initBack();
         return view;
     }
 
@@ -88,29 +98,38 @@ public class IDCardForFrontDetailsFragment extends Fragment {
     }
 
     private void getDetailData() {
-        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("front_id_card","SELECT * FROM front_id_card WHERE id=" + id);
+        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("passport","SELECT * FROM passport WHERE id=" + id);
         observable.subscribe(new Action1<SqlBrite.Query>() {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
                 if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
-                        address = cursor.getString(cursor.getColumnIndex("address"));
-                        name = cursor.getString(cursor.getColumnIndex("name"));
+                        countryCode = cursor.getString(cursor.getColumnIndex("countryCode"));
                         birthday = cursor.getString(cursor.getColumnIndex("birthday"));
-                        idNumber = cursor.getString(cursor.getColumnIndex("number"));
-                        gender = cursor.getString(cursor.getColumnIndex("gender"));
-                        nationality = cursor.getString(cursor.getColumnIndex("nationality"));
+                        passportIssuanceLocation = cursor.getString(cursor.getColumnIndex("passportIssuanceLocation"));
+                        validUntil = cursor.getString(cursor.getColumnIndex("validUntil"));
+                        passportNumber = cursor.getString(cursor.getColumnIndex("passportNumber"));
+                        passportDateOfIssue = cursor.getString(cursor.getColumnIndex("passportDateOfIssue"));
+                        birthPlace = cursor.getString(cursor.getColumnIndex("birthPlace"));
+                        name = cursor.getString(cursor.getColumnIndex("name"));
+                        pinyinOfName = cursor.getString(cursor.getColumnIndex("pinyinOfName"));
+                        sex = cursor.getString(cursor.getColumnIndex("sex"));
                         bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         imageView.setImageBitmap(BitmapUtil.changeBitmapSize(bitmap, 300, 200));
-                        textViewAddress.setText(address);
-                        textViewName.setText(name);
+                        textViewCountryCode.setText(countryCode);
                         textViewBirthday.setText(birthday);
-                        textViewGender.setText(gender);
-                        textViewNationality.setText(nationality);
-                        textViewIDNumber.setText(idNumber);
+                        textViewPassportIssuanceLocation.setText(passportIssuanceLocation);
+                        textViewValidUntil.setText(validUntil);
+                        textViewPassportNumber.setText(passportNumber);
+                        textViewPassportDateOfIssue.setText(passportDateOfIssue);
+                        textViewBirthPlace.setText(birthPlace);
+                        textViewPinyinOfName.setText(pinyinOfName);
+                        textViewSex.setText(sex);
+                        textViewName.setText(name);
                         bitmap.recycle();
+                        initBack();
                     }
                 }
                 cursor.close();
@@ -130,7 +149,7 @@ public class IDCardForFrontDetailsFragment extends Fragment {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
-                        IDCardForFrontHistoryFragment fragment = new IDCardForFrontHistoryFragment();
+                        PassportHistoryFragment fragment = new PassportHistoryFragment();
                         getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
                     }
                 }, new Consumer<Throwable>() {

@@ -2,13 +2,11 @@ package com.example.sqlbrite.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +38,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
+import static com.example.sqlbrite.common.InitBack.initBackMain;
+
 public class TextHistoryFragment extends Fragment {
 
     private IdentificationDatabaseHelper dbHelper;
@@ -62,7 +62,7 @@ public class TextHistoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        context = (DisplayHistoryActivity) getActivity();
+        context = getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
         Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
         listView = view.findViewById(R.id.text_view_list);
@@ -75,7 +75,7 @@ public class TextHistoryFragment extends Fragment {
         layout_title = view.findViewById(R.id.title_common);
         layout_title.setVisibility(View.GONE);
         initSwitchFragment();
-        initBack();
+        initBackMain(back,context,MainActivity.class);
         return view;
     }
 
@@ -100,19 +100,24 @@ public class TextHistoryFragment extends Fragment {
                         String words = cursor.getString(cursor.getColumnIndex("words"));
                         byte[] bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
                         TextHistory history = new TextHistory();
-                        TextHistory.TextHistoryArray textHistoryArray = history.new TextHistoryArray(id,words,bytes);
+                        TextHistory.TextHistoryArray textHistoryArray = history.new TextHistoryArray(id, words, bytes);
                         textList.add(textHistoryArray);
-                        adapter = new TextHistoryAdapter(context,textList);
+                        adapter = new TextHistoryAdapter(context, textList);
                         listView.setAdapter(adapter);
                         initRemoveTextItemView();
                         getDetails();
                     }
                 } else {
                     PromptFragment fragment = new PromptFragment();
-                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt,fragment).commit();
+                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt, fragment).commit();
                 }
                 cursor.close();
                 briteDatabase.close();
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                L.i(throwable.getMessage());
             }
         });
     }
@@ -175,24 +180,6 @@ public class TextHistoryFragment extends Fragment {
                 getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
             }
         });
-    }
-
-    private void initBack(){
-        RxView.clicks(back)
-                .throttleFirst(600,TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
-                        intent.putExtra("flag", "flag");
-                        getActivity().startActivity(intent);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        L.i(throwable.getMessage());
-                    }
-                });
     }
 
     private void initSwitchFragment(){

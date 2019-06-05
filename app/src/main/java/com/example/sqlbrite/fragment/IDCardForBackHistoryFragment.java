@@ -2,13 +2,11 @@ package com.example.sqlbrite.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sqlbrite.R;
-import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.activity.MainActivity;
 import com.example.sqlbrite.adapter.IDCardForBackHistoryAdapter;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
@@ -39,6 +36,8 @@ import io.reactivex.functions.Consumer;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+
+import static com.example.sqlbrite.common.InitBack.initBackMain;
 
 public class IDCardForBackHistoryFragment extends Fragment {
 
@@ -64,7 +63,7 @@ public class IDCardForBackHistoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        context = (DisplayHistoryActivity) getActivity();
+        context = getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
         Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
         listView = view.findViewById(R.id.text_view_list);
@@ -76,7 +75,7 @@ public class IDCardForBackHistoryFragment extends Fragment {
         text_title_left.setText("反面记录");
         text_title_right.setText("正面记录");
         layout_title.setVisibility(View.GONE);
-        initBack();
+        initBackMain(back,context,MainActivity.class);
         return view;
     }
 
@@ -104,19 +103,24 @@ public class IDCardForBackHistoryFragment extends Fragment {
                         String expirationDate = cursor.getString(cursor.getColumnIndex("expirationDate"));
                         byte[] bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
                         IDCardForBackHistory history = new IDCardForBackHistory();
-                        IDCardForBackHistoryArray textHistoryArray = history.new IDCardForBackHistoryArray(id,issuingAuthority,dateOfIssue,expirationDate,bytes);
+                        IDCardForBackHistoryArray textHistoryArray = history.new IDCardForBackHistoryArray(id, issuingAuthority, dateOfIssue, expirationDate, bytes);
                         textList.add(textHistoryArray);
-                        adapter = new IDCardForBackHistoryAdapter(context,textList);
+                        adapter = new IDCardForBackHistoryAdapter(context, textList);
                         listView.setAdapter(adapter);
                         initRemoveIDCardForBackItemView();
                         getDetails();
                     }
                 } else {
                     PromptFragment fragment = new PromptFragment();
-                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt,fragment).commit();
+                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt, fragment).commit();
                 }
                 cursor.close();
                 briteDatabase.close();
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                L.i(throwable.getMessage());
             }
         });
     }
@@ -179,25 +183,6 @@ public class IDCardForBackHistoryFragment extends Fragment {
                 getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
             }
         });
-    }
-
-    private void initBack(){
-        RxView.clicks(back)
-                .throttleFirst(600,TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
-                        intent.putExtra("flag", "flag");
-                        getActivity().startActivity(intent);
-                        getActivity().finish();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        L.i(throwable.getMessage());
-                    }
-                });
     }
 
     private void initSwitchFragment(){

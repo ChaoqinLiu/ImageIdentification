@@ -19,9 +19,10 @@ import android.widget.Toast;
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.DisplayHistoryActivity;
 import com.example.sqlbrite.activity.MainActivity;
-import com.example.sqlbrite.adapter.ImageHistoryAdapter;
+import com.example.sqlbrite.adapter.LicensePlateHistoryAdapter;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
-import com.example.sqlbrite.model.ImageHistory;
+import com.example.sqlbrite.model.LicensePlateHistory;
+import com.example.sqlbrite.model.LicensePlateHistory.LicensePlateHistoryArray;
 import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
@@ -34,7 +35,7 @@ import rx.functions.Action1;
 
 import static com.example.sqlbrite.common.InitBack.initBackMain;
 
-public class ImageHistoryFragment extends Fragment {
+public class LicensePlateHistoryFragment extends Fragment {
 
     private IdentificationDatabaseHelper dbHelper;
     private BriteDatabase briteDatabase;
@@ -43,30 +44,25 @@ public class ImageHistoryFragment extends Fragment {
     protected View view;
     protected Context context;
 
-    private List<ImageHistory.ImageHistoryArray> imageList = new ArrayList<ImageHistory.ImageHistoryArray>();
-    private ImageHistoryAdapter imageHistoryAdapter;
+    private List<LicensePlateHistoryArray> textList = new ArrayList<LicensePlateHistoryArray>();
+
+    private LicensePlateHistoryAdapter adapter;
 
     private ListView listView;
     private TextView back;
-    private LinearLayout title_common_other;
-
-    private int id;
-    private float score;
-    private String root;
-    private String keyword;
-    private byte[] bytes;
+    private LinearLayout layout_title;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         context = getActivity();
         view = inflater.inflate(R.layout.fragment_text_history,container,false);
-        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
         listView = view.findViewById(R.id.text_view_list);
+        Typeface iconfont = Typeface.createFromAsset(context.getAssets(), "iconfont/iconfont.ttf");
         back = view.findViewById(R.id.back);
         back.setTypeface(iconfont);
-        title_common_other = view.findViewById(R.id.title_common_other);
-        title_common_other.setVisibility(View.GONE);
+        layout_title = view.findViewById(R.id.title_common_other);
+        layout_title.setVisibility(View.GONE);
         initBackMain(back,context,MainActivity.class);
         return view;
     }
@@ -77,32 +73,32 @@ public class ImageHistoryFragment extends Fragment {
         dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
-        getDisplayImageHistoryData();
+        getDrivingLicenseHistoryData();
     }
 
-    private void getDisplayImageHistoryData() {
-        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("image","SELECT * FROM image ORDER BY id");
+    private void getDrivingLicenseHistoryData() {
+        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("license_plate","SELECT * FROM license_plate ORDER BY id");
         observable.subscribe(new Action1<SqlBrite.Query>() {
             @Override
             public void call(SqlBrite.Query query) {
                 Cursor cursor = query.run();
                 if (cursor.getCount() != 0) {
                     while (cursor.moveToNext()) {
-                        id = cursor.getInt(cursor.getColumnIndex("id"));
-                        score = cursor.getFloat(cursor.getColumnIndex("score"));
-                        root = cursor.getString(cursor.getColumnIndex("root"));
-                        keyword = cursor.getString(cursor.getColumnIndex("keyword"));
-                        bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
-                        ImageHistory result = new ImageHistory();
-                        ImageHistory.ImageHistoryArray imageHistoryResult = result.new ImageHistoryArray(id,score,root,keyword,bytes);
-                        imageList.add(imageHistoryResult);
-                        imageHistoryAdapter = new ImageHistoryAdapter(context,imageList);
-                        listView.setAdapter(imageHistoryAdapter);
-                        initRemoveImageItemView();
+                        int id = cursor.getInt(cursor.getColumnIndex("id"));
+                        String color = cursor.getString(cursor.getColumnIndex("color"));
+                        String number = cursor.getString(cursor.getColumnIndex("number"));
+                        byte[] bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
+                        LicensePlateHistory history = new LicensePlateHistory();
+                        LicensePlateHistoryArray textHistoryArray = history.new LicensePlateHistoryArray(id, color, number, bytes);
+                        textList.add(textHistoryArray);
+                        adapter = new LicensePlateHistoryAdapter(context, textList);
+                        listView.setAdapter(adapter);
+                        initRemoveLicensePlateItemView();
+                        getDetails();
                     }
                 } else {
                     PromptFragment fragment = new PromptFragment();
-                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt,fragment).commit();
+                    getFragmentManager().beginTransaction().replace(R.id.frameLayout_prompt, fragment).commit();
                 }
                 cursor.close();
                 briteDatabase.close();
@@ -110,45 +106,39 @@ public class ImageHistoryFragment extends Fragment {
         }, new Action1<Throwable>() {
             @Override
             public void call(Throwable throwable) {
-                System.out.println("onError: " + throwable.getMessage());
+                L.i(throwable.getMessage());
             }
         });
-
     }
 
-    private void initRemoveImageItemView() {
+    private void initRemoveLicensePlateItemView() {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                //定义AlertDialog.Builder对象，当长按列表项的时候弹出确认删除对话框
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage("确定删除?");
                 builder.setTitle("提示");
-                //添加AlertDialog.Builder对象的setPositiveButton()方法
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(imageList.remove(position) != null ){
+                        if(textList.remove(position) != null ){
                             try {
-                                //获取item控件内容:id作为删除数据库数据的条件
-                                TextView textView = parent.getChildAt(position).findViewById(R.id.text_image_id);
+                                TextView textView = parent.getChildAt(position).findViewById(R.id.text_id);
                                 int id = Integer.parseInt(textView.getText().toString());
-                                L.i(String.valueOf(id));
-                                deleteImageItemDataFromDatabase(id);
+                                deleteLicensePlateItemDataFromDatabase(id);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }else {
                             L.i("failed");
                         }
-                        imageList.clear();
-                        if (imageHistoryAdapter != null) {
-                            imageHistoryAdapter.notifyDataSetChanged();
+                        textList.clear();
+                        if (adapter != null) {
+                            adapter.notifyDataSetChanged();
                             Toast.makeText(context, "删除成功", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-                //添加AlertDialog.Builder对象的setNegativeButton()方法
                 builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -156,14 +146,29 @@ public class ImageHistoryFragment extends Fragment {
                     }
                 });
                 builder.create().show();
-                return false;
+                return true;  //不触发点击，当return false时长击点击都触发
             }
         });
     }
 
-    private void deleteImageItemDataFromDatabase(int id) {
-        briteDatabase.delete("image", "id=" + id);
+    private void deleteLicensePlateItemDataFromDatabase(int id){
+        briteDatabase.delete("license_plate", "id=" + id);
         briteDatabase.close();
+    }
+
+    private void getDetails() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                TextView textView = parent.getChildAt(position).findViewById(R.id.text_id);
+                int text_id = Integer.parseInt(textView.getText().toString());
+                LicensePlateDetailsFragment fragment = new LicensePlateDetailsFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt("id",text_id);
+                fragment.setArguments(bundle);
+                getFragmentManager().beginTransaction().replace(R.id.fragment_text, fragment).commit();
+            }
+        });
     }
 
 }
