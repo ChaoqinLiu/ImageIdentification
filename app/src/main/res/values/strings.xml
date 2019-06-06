@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">图片识别</string>
+    <string name="app_name">识别助手</string>
     <string name="str_back">&#xe66e;</string>
     <string name="str_image">&#xe626;</string>
     <string name="str_text">&#xe60d;</string>
