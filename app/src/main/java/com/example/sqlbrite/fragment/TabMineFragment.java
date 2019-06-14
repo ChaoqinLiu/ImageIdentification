@@ -1,5 +1,6 @@
 package com.example.sqlbrite.fragment;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,11 +17,15 @@ import android.widget.TextView;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.AlbumSelectionActivity;
+import com.example.sqlbrite.activity.MainActivity;
+import com.example.sqlbrite.activity.TakePictureActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.widgets.CircleImageView;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.concurrent.TimeUnit;
 
@@ -48,6 +53,7 @@ public class TabMineFragment extends Fragment {
     private CircleImageView imageView;
     private TextView textNickname;
     private TextView textAccount;
+    private MainActivity mainActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,15 +67,34 @@ public class TabMineFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mainActivity = (MainActivity) context;
+    }
+
     private void initView(){
+        RxPermissions rxPermissions = new RxPermissions(mainActivity);
+
         RxView.clicks(imageView)
                 .throttleFirst(600,TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
+                .compose(rxPermissions.ensure(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE))
+                .subscribe(new Consumer<Boolean>() {
+
                     @Override
-                    public void accept(@NonNull Object o) throws Exception{
-                        Intent intent = new Intent(context,AlbumSelectionActivity.class);
-                        intent.putExtra("type",TYPE_USER);
-                        startActivity(intent);
+                    public void accept(@NonNull Boolean granted) throws Exception {
+
+                        if (granted) {
+                            Intent intent = new Intent(context,AlbumSelectionActivity.class);
+                            intent.putExtra("type",TYPE_USER);
+                            startActivity(intent);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        L.i(throwable.getMessage());
                     }
                 });
     }

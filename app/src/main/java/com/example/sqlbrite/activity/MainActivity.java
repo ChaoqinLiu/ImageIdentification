@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.adapter.TabFragmentPagerAdapter;
 import com.example.sqlbrite.app.BaseActivity;
+import com.example.sqlbrite.fragment.TabMineFragment;
 import com.facebook.stetho.Stetho;
 import com.safframework.log.L;
 
