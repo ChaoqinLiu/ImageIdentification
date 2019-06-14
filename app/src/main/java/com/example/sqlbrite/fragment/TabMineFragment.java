@@ -16,11 +16,9 @@ import android.widget.TextView;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.AlbumSelectionActivity;
-import com.example.sqlbrite.activity.MainActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
 import com.example.sqlbrite.widgets.CircleImageView;
 import com.jakewharton.rxbinding2.view.RxView;
-import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
@@ -97,8 +95,13 @@ public class TabMineFragment extends Fragment {
                     while (cursor.moveToNext()) {
                         String account = cursor.getString(cursor.getColumnIndex("name"));
                         String nickname = cursor.getString(cursor.getColumnIndex("nickname"));
+                        byte[] bytes = cursor.getBlob(cursor.getColumnIndex("pic"));
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                        imageView.setBackgroundColor(Color.WHITE);
+                        imageView.setImageBitmap(changeBitmapSize(bitmap,80,80));
                         textAccount.setText(account);
                         textNickname.setText(nickname);
+                        bitmap.recycle();
                     }
                     cursor.close();
                     briteDatabase.close();
@@ -106,5 +109,6 @@ public class TabMineFragment extends Fragment {
             }
         });
     }
+
 
 }
