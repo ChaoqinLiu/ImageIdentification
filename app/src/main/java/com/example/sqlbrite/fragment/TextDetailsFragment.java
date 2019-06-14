@@ -31,6 +31,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
+import static com.example.sqlbrite.database.IdentificationDatabaseHelper.CURRENTVERSION;
+
 public class TextDetailsFragment extends Fragment {
 
     private IdentificationDatabaseHelper dbHelper;
@@ -67,7 +69,7 @@ public class TextDetailsFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
+        dbHelper = IdentificationDatabaseHelper.getInstance(context,CURRENTVERSION);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
         getDetailData();

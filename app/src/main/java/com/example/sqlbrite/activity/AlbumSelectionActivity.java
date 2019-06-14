@@ -2,7 +2,9 @@ package com.example.sqlbrite.activity;
 
 import android.annotation.TargetApi;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,16 +19,26 @@ import android.view.KeyEvent;
 import android.view.Window;
 
 import com.example.sqlbrite.app.BaseActivity;
+import com.example.sqlbrite.database.IdentificationDatabaseHelper;
+import com.safframework.log.L;
+import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite.SqlBrite;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Calendar;
+
+import rx.schedulers.Schedulers;
+
+import static com.example.sqlbrite.database.IdentificationDatabaseHelper.CURRENTVERSION;
 
 public class AlbumSelectionActivity extends BaseActivity {
 
     private static final int ALBUM_SELECTION_RESULT_CODE = 10;  //相册选择图片
     private static final int CROP_PHOTO_RESULT_CODE = 20;       //裁剪
     private static final int RESULT_CODE = 30;
+
     private File mOutImage;
     private Uri uritempFile;
     private Bitmap mBitmap;
@@ -34,6 +46,10 @@ public class AlbumSelectionActivity extends BaseActivity {
 
     private String type;
     private String id_card_side;
+
+    private IdentificationDatabaseHelper dbHelper;
+    private BriteDatabase briteDatabase;
+    private SqlBrite sqlBrite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +61,14 @@ public class AlbumSelectionActivity extends BaseActivity {
         id_card_side = getIntent().getStringExtra("id_card_side");
 
         chooseAlbum();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        dbHelper = IdentificationDatabaseHelper.getInstance(this,CURRENTVERSION);
+        sqlBrite = SqlBrite.create();
+        briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper, Schedulers.io());
     }
 
     private void chooseAlbum(){
@@ -68,6 +92,12 @@ public class AlbumSelectionActivity extends BaseActivity {
                     mOutImage = new File(imagePath);
                     setCropPhoto();
                  }
+                if (resultCode == RESULT_CANCELED) {
+                    Intent intent = new Intent();
+                    intent.setClass(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
                  break;
             case CROP_PHOTO_RESULT_CODE:
                if (resultCode == RESULT_OK) {
@@ -75,11 +105,29 @@ public class AlbumSelectionActivity extends BaseActivity {
                        mBitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uritempFile));
                        //L.i("ImagePath = " + imagePath);
                        //将图片路径传到下一个Activity处理
-                       Intent intent = new Intent(AlbumSelectionActivity.this, IntelligentDetectionActivity.class);
-                       intent.putExtra("type", type);
-                       intent.putExtra("image_path", imagePath);
-                       intent.putExtra("id_card_side",id_card_side);
-                       startActivityForResult(intent, RESULT_CODE);
+                       if (type.equals("type_user")) {
+                           SharedPreferences preferences = getSharedPreferences("user",MODE_PRIVATE);
+                           String name = preferences.getString("account","");
+
+                           ContentValues values = new ContentValues();
+                           final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                           mBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                           values.put("pic", os.toByteArray());
+                           briteDatabase.update("user",values,"name=?",new String(name));
+                           mBitmap.recycle();
+
+                           Intent intent = new Intent(this,MainActivity.class);
+                           intent.putExtra("type", type);
+                           startActivity(intent);
+                           finish();
+                       } else {
+                           Intent intent = new Intent(this, IntelligentDetectionActivity.class);
+                           intent.putExtra("type", type);
+                           intent.putExtra("image_path", imagePath);
+                           intent.putExtra("id_card_side",id_card_side);
+                           startActivityForResult(intent, RESULT_CODE);
+                           finish();
+                       }
                    } catch (FileNotFoundException e) {
                        e.printStackTrace();
                    }
@@ -178,18 +226,6 @@ public class AlbumSelectionActivity extends BaseActivity {
         intent.setDataAndType(uri, "image/*");
 
         startActivityForResult(intent,CROP_PHOTO_RESULT_CODE); //启动裁剪程序
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {// 重写系统返回键
-            Intent intent = new Intent();
-            intent.setClass(AlbumSelectionActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
 }

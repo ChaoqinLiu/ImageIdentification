@@ -131,6 +131,13 @@ public class TakePictureActivity extends BaseActivity {
 
                     startActivityForResult(intent,CROP_PHOTO_RESULT_CODE); //启动裁剪程序
                 }
+                //如果取消拍照按返回键直接返回MainActivity
+                if (resultCode == RESULT_CANCELED) {
+                    Intent intent = new Intent();
+                    intent.setClass(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
                 break;
             case CROP_PHOTO_RESULT_CODE:
                 if (resultCode == RESULT_OK) {
@@ -187,18 +194,6 @@ public class TakePictureActivity extends BaseActivity {
         }
         //最后通知图库更新
         this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,Uri.parse("file://" + mImagePath)));
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {// 重写系统返回键
-            Intent intent = new Intent();
-            intent.setClass(TakePictureActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
  }

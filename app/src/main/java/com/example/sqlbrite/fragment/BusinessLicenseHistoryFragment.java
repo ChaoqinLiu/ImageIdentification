@@ -33,6 +33,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
 import static com.example.sqlbrite.common.InitBack.initBackMain;
+import static com.example.sqlbrite.database.IdentificationDatabaseHelper.CURRENTVERSION;
 
 public class BusinessLicenseHistoryFragment extends Fragment {
 
@@ -69,7 +70,7 @@ public class BusinessLicenseHistoryFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        dbHelper = IdentificationDatabaseHelper.getInstance(context,16);
+        dbHelper = IdentificationDatabaseHelper.getInstance(context,CURRENTVERSION);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper,AndroidSchedulers.mainThread());
         getDrivingLicenseHistoryData();

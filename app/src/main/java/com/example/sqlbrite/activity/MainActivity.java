@@ -1,6 +1,7 @@
 package com.example.sqlbrite.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -26,6 +27,8 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     public static final int PAGE_ONE = 0;
     public static final int PAGE_TWO = 1;
     public static final int PAGE_THREE = 2;
+    private static final int USER_RESULT_CODE = 40;
+    private static final int FLAG_RESULT_CODE = 5;
 
     private RadioGroup tabBar;
     private RadioButton home;
@@ -35,14 +38,15 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     private ViewPager viewPager;
 
     private String flag;
+    private static String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tabFragmentPagerAdapter = new TabFragmentPagerAdapter(getSupportFragmentManager());
-        initView();
         Stetho.initializeWithDefaults(this);
+        initView();
     }
 
     @Override
@@ -53,6 +57,11 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         if (flag != null) {
             viewPager.setCurrentItem(PAGE_TWO);
         }
+        type = getIntent().getStringExtra("type");
+        if (type.equals("type_user")) {
+            viewPager.setCurrentItem(PAGE_THREE);
+        }
+
     }
 
     private void initView(){

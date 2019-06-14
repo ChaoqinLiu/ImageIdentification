@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DBNAME = "brite.db";
-    private static final int CURRENTVERSION = 1;
+    public static final int CURRENTVERSION = 21;
     private static final String image_table = "image";
     private static final String text_table = "text";
     private static final String translation_table = "translation";
@@ -20,8 +20,17 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
     private static final String license_plate_table = "license_plate";
     private static final String passport_table = "passport";
     private static final String train_ticket_table = "train_ticket";
+    private static final String user = "user";
     private static IdentificationDatabaseHelper mHelper = null;
     private SQLiteDatabase mDB = null;
+
+    private static final String CREATE_USER = "create table if not exists " + user + " ("
+            + "id integer primary key autoincrement not null, "
+            + "nickname text not null, "
+            + "name text not null, "
+            + "password text not null, "
+            + "pic blob"
+            + ");";
 
     private static final String CREATE_IMAGE = "create table if not exists " + image_table + " ("
             + "id integer primary key autoincrement not null, "
@@ -209,12 +218,13 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_DRIVING_LICENSE);
         db.execSQL(CREATE_PASSPORT);
         db.execSQL(CREATE_TRAIN_TICKET);
+        db.execSQL(CREATE_USER);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         /*switch (oldVersion) {
-            case 15:
+            case 20:
                 *//*db.execSQL("drop table if exists image");
                 db.execSQL("drop table if exists text");
                 db.execSQL("drop table if exists train_ticket");
@@ -227,10 +237,12 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("drop table if exists driving_license");
                 db.execSQL("drop table if exists bank_card");
                 db.execSQL("drop table if exists license_plate");
-                db.execSQL("drop table if exists passport");*//*
-                //onCreate(db);
+                db.execSQL("drop table if exists passport");
+                onCreate(db);*//*
                 //db.execSQL(CREATE_FRONT_IDCARD);
                 //db.execSQL(CREATE_BACK_IDCARD);
+                db.execSQL("drop table if exists user");
+                db.execSQL(CREATE_USER);
             default:
         }*/
     }

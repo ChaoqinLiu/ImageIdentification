@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.activity.DisplayHistoryActivity;
-import com.example.sqlbrite.activity.MainActivity;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.log.L;
 
@@ -72,7 +71,7 @@ public class TabHistoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        context = (MainActivity) getActivity();
+        context = getActivity();
         view = inflater.inflate(R.layout.fragment_tab_history,container,false);
 
         layout_image = view.findViewById(R.id.layout_image);

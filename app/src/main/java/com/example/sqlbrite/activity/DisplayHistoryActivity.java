@@ -144,7 +144,7 @@ public class DisplayHistoryActivity extends BaseActivity {
     }
 
     private void Intent(){
-        Intent intent = new Intent(DisplayHistoryActivity.this, MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("flag", "flag");
         startActivity(intent);
         finish();

@@ -14,10 +14,18 @@
     <string name="str_Passport">&#xe6a9;</string>
     <string name="str_enter">&#xe643;</string>
     <string name="str_share">&#xe679;</string>
+    <string name="str_user">&#xeb2f;</string>
+    <string name="str_phone">&#xe686;</string>
+    <string name="str_weichat">&#xe637;</string>
+    <string name="str_qq">&#xe680;</string>
+    <string name="str_password">&#xe63e;</string>
     <string name="srt_result">识别结果</string>
     <string name="str_translation">翻译</string>
     <string name="str_home">识别</string>
     <string name="str_history">历史</string>
     <string name="str_me">我的</string>
+    <string name="title_activity_login">登陆</string>
+    <string name="countdown">倒计时</string>
+    <string name="get">获取</string>
 
 </resources>

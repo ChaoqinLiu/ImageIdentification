@@ -46,6 +46,8 @@ import java.util.concurrent.TimeUnit;
 
 import rx.schedulers.Schedulers;
 
+import static com.example.sqlbrite.database.IdentificationDatabaseHelper.CURRENTVERSION;
+
 
 public class TextTranslationActivity extends BaseActivity {
 
@@ -111,7 +113,7 @@ public class TextTranslationActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        dbHelper = IdentificationDatabaseHelper.getInstance(this,16);
+        dbHelper = IdentificationDatabaseHelper.getInstance(this,CURRENTVERSION);
         sqlBrite = SqlBrite.create();
         briteDatabase = sqlBrite.wrapDatabaseHelper(dbHelper, Schedulers.io());
     }

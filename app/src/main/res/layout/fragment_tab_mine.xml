@@ -3,16 +3,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_me"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="bottom|center"
-        android:textColor="#000000"
-        android:textSize="17sp"
-        android:text="我的页面"/>
+        android:layout_height="120dp"
+        android:layout_marginTop="30dp"
+        android:padding="10dp"
+        android:orientation="horizontal">
+
+        <com.example.sqlbrite.widgets.CircleImageView
+            android:id="@+id/icon_user"
+            android:layout_height="80dp"
+            android:layout_width="80dp"
+            android:background="@drawable/icon_user"
+            android:layout_marginRight="20dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_nickname"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:gravity="left|bottom"/>
+
+            <LinearLayout
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="top|center_vertical"
+                    android:textSize="16sp"
+                    android:textColor="@color/gray"
+                    android:text="账号:"/>
+
+                <TextView
+                    android:id="@+id/text_account"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:textSize="16sp"
+                    android:gravity="left|center_horizontal"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_height="8dp"
+        android:layout_width="match_parent"
+        android:background="@color/LightGrey"/>
 
 </LinearLayout>

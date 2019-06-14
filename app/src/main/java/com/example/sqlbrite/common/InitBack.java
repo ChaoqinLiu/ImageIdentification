@@ -2,6 +2,7 @@ package com.example.sqlbrite.common;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
@@ -22,7 +23,7 @@ public class InitBack {
                     public void accept(@NonNull Object o) throws Exception {
                         Intent intent = new Intent(context, activity);
                         intent.putExtra("flag", "flag");
-                        context.startActivity(intent);
+                         context.startActivity(intent);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
