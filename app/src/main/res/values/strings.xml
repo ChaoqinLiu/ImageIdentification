@@ -27,5 +27,15 @@
     <string name="title_activity_login">登陆</string>
     <string name="countdown">倒计时</string>
     <string name="get">获取</string>
+    <string name="save">保存</string>
+    <string name="editNickname">更改昵称</string>
+    <string name="userInfo">个人信息</string>
+    <string name="nickname">昵称</string>
+    <string name="account">账号</string>
+    <string name="avatar">头像</string>
+    <string name="logout">退出</string>
+    <string name="about">关于</string>
+    <string name="features">功能介绍</string>
+    <string name="description">识别助手是一款用于识别图片的工具，可以拍照和相册选择图片识别，主要功能包括识别图像的类型，相识度，文字，翻译以及识别各种证件，简洁，高效。</string>
 
 </resources>

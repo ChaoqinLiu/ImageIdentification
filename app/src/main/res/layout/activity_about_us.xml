@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:roundiv="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/back"
+        android:layout_height="45dp"
+        android:layout_width="match_parent"
+        android:text="@string/str_back"
+        android:paddingStart="15dp"
+        android:textSize="18sp"
+        android:gravity="center_vertical"/>
+
+    <com.example.sqlbrite.widgets.RoundImageView
+        android:layout_height="60dp"
+        android:layout_width="60dp"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="centerCrop"
+        android:src="@drawable/logo"
+        roundiv:left_bottom_radius="8dp"
+        roundiv:left_top_radius="8dp"
+        roundiv:right_bottom_radius="8dp"
+        roundiv:right_top_radius="8dp" />
+
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:textSize="20sp"
+        android:textColor="@color/black"/>
+
+    <TextView
+        android:id="@+id/versionCode"
+        android:layout_height="25dp"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical|center"
+        android:textSize="15sp"
+        android:textColor="@color/gray"/>
+
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginTop="20dp"
+        android:background="@color/LightGrey"/>
+
+    <TextView
+        android:layout_height="40dp"
+        android:layout_width="match_parent"
+        android:text="@string/features"
+        android:gravity="center_vertical|center"
+        android:textSize="17sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:textSize="16sp"
+        android:text="@string/description"/>
+
+</LinearLayout>

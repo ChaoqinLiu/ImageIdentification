@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DBNAME = "brite.db";
-    public static final int CURRENTVERSION = 21;
+    public static final int CURRENTVERSION = 22;
     private static final String image_table = "image";
     private static final String text_table = "text";
     private static final String translation_table = "translation";
@@ -26,9 +26,9 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_USER = "create table if not exists " + user + " ("
             + "id integer primary key autoincrement not null, "
-            + "nickname text not null, "
-            + "name text not null, "
-            + "password text not null, "
+            + "nickname text, "
+            + "name text, "
+            + "password text, "
             + "pic blob"
             + ");";
 
@@ -223,9 +223,9 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        /*switch (oldVersion) {
-            case 20:
-                *//*db.execSQL("drop table if exists image");
+        switch (oldVersion) {
+            case 21:
+               /* db.execSQL("drop table if exists image");
                 db.execSQL("drop table if exists text");
                 db.execSQL("drop table if exists train_ticket");
                 db.execSQL("drop table if exists translation");
@@ -238,12 +238,12 @@ public class IdentificationDatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("drop table if exists bank_card");
                 db.execSQL("drop table if exists license_plate");
                 db.execSQL("drop table if exists passport");
-                onCreate(db);*//*
+                onCreate(db);*/
                 //db.execSQL(CREATE_FRONT_IDCARD);
                 //db.execSQL(CREATE_BACK_IDCARD);
                 db.execSQL("drop table if exists user");
                 db.execSQL(CREATE_USER);
             default:
-        }*/
+        }
     }
 }

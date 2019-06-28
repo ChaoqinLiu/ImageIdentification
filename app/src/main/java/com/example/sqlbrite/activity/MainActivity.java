@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -54,13 +56,20 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        flag = getIntent().getStringExtra("flag");
-        if (flag != null) {
-            viewPager.setCurrentItem(PAGE_TWO);
-        }
-        type = getIntent().getStringExtra("type");
-        if (type.equals("type_user")) {
-            viewPager.setCurrentItem(PAGE_THREE);
+        try {
+            flag = getIntent().getStringExtra("flag");
+            if (flag != null) {
+                viewPager.setCurrentItem(PAGE_TWO);
+            }
+            type = getIntent().getStringExtra("type");
+            if (type.equals("type_user")) {
+                Intent i = new Intent("android.intent.action.CART_BROADCAST");
+                i.putExtra("refresh","refresh");
+                LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+                viewPager.setCurrentItem(PAGE_THREE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }

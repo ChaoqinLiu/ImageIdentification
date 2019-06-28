@@ -5,6 +5,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -26,15 +28,31 @@ import android.widget.Toast;
 import com.example.sqlbrite.R;
 import com.example.sqlbrite.app.BaseActivity;
 import com.example.sqlbrite.database.IdentificationDatabaseHelper;
+import com.example.sqlbrite.model.User;
+import com.example.sqlbrite.utils.GsonUtil;
 import com.example.sqlbrite.utils.MD5Utils;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.safframework.injectview.annotations.InjectView;
 import com.safframework.log.L;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
+import com.tencent.connect.UserInfo;
+import com.tencent.connect.auth.QQToken;
+import com.tencent.connect.common.Constants;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import cn.smssdk.EventHandler;
@@ -46,11 +64,14 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import static com.example.sqlbrite.database.IdentificationDatabaseHelper.CURRENTVERSION;
+import static com.example.sqlbrite.utils.BitmapUtil.getNetImage;
 import static com.example.sqlbrite.utils.ValidatorUtil.isEmail;
 import static com.example.sqlbrite.utils.ValidatorUtil.isPhone;
 
 
 public class LoginActivity extends BaseActivity{
+
+    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
 
     private IdentificationDatabaseHelper dbHelper;
     private BriteDatabase briteDatabase;
@@ -59,7 +80,11 @@ public class LoginActivity extends BaseActivity{
     private CountDownTimer countDownTimer;
     private EventHandler handler;
 
-    ArrayList<String> nameList = new ArrayList<String>();
+    private static final String APP_ID = "101630625";
+    private Tencent tencent;
+    private BaseUiListener mIUiListener;
+    private UserInfo mUserInfo;
+    private List<User> userList = new ArrayList<>();
 
     private EditText edit_nickname;
     private EditText edit_account;
@@ -72,8 +97,9 @@ public class LoginActivity extends BaseActivity{
     private String account;
     private String password;
     private String rePassword;
+    private String name = "";
 
-    private String name;
+    private Bitmap bitmap;
 
     @InjectView(R.id.text_user)
     TextView text_user;
@@ -105,6 +131,7 @@ public class LoginActivity extends BaseActivity{
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN , WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
+        tencent = Tencent.createInstance(APP_ID,this);
 
         Typeface iconfont = Typeface.createFromAsset(getAssets(), "iconfont/iconfont.ttf");
         text_user.setTypeface(iconfont);
@@ -160,7 +187,10 @@ public class LoginActivity extends BaseActivity{
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
-                        initLogin();
+                        String user = editUser.getText().toString().trim();
+                        String pwd = MD5Utils.MD5Encode(editPassword.getText().toString(), "UTF-8").trim();
+                        initLogin(user, pwd);
+                        saveUserDataToSharedPreferences(user,pwd);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -184,14 +214,14 @@ public class LoginActivity extends BaseActivity{
                 });
 
         //如果SharedPreferences里存在用户信息则直接进入
-        /*SharedPreferences preferences = getSharedPreferences("user",MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("user",MODE_PRIVATE);
         String user = preferences.getString("account","");
         String passwprd = preferences.getString("password","");
         if (!(TextUtils.isEmpty(user) && TextUtils.isEmpty(passwprd))) {
             Intent intent = new Intent(this,MainActivity.class);
             startActivity(intent);
             finish();
-        }*/
+        }
     }
 
     private void initQuickLogin (){
@@ -206,16 +236,13 @@ public class LoginActivity extends BaseActivity{
 
         LinearLayout phone_quick_login = dialog.findViewById(R.id.phone_quick_login);
         LinearLayout qq_quick_login = dialog.findViewById(R.id.qq_quick_login);
-        LinearLayout weichat_quick_login = dialog.findViewById(R.id.weichat_quick_login);
         TextView icon_phone = dialog.findViewById(R.id.icon_phone);
         TextView icon_qq = dialog.findViewById(R.id.icon_qq);
-        TextView icon_weichat = dialog.findViewById(R.id.icon_weichat);
         TextView cancel = dialog.findViewById(R.id.cancel);
 
         Typeface iconfont = Typeface.createFromAsset(getAssets(), "iconfont/iconfont.ttf");
         icon_phone.setTypeface(iconfont);
         icon_qq.setTypeface(iconfont);
-        icon_weichat.setTypeface(iconfont);
 
         RxView.clicks(cancel)
                 .throttleFirst(600,TimeUnit.MILLISECONDS)
@@ -252,20 +279,7 @@ public class LoginActivity extends BaseActivity{
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
                         initQQLogin();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        L.i(throwable.getMessage());
-                    }
-                });
-
-        RxView.clicks(weichat_quick_login)
-                .throttleFirst(600,TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        initWeichatLogin();
+                        dialog.dismiss();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -306,49 +320,20 @@ public class LoginActivity extends BaseActivity{
                         password = edit_password.getText().toString().trim();
                         rePassword = edit_rePassword.getText().toString().trim();
 
-                        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("user","SELECT name FROM user WHERE name=?",new String(account));
-                        observable.subscribe(new Action1<SqlBrite.Query>() {
+                        Observable<SqlBrite.Query> observables = briteDatabase.createQuery("user","SELECT name FROM user WHERE name=?",new String(account));
+                        observables.subscribe(new Action1<SqlBrite.Query>() {
                             @Override
                             public void call(SqlBrite.Query query) {
                                 Cursor cursor = query.run();
-                                if (cursor.getCount() != 0) {
+                                if (cursor.getCount() == 0) {
+                                    initRegisterUser(nickname,account,password,rePassword);
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(LoginActivity.this, "账号已注册，请直接登陆", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(LoginActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
                                             dialog.dismiss();
-                                            return;
                                         }
                                     });
-                                } else {
-                                    if (TextUtils.isEmpty(nickname)) {
-                                        Toast.makeText(LoginActivity.this,"昵称不能为空",Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-
-                                    if (!(isPhone(account) || isEmail(account))) {
-                                        Toast.makeText(LoginActivity.this,"账号格式不正确，请重新输入",Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                    if (password.length() < 6) {
-                                        Toast.makeText(LoginActivity.this,"密码不能小于6位",Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                    if (!(rePassword.equals(password))) {
-                                        Toast.makeText(LoginActivity.this,"两次输入的密码必须一致",Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                    String pwd = MD5Utils.MD5Encode(password,"UTF-8");
-                                    ContentValues contentValues = new ContentValues();
-                                    contentValues.put("nickname", nickname);
-                                    contentValues.put("name", account);
-                                    contentValues.put("password", pwd);
-                                    briteDatabase.insert("user", contentValues);
-                                    Toast.makeText(LoginActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
-                                    saveUserDataToSharedPreferences(account, pwd);
-                                    dialog.dismiss();
-                                    cursor.close();
-                                    briteDatabase.close();
                                 }
                             }
                         }, new Action1<Throwable>() {
@@ -358,8 +343,28 @@ public class LoginActivity extends BaseActivity{
                             }
                         });
 
+                        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("user","SELECT name FROM user WHERE name=?",new String(account));
+                        observable.subscribe(new Action1<SqlBrite.Query>() {
+                            @Override
+                            public void call(SqlBrite.Query query) {
+                                Cursor cursor = query.run();
+                                if (cursor.getCount() > 0) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(LoginActivity.this, "账号已注册，请直接登陆", Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                }
+                            }
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                L.i(throwable.getMessage());
+                            }
+                        });
                     }
-
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
@@ -378,6 +383,38 @@ public class LoginActivity extends BaseActivity{
 
     }
 
+    private void initRegisterUser(String nickname, String account, String password, String rePassword){
+        if (TextUtils.isEmpty(nickname)) {
+            Toast.makeText(LoginActivity.this,"昵称不能为空",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!(isPhone(account) || isEmail(account))) {
+            Toast.makeText(LoginActivity.this,"账号格式不正确，请重新输入",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (password.length() < 6) {
+            Toast.makeText(LoginActivity.this,"密码不能小于6位",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!(rePassword.equals(password))) {
+            Toast.makeText(LoginActivity.this,"两次输入的密码必须一致",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String pwd = MD5Utils.MD5Encode(password,"UTF-8");
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_user);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("nickname", nickname);
+        contentValues.put("name", account);
+        contentValues.put("password", pwd);
+        contentValues.put("pic", os.toByteArray());
+        briteDatabase.insert("user", contentValues);
+        bitmap.recycle();
+        briteDatabase.close();
+    }
+
     private void saveUserDataToSharedPreferences(String account,String password){
         SharedPreferences.Editor editor = getSharedPreferences("user",MODE_PRIVATE).edit();
         editor.putString("account",account);
@@ -385,37 +422,29 @@ public class LoginActivity extends BaseActivity{
         editor.commit();
     }
 
-    private void initLogin() {
-        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("user","SELECT name, password FROM user");
+    private void initLogin(String account, String password) {
+        Observable<SqlBrite.Query> observable = briteDatabase.createQuery("user","SELECT name, password FROM user where name=? and password=?", new String[]{account,password});
         observable.subscribe(new Action1<SqlBrite.Query>() {
             @Override
             public void call(SqlBrite.Query query) {
-                String user = editUser.getText().toString().trim();
-                String pwd = MD5Utils.MD5Encode(editPassword.getText().toString(), "UTF-8").trim();
                 Cursor cursor = query.run();
                 if (cursor.getCount() != 0) {
-                    while (cursor.moveToNext()) {
-                        account = cursor.getString(cursor.getColumnIndex("name"));
-                        password = cursor.getString(cursor.getColumnIndex("password"));
-                    }
-                    if (account.equals(user) && password.equals(pwd)) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(LoginActivity.this, "账号或密码不正确，请重新输入", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    startActivity(intent);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LoginActivity.this, "账号或密码不正确，请重新输入", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
                 cursor.close();
                 briteDatabase.close();
@@ -504,6 +533,7 @@ public class LoginActivity extends BaseActivity{
                                                 saveUserDataToSharedPreferences(phone," ");
                                                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                                                 startActivity(intent);
+                                                dialog.dismiss();
                                                 finish();
                                             } else {
                                                 runOnUiThread(new Runnable() {
@@ -768,9 +798,103 @@ public class LoginActivity extends BaseActivity{
                 });
     }
 
-    private void initQQLogin(){}
+    private void initQQLogin(){
+        mIUiListener = new BaseUiListener();
+        //all表示获取所有权限、
+        tencent.login(this,"all",mIUiListener);
+    }
+    private class BaseUiListener implements IUiListener {
 
-    private void initWeichatLogin(){}
+        @Override
+        public void onComplete(Object response) {
+            Toast.makeText(LoginActivity.this, "授权成功", Toast.LENGTH_SHORT).show();
+            JSONObject obj = (JSONObject) response;
+            try {
+                String openID = obj.getString("openid");
+                String accessToken = obj.getString("access_token");
+                String expires = obj.getString("expires_in");
+                tencent.setOpenId(openID);
+                tencent.setAccessToken(accessToken, expires);
+                QQToken qqToken = tencent.getQQToken();
+                mUserInfo = new UserInfo(getApplicationContext(), qqToken);
+                mUserInfo.getUserInfo(new IUiListener() {
+                    @Override
+                    public void onComplete(Object response) {
+                        String userInfo = response.toString();
+                        User user = GsonUtil.parseJsonWithGson(userInfo,User.class);
+                        userList.add(user);
+                        String nickname = user.getNickname();
+                        String path = user.getFigure();
+
+                        //给用户生成一个随机的id
+                        Random ran = new Random(System.currentTimeMillis());
+                        for (int i = 0; i < 10; i++) {
+                            name = name + ran.nextInt(10);
+                        }
+                        fixedThreadPool.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                bitmap = getNetImage(path);
+                                final ByteArrayOutputStream os = new ByteArrayOutputStream();
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+
+                                ContentValues values = new ContentValues();
+                                values.put("name",name);
+                                values.put("nickname",nickname);
+                                values.put("pic",os.toByteArray());
+                                briteDatabase.insert("user",values);
+                                bitmap.recycle();
+                                saveUserDataToSharedPreferences(name, "");
+                                Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(UiError uiError) {
+                        L.i("登录失败" + uiError.toString());
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        L.i("登录取消");
+
+                    }
+                });
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onError(UiError uiError) {
+            Toast.makeText(LoginActivity.this, "授权失败", Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void onCancel() {
+            Toast.makeText(LoginActivity.this, "授权取消", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    /**
+     * 在调用Login的Activity或者Fragment中重写onActivityResult方法
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.REQUEST_LOGIN) {
+            Tencent.onActivityResultData(requestCode, resultCode, data, mIUiListener);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 
     @Override
     protected void onDestroy() {

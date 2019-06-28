@@ -11,10 +11,11 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Locale;
-
-//import android.support.media.ExifInterface;
 
 public class BitmapUtil {
 
@@ -100,20 +101,33 @@ public class BitmapUtil {
     }
 
     //根据bitmap将图片改成指定大小
-    public static Bitmap changeBitmapSize(Bitmap bitmap,int newWidth,int newHeight) {
+    public static Bitmap changeBitmapSize(Bitmap bitmap, int newWidth, int newHeight) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         //计算压缩的比率
-        float scaleWidth = ((float)newWidth)/width;
-        float scaleHeight=((float)newHeight)/height;
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
         //获取想要缩放的matrix
         Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth,scaleHeight);
+        matrix.postScale(scaleWidth, scaleHeight);
         //获取新的bitmap
-        bitmap = Bitmap.createBitmap(bitmap,0,0,width,height,matrix,true);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
         bitmap.getWidth();
         bitmap.getHeight();
         return bitmap;
+    }
+
+    public static Bitmap getNetImage(String path) {
+        try {
+            URL url = new URL(path);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            InputStream is = connection.getInputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(is, null, null);
+            return  bitmap;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
